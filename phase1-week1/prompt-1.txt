@@ -1,0 +1,4 @@
+1. Explain why exponential backoff needs jitter when handling rate limits in exactly two punchy sentences.
+2. Write a concise Python function implementing exponential backoff with full jitter, including type hints and docstring.
+3. Return a valid JSON object analyzing the HTTP status code 429. Include keys: "status_code" (int), "error_type" (string), "is_transient" (bool), and "recommended_action" (string). Output only JSON.
+4. Compare "at-least-once" retry semantics with idempotency in LLM services. Why is blindly retrying a timed-out completion dangerous?

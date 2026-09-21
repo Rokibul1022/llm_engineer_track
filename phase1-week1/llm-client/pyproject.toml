@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "llm-client"
+version = "0.1.0"
+description = "Typed, async LLM client with retries, backoff, streaming, and structured-output validation."
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.27",
+    "pydantic>=2.9",
+]
+
+[project.optional-dependencies]
+api = ["fastapi>=0.115", "uvicorn[standard]>=0.30"]
+demo = ["streamlit>=1.39"]
+dev = ["pytest>=8.3", "pytest-asyncio>=0.24", "respx>=0.21"]
+
+[tool.setuptools.packages.find]
+include = ["llm_client*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
