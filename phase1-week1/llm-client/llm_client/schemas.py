@@ -20,8 +20,15 @@ class LLMRequest(BaseModel):
     model: str
     messages: list[ChatMessage]
     temperature: float = Field(default=0.7, ge=0.0, le=2.0)
+    top_p: float | None = Field(
+        default=None,
+        ge=0.0,
+        le=1.0,
+        description="Nucleus sampling cutoff; defaults to None (provider default). Optional for backwards compatibility.",
+    )
     max_tokens: int = Field(default=512, gt=0)
     stream: bool = False
+
 
 
 class Usage(BaseModel):

@@ -3,7 +3,8 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com)
 [![Pydantic v2](https://img.shields.io/badge/Pydantic-v2.10+-e92063.svg)](https://docs.pydantic.dev)
-[![Tests Passing](https://img.shields.io/badge/tests-8%2F8%20passing-brightgreen.svg)](tests/test_client.py)
+[![Tests Passing](https://img.shields.io/badge/tests-11%2F11%20passing-brightgreen.svg)](tests/test_benchmark.py)
+
 [![Docker Ready](https://img.shields.io/badge/docker-ready-2496ED.svg)](Dockerfile)
 
 A production-grade, typed, asynchronous Python client for calling Large Language Model (LLM) providers reliably, paired with a Dockerized FastAPI proxy service, comprehensive test suite, and an interactive real-time visual demonstration studio.
@@ -164,7 +165,59 @@ $$\text{Total Cost} = \left(\text{Prompt Tokens} \times \frac{\$0.10}{1,000,000}
 
 ---
 
+## Benchmark & Pipeline Explanation
+
+This repository provides an automated benchmarking harness ([`llm_client/benchmark.py`](./llm_client/benchmark.py)) and an architectural deep dive ([`PIPELINE.md`](./PIPELINE.md)) explaining how Transformer inference stages map directly to this codebase.
+
+For core theoretical explanations and questions, see [`ANSWERS.md`](./ANSWERS.md); for tradeoffs and boundary conditions, see [`LIMITATIONS.md`](./LIMITATIONS.md). For the high-level architecture diagram, see [`architecture.md`](../../architecture.md).
+
+### Running the CLI Benchmark Suite
+
+Run the Cartesian benchmark suite (short/medium/long prompts across temperatures `0.0`, `0.7`, `1.2` with 3 repeats):
+
+```bash
+# Using live Groq credentials from .env
+python scripts/run_benchmark.py --model openai/gpt-oss-120b --repeats 3 --delay 2.1
+
+# Or offline with mock streaming transport
+python scripts/run_benchmark.py --mock --repeats 3
+```
+
+### Empirical Summary Table Output
+
+Sample measured benchmark output querying `openai/gpt-oss-120b` (saved to `benchmark_results.json`):
+
+```text
+================================================================================================================
+ [BENCHMARK] INFERENCE BENCHMARK SUMMARY TABLE
+================================================================================================================
+Prompt Size    | Temp   | Top-P   | Runs   | Prompt Tok   | Comp Tok   | TTFT (ms)   | Tokens/s   | Identical?  
+---------------+--------+---------+--------+--------------+------------+-------------+------------+-------------
+Short (36c)    | 0.0    | 1.0     | 3      | 81           | 120        | 605.2       | 199.2      | YES (det)   
+Short (36c)    | 0.7    | 0.9     | 3      | 81           | 115        | 592.4       | 187.5      | NO (3 var)  
+Short (36c)    | 1.2    | 1.0     | 3      | 81           | 123        | 695.5       | 172.3      | NO (3 var)  
+Medium (162c)  | 0.0    | 1.0     | 3      | 99           | 128        | 546.0       | 179.3      | YES (det)   
+Medium (162c)  | 0.7    | 0.9     | 3      | 99           | 128        | 627.6       | 169.3      | NO (3 var)  
+Medium (162c)  | 1.2    | 1.0     | 3      | 99           | 128        | 622.8       | 189.3      | NO (3 var)  
+Long (758c)    | 0.0    | 1.0     | 3      | 214          | 128        | 698.7       | 158.7      | NO (2 var)  
+Long (758c)    | 0.7    | 0.9     | 3      | 214          | 128        | 661.1       | 164.4      | NO (3 var)  
+Long (758c)    | 1.2    | 1.0     | 3      | 214          | 128        | 651.4       | 170.3      | NO (3 var)  
+---------------+--------+---------+--------+--------------+------------+-------------+------------+-------------
+```
+
+### Interactive Streamlit Multipage Studio
+
+Launch the updated multipage Streamlit app to explore the Week 1 fault-injection suite and the new Week 2 benchmark and nondeterminism explorer:
+
+```bash
+streamlit run streamlit_demo.py
+# Navigate to "Week 2: Token Benchmark & Nondeterminism" in the sidebar
+```
+
+---
+
 ## Interactive Visual Demonstration Studio
+
 
 The service includes a web interface hosted at `http://localhost:8000` containing two visual demonstration environments:
 

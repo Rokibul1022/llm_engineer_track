@@ -1,3 +1,10 @@
+from .benchmark import (
+    BenchmarkRun,
+    TokenTimingSample,
+    run_benchmark_suite,
+    run_single_benchmark,
+    summarize,
+)
 from .client import AsyncLLMClient
 from .exceptions import (
     LLMBadRequestError,
@@ -15,6 +22,11 @@ __all__ = [
     "LLMRequest",
     "LLMResponse",
     "Usage",
+    "TokenTimingSample",
+    "BenchmarkRun",
+    "run_single_benchmark",
+    "run_benchmark_suite",
+    "summarize",
     "LLMClientError",
     "LLMTimeoutError",
     "LLMRateLimitError",
@@ -22,3 +34,4 @@ __all__ = [
     "LLMBadRequestError",
     "LLMMalformedResponseError",
 ]
+

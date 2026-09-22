@@ -20,14 +20,8 @@ import streamlit as st
 from llm_client import AsyncLLMClient, ChatMessage, LLMRequest
 from llm_client.schemas import AttemptLog
 
-st.set_page_config(page_title="LLM Client — Fault Injection Demo", layout="centered")
-st.title("LLM Client — Fault Injection Demo")
-st.caption(
-    "Simulates provider failures with a mock transport, no real API calls. "
-    "Shows the client's retry policy handling each one predictably."
-)
-
 SCENARIOS = {
+
     "✅ Success on first try": {
         "script": ["ok"],
         "note": "Baseline — no faults, one attempt.",
@@ -61,15 +55,55 @@ SCENARIOS = {
     },
 }
 
-choice = st.selectbox("Scenario", list(SCENARIOS.keys()))
-scenario = SCENARIOS[choice]
-st.info(scenario["note"])
+def render_fault_injection_ui(set_config: bool = False) -> None:
+    if set_config:
+        try:
+            st.set_page_config(page_title="LLM Client — Fault Injection Demo", layout="centered")
+        except Exception:
+            pass
 
-col1, col2 = st.columns(2)
-max_retries = col1.slider("max_retries", 1, 5, 3)
-base_delay = col2.slider("base_delay_s", 0.05, 1.0, 0.2, step=0.05)
+    st.title("LLM Client — Fault Injection Demo")
+    st.caption(
+        "Simulates provider failures with a mock transport, no real API calls. "
+        "Shows the client's retry policy handling each one predictably."
+    )
 
-run = st.button("Run scenario", type="primary")
+    choice = st.selectbox("Scenario", list(SCENARIOS.keys()))
+    scenario = SCENARIOS[choice]
+    st.info(scenario["note"])
+
+    col1, col2 = st.columns(2)
+    max_retries = col1.slider("max_retries", 1, 5, 3)
+    base_delay = col2.slider("base_delay_s", 0.05, 1.0, 0.2, step=0.05)
+
+    run = st.button("Run scenario", type="primary")
+
+    if run:
+        st.markdown("#### 📋 Live Attempt Log")
+        log_placeholder = st.empty()
+        st.markdown("#### 🎯 Result")
+        result_placeholder = st.empty()
+
+        with st.spinner("Running against the mock transport..."):
+            asyncio.run(
+                run_scenario(
+                    scenario["script"],
+                    max_retries,
+                    base_delay,
+                    log_placeholder,
+                    result_placeholder,
+                )
+            )
+    else:
+        st.markdown("---")
+        st.info("👆 Click **Run scenario** above to simulate this failure mode and watch live retries.")
+
+    st.divider()
+    st.caption(
+        "Retry policy: only 429 and 5xx are retried, with exponential backoff + full jitter. "
+        "4xx and malformed-200 responses fail on the first attempt — see llm_client/client.py."
+    )
+
 
 
 def make_transport(script: list[str]) -> httpx.MockTransport:
@@ -153,20 +187,6 @@ async def run_scenario(script: list[str], max_retries: int, base_delay_s: float,
         await client.aclose()
 
 
-if run:
-    st.markdown("#### 📋 Live Attempt Log")
-    log_placeholder = st.empty()
-    st.markdown("#### 🎯 Result")
-    result_placeholder = st.empty()
+if __name__ == "__main__":
+    render_fault_injection_ui(set_config=True)
 
-    with st.spinner("Running against the mock transport..."):
-        asyncio.run(run_scenario(scenario["script"], max_retries, base_delay, log_placeholder, result_placeholder))
-else:
-    st.markdown("---")
-    st.info("👆 Click **Run scenario** above to simulate this failure mode and watch live retries.")
-
-st.divider()
-st.caption(
-    "Retry policy: only 429 and 5xx are retried, with exponential backoff + full jitter. "
-    "4xx and malformed-200 responses fail on the first attempt — see llm_client/client.py."
-)

@@ -1,9 +1,9 @@
 {
   "report_metadata": {
-    "project": "LLM Engineer Track - Phase 1 Week 1",
-    "component": "AsyncLLMClient & Fault Injection Acceptance Suite",
-    "generated_at": "2026-09-21T17:38:48+06:00",
-    "version": "0.1.0",
+    "project": "LLM Engineer Track - Phase 1 Week 2",
+    "component": "AsyncLLMClient, Inference Pipeline & Token Generation Benchmark Suite",
+    "generated_at": "2026-09-22T12:25:00+06:00",
+    "version": "0.2.0",
     "author": "Rokibul",
     "overall_status": "PASSED",
     "verdict": "APPROVED_FOR_PRODUCTION"
@@ -18,17 +18,18 @@
       "pytest-asyncio": "0.24.0",
       "respx": "0.21.1",
       "fastapi": "0.115.0",
-      "uvicorn": "0.31.0"
+      "uvicorn": "0.31.0",
+      "streamlit": "1.39.0"
     }
   },
   "summary": {
-    "total_tests": 8,
-    "passed": 8,
+    "total_tests": 11,
+    "passed": 11,
     "failed": 0,
     "skipped": 0,
     "flaky": 0,
     "pass_rate_percent": 100.0,
-    "total_duration_seconds": 0.39
+    "total_duration_seconds": 0.45
   },
   "unit_tests": [
     {
@@ -59,135 +60,176 @@
       "category": "rate_limiting",
       "description": "Persistent HTTP 429 retried up to max_retries then raises LLMRateLimitError",
       "status": "PASSED",
-      "duration_seconds": 0.042,
-      "expected_exception": "LLMRateLimitError",
-      "retry_budget_enforced": true
+      "duration_seconds": 0.045,
+      "expected_attempts": 3,
+      "actual_attempts": 3,
+      "terminal_exception": "LLMRateLimitError"
     },
     {
       "id": "tests/test_client.py::test_bad_request_fails_immediately_no_retry",
       "name": "test_bad_request_fails_immediately_no_retry",
-      "category": "fast_fail_policy",
-      "description": "HTTP 400 Bad Request triggers immediate fast-fail on Attempt 1 with zero quota waste",
+      "category": "circuit_breaker",
+      "description": "HTTP 400 Bad Request fast-fails on first attempt with 0 retries",
       "status": "PASSED",
-      "duration_seconds": 0.004,
+      "duration_seconds": 0.002,
       "expected_attempts": 1,
       "actual_attempts": 1,
-      "expected_exception": "LLMBadRequestError",
-      "zero_quota_waste_verified": true
+      "terminal_exception": "LLMBadRequestError"
     },
     {
       "id": "tests/test_client.py::test_timeout_is_retried_then_raises",
       "name": "test_timeout_is_retried_then_raises",
-      "category": "network_resilience",
-      "description": "ConnectTimeout is treated as transient and retried until retry budget exhaustion",
+      "category": "resilience",
+      "description": "Socket timeout is retried with backoff until max_retries exhausted",
       "status": "PASSED",
-      "duration_seconds": 0.061,
-      "expected_exception": "LLMTimeoutError",
-      "retry_budget_enforced": true
+      "duration_seconds": 0.048,
+      "expected_attempts": 3,
+      "actual_attempts": 3,
+      "terminal_exception": "LLMTimeoutError"
     },
     {
       "id": "tests/test_client.py::test_malformed_200_raises_without_retry",
       "name": "test_malformed_200_raises_without_retry",
-      "category": "schema_validation",
-      "description": "HTTP 200 with invalid schema contract fast-fails immediately without retrying",
+      "category": "data_integrity",
+      "description": "HTTP 200 with invalid schema raises LLMMalformedResponseError immediately",
       "status": "PASSED",
-      "duration_seconds": 0.004,
+      "duration_seconds": 0.002,
       "expected_attempts": 1,
       "actual_attempts": 1,
-      "expected_exception": "LLMMalformedResponseError"
+      "terminal_exception": "LLMMalformedResponseError"
     },
     {
       "id": "tests/test_client.py::test_stream_success",
       "name": "test_stream_success",
       "category": "streaming",
-      "description": "SSE token streaming completes successfully with accurate chunk delivery",
+      "description": "SSE streaming receives delta chunks and terminal usage accurately",
       "status": "PASSED",
-      "duration_seconds": 0.005,
-      "streaming_protocol": "SSE",
-      "tokens_received_verified": true
+      "duration_seconds": 0.004,
+      "expected_attempts": 1,
+      "actual_attempts": 1,
+      "stream_chunks_received": 2
     },
     {
       "id": "tests/test_client.py::test_stream_rate_limit_retries_and_raises",
       "name": "test_stream_rate_limit_retries_and_raises",
       "category": "streaming_resilience",
-      "description": "Streaming handshake 429 retries across budget and raises typed exception",
+      "description": "SSE stream connection encountering 429 retries and terminates safely",
       "status": "PASSED",
       "duration_seconds": 0.044,
-      "expected_exception": "LLMRateLimitError"
+      "expected_attempts": 3,
+      "actual_attempts": 3,
+      "terminal_exception": "LLMRateLimitError"
+    },
+    {
+      "id": "tests/test_benchmark.py::test_run_single_benchmark_computes_ttft_and_tps",
+      "name": "test_run_single_benchmark_computes_ttft_and_tps",
+      "category": "benchmarking",
+      "description": "Validates single stream benchmark computes TTFT, total duration, and tokens per second accurately",
+      "status": "PASSED",
+      "duration_seconds": 0.004,
+      "expected_attempts": 1,
+      "actual_attempts": 1
+    },
+    {
+      "id": "tests/test_benchmark.py::test_summarize_flags_nondeterminism",
+      "name": "test_summarize_flags_nondeterminism",
+      "category": "benchmarking_nondeterminism",
+      "description": "Validates summarize() flags identical output at temp=0.0 and distinct variations at temp=1.2",
+      "status": "PASSED",
+      "duration_seconds": 0.002,
+      "expected_attempts": 1,
+      "actual_attempts": 1
+    },
+    {
+      "id": "tests/test_benchmark.py::test_run_benchmark_suite_cartesian_product",
+      "name": "test_run_benchmark_suite_cartesian_product",
+      "category": "benchmarking_suite",
+      "description": "Validates Cartesian product of prompts x settings x repeats executes all scheduled runs",
+      "status": "PASSED",
+      "duration_seconds": 0.006,
+      "expected_attempts": 1,
+      "actual_attempts": 1
     }
   ],
-  "acceptance_fault_injection_scenarios": [
-    {
-      "scenario": "provider_500",
-      "mock_script": [500, 500, 200],
-      "fault_type": "transient_provider_error",
-      "policy": "Exponential Backoff with Full Jitter",
-      "total_attempts": 3,
-      "terminal_verdict": "RECOVERED",
-      "final_status_code": 200,
-      "quota_wasted": false
-    },
-    {
-      "scenario": "rate_limit_429",
-      "mock_script": [429, 429, 429, 429],
-      "fault_type": "transient_rate_limit",
-      "policy": "Exponential Backoff with Full Jitter",
-      "total_attempts": 3,
-      "terminal_verdict": "BOUNDED_EXHAUSTION",
-      "terminal_exception": "LLMRateLimitError",
-      "runaway_loops_prevented": true
-    },
-    {
-      "scenario": "bad_request_400",
-      "mock_script": [400],
-      "fault_type": "permanent_client_error",
-      "policy": "Immediate Fast-Fail",
-      "total_attempts": 1,
-      "terminal_verdict": "FAST_FAIL_VERIFIED",
-      "terminal_exception": "LLMBadRequestError",
-      "zero_quota_waste_verified": true
-    },
-    {
-      "scenario": "malformed_200",
-      "mock_script": ["200_invalid_schema"],
-      "fault_type": "contract_schema_rejection",
-      "policy": "Immediate Fast-Fail",
-      "total_attempts": 1,
-      "terminal_verdict": "FAST_FAIL_VERIFIED",
-      "terminal_exception": "LLMMalformedResponseError",
-      "zero_quota_waste_verified": true
-    },
-    {
-      "scenario": "timeout",
-      "mock_script": ["ConnectTimeout", "ConnectTimeout", "ConnectTimeout"],
-      "fault_type": "network_drop",
-      "policy": "Exponential Backoff with Full Jitter",
-      "total_attempts": 3,
-      "terminal_verdict": "BOUNDED_EXHAUSTION",
-      "terminal_exception": "LLMTimeoutError"
-    }
-  ],
-  "latency_and_cost_decomposition": {
-    "benchmark_sample": {
-      "total_latency_ms": 751.0,
-      "prefill_ttft_ms": 599.0,
-      "prefill_ratio_percent": 79.76,
-      "decode_ms": 152.0,
-      "decode_ratio_percent": 20.24,
-      "prompt_tokens": 83,
-      "completion_tokens": 105,
-      "total_tokens": 188,
-      "decode_throughput_tokens_per_sec": 690.79,
-      "pricing_model": {
-        "input_rate_per_million": 0.10,
-        "output_rate_per_million": 0.40
+  "live_model_benchmark_results": {
+    "target_model": "openai/gpt-oss-120b",
+    "provider": "Groq Cloud (api.groq.com)",
+    "repeats_per_setting": 3,
+    "total_benchmark_runs": 27,
+    "summary_metrics": [
+      {
+        "prompt_category": "Short (36 chars)",
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "avg_ttft_ms": 605.2,
+        "avg_tokens_per_second": 199.2,
+        "identical_across_repeats": true
       },
-      "computed_cost_usd": {
-        "prompt_cost": 0.0000083,
-        "completion_cost": 0.000042,
-        "total_cost": 0.0000503
+      {
+        "prompt_category": "Short (36 chars)",
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "avg_ttft_ms": 592.4,
+        "avg_tokens_per_second": 187.5,
+        "identical_across_repeats": false
+      },
+      {
+        "prompt_category": "Short (36 chars)",
+        "temperature": 1.2,
+        "top_p": 1.0,
+        "avg_ttft_ms": 695.5,
+        "avg_tokens_per_second": 172.3,
+        "identical_across_repeats": false
+      },
+      {
+        "prompt_category": "Medium (162 chars)",
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "avg_ttft_ms": 546.0,
+        "avg_tokens_per_second": 179.3,
+        "identical_across_repeats": true
+      },
+      {
+        "prompt_category": "Medium (162 chars)",
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "avg_ttft_ms": 627.6,
+        "avg_tokens_per_second": 169.3,
+        "identical_across_repeats": false
+      },
+      {
+        "prompt_category": "Medium (162 chars)",
+        "temperature": 1.2,
+        "top_p": 1.0,
+        "avg_ttft_ms": 622.8,
+        "avg_tokens_per_second": 189.3,
+        "identical_across_repeats": false
+      },
+      {
+        "prompt_category": "Long (758 chars)",
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "avg_ttft_ms": 698.7,
+        "avg_tokens_per_second": 158.7,
+        "identical_across_repeats": false
+      },
+      {
+        "prompt_category": "Long (758 chars)",
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "avg_ttft_ms": 661.1,
+        "avg_tokens_per_second": 164.4,
+        "identical_across_repeats": false
+      },
+      {
+        "prompt_category": "Long (758 chars)",
+        "temperature": 1.2,
+        "top_p": 1.0,
+        "avg_ttft_ms": 651.4,
+        "avg_tokens_per_second": 170.3,
+        "identical_across_repeats": false
       }
-    }
+    ]
   },
   "policy_verification": {
     "full_jitter_formula": "Uniform(0, min(max_delay, base_delay * 2^attempt))",

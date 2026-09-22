@@ -1,0 +1,4859 @@
+{
+  "metadata": {
+    "model": "openai/gpt-oss-120b",
+    "repeats": 3,
+    "total_runs": 27,
+    "generated_at": "2026-09-22T12:24:47+0600"
+  },
+  "summary": {
+    "total_runs": 27,
+    "groups": [
+      {
+        "prompt": "Explain what a token is in 10 words.",
+        "prompt_char_length": 36,
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "repeats": 3,
+        "avg_prompt_tokens": 81.0,
+        "avg_completion_tokens": 120.0,
+        "avg_ttft_s": 0.6052,
+        "avg_ttft_ms": 605.2,
+        "avg_tokens_per_second": 199.16,
+        "distinct_outputs_count": 1,
+        "identical_across_repeats": true,
+        "outputs": [
+          "A token is a discrete unit of text or data.",
+          "A token is a discrete unit of text or data.",
+          "A token is a discrete unit of text or data."
+        ]
+      },
+      {
+        "prompt": "Explain what a token is in 10 words.",
+        "prompt_char_length": 36,
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "repeats": 3,
+        "avg_prompt_tokens": 81.0,
+        "avg_completion_tokens": 115.3,
+        "avg_ttft_s": 0.5924,
+        "avg_ttft_ms": 592.4,
+        "avg_tokens_per_second": 187.53,
+        "distinct_outputs_count": 3,
+        "identical_across_repeats": false,
+        "outputs": [
+          "A token is a unit of text processed by AI.",
+          "A token is a unit of text for language models.",
+          "A token is a unit of text processed by models."
+        ]
+      },
+      {
+        "prompt": "Explain what a token is in 10 words.",
+        "prompt_char_length": 36,
+        "temperature": 1.2,
+        "top_p": 1.0,
+        "repeats": 3,
+        "avg_prompt_tokens": 81.0,
+        "avg_completion_tokens": 122.7,
+        "avg_ttft_s": 0.6955,
+        "avg_ttft_ms": 695.5,
+        "avg_tokens_per_second": 172.32,
+        "distinct_outputs_count": 3,
+        "identical_across_repeats": false,
+        "outputs": [
+          "A token represents a piece of text for language models.",
+          "A token is a unit of text processed by models.",
+          ""
+        ]
+      },
+      {
+        "prompt": "Compare self-attention and cross-attention mechanisms in Transformer architectures. Highlight the primary difference in how keys, queries, and values are sourced.",
+        "prompt_char_length": 162,
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "repeats": 3,
+        "avg_prompt_tokens": 99.0,
+        "avg_completion_tokens": 128.0,
+        "avg_ttft_s": 0.546,
+        "avg_ttft_ms": 546.0,
+        "avg_tokens_per_second": 179.32,
+        "distinct_outputs_count": 1,
+        "identical_across_repeats": true,
+        "outputs": [
+          "## Self\u2011Attention vs. Cross\u2011Attention in Transformers  \n\n| Aspect | Self\u2011Attention | Cross\u2011Attention |\n|--------|----------------|-----------------|\n| **Typical use\u2011case** | Encoding a single sequence (e.g., the tokens of a sentence) so that each token can attend to every other token in the *same* sequence. | Connecting two different sequences (",
+          "## Self\u2011Attention vs. Cross\u2011Attention in Transformers  \n\n| Aspect | Self\u2011Attention | Cross\u2011Attention |\n|--------|----------------|-----------------|\n| **Typical use\u2011case** | Encoding a single sequence (e.g., the tokens of a sentence) so that each token can attend to every other token in the *same* sequence. | Connecting two different sequences (",
+          "## Self\u2011Attention vs. Cross\u2011Attention in Transformers  \n\n| Aspect | Self\u2011Attention | Cross\u2011Attention |\n|--------|----------------|-----------------|\n| **Typical use\u2011case** | Encoding a single sequence (e.g., the tokens of a sentence) so that each token can attend to every other token in the *same* sequence. | Connecting two different sequences ("
+        ]
+      },
+      {
+        "prompt": "Compare self-attention and cross-attention mechanisms in Transformer architectures. Highlight the primary difference in how keys, queries, and values are sourced.",
+        "prompt_char_length": 162,
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "repeats": 3,
+        "avg_prompt_tokens": 99.0,
+        "avg_completion_tokens": 128.0,
+        "avg_ttft_s": 0.6276,
+        "avg_ttft_ms": 627.6,
+        "avg_tokens_per_second": 169.34,
+        "distinct_outputs_count": 3,
+        "identical_across_repeats": false,
+        "outputs": [
+          "## Self\u2011Attention vs. Cross\u2011Attention in Transformers  \n\n| Aspect | Self\u2011Attention | Cross\u2011Attention |\n|--------|----------------|-----------------|\n| **Typical place in a model** | Encoder layers (e.g., BERT, ViT) and decoder layers of the original \u201cencoder\u2011decoder\u201d transformer when the decoder attends to its",
+          "## Self\u2011Attention vs. Cross\u2011Attention in Transformers  \n\n| Aspect | Self\u2011Attention | Cross\u2011Attention |\n|--------|----------------|-----------------|\n| **Typical use\u2011case** | Encoding a single sequence (e.g., the words of a sentence, image patches, protein residues). | Connecting two different sequences (e.g., decoder attending to encoder",
+          "**Self\u2011Attention vs. Cross\u2011Attention in Transformers**  \n\n| Aspect | Self\u2011Attention | Cross\u2011Attention |\n|--------|----------------|-----------------|\n| **Where it appears** | Inside a **single** stack (encoder or decoder) where the same sequence is processed repeatedly. | In"
+        ]
+      },
+      {
+        "prompt": "Compare self-attention and cross-attention mechanisms in Transformer architectures. Highlight the primary difference in how keys, queries, and values are sourced.",
+        "prompt_char_length": 162,
+        "temperature": 1.2,
+        "top_p": 1.0,
+        "repeats": 3,
+        "avg_prompt_tokens": 99.0,
+        "avg_completion_tokens": 128.0,
+        "avg_ttft_s": 0.6228,
+        "avg_ttft_ms": 622.8,
+        "avg_tokens_per_second": 189.26,
+        "distinct_outputs_count": 3,
+        "identical_across_repeats": false,
+        "outputs": [
+          "## Self\u2011Attention vs. Cross\u2011Attention  \n\n| Aspect | Self\u2011Attention | Cross\u2011",
+          "**Self\u2011Attention vs. Cross\u2011Attention in",
+          "## Self\u2011Attention vs. Cross\u2011Attention in Transformers  \n\n| Aspect | Self\u2011Attention | Cross\u2011Attention |\n|--------|----------------|-----------------|\n| **Typical place in the model** | Every encoder layer (and often the decoder\u2019s *self\u2011attention* sub\u2011layer). | Decoder layers (the *encoder\u2011decoder"
+        ]
+      },
+      {
+        "prompt": "Modern autoregressive Transformer inference consists of two distinct computational regimes: the prefill (prompt processing) phase and the decode (token-by-token generation) phase. In the prefill phase, all prompt tokens are processed simultaneously in parallel via matrix multiplications, populating the Key-Value (KV) cache. In the decode phase, each new token requires reading all previous KV states from High Bandwidth Memory (HBM) to compute attention, rendering single-batch decoding heavily memory-bandwidth bound. Techniques such as continuous batching, PagedAttention, and Speculative Decoding attempt to maximize compute throughput. Based on this overview, identify the main bottleneck of the decode phase and how KV caching mitigates recomputation.",
+        "prompt_char_length": 758,
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "repeats": 3,
+        "avg_prompt_tokens": 214.0,
+        "avg_completion_tokens": 128.0,
+        "avg_ttft_s": 0.6987,
+        "avg_ttft_ms": 698.7,
+        "avg_tokens_per_second": 158.69,
+        "distinct_outputs_count": 2,
+        "identical_across_repeats": false,
+        "outputs": [
+          "**Main bottleneck of the decode (generation) phase**\n\nDuring token\u2011by\u2011token generation the model must attend to **all previously generated tokens**. For every new token the attention kernel needs:\n\n1. **The query vector** for",
+          "**Main bottleneck of the decode (token\u2011by\u2011token) phase**\n\nDuring decoding the model must attend the newly generated token to **all** previously generated tokens.  \nFor every step the attention kernel needs:\n\n1. **Read",
+          "**Main bottleneck of the decode (generation) phase**\n\nDuring token\u2011by\u2011token generation the model must attend to **all previously generated tokens**. For every new token the attention kernel needs:\n\n1. **The query vector** for"
+        ]
+      },
+      {
+        "prompt": "Modern autoregressive Transformer inference consists of two distinct computational regimes: the prefill (prompt processing) phase and the decode (token-by-token generation) phase. In the prefill phase, all prompt tokens are processed simultaneously in parallel via matrix multiplications, populating the Key-Value (KV) cache. In the decode phase, each new token requires reading all previous KV states from High Bandwidth Memory (HBM) to compute attention, rendering single-batch decoding heavily memory-bandwidth bound. Techniques such as continuous batching, PagedAttention, and Speculative Decoding attempt to maximize compute throughput. Based on this overview, identify the main bottleneck of the decode phase and how KV caching mitigates recomputation.",
+        "prompt_char_length": 758,
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "repeats": 3,
+        "avg_prompt_tokens": 214.0,
+        "avg_completion_tokens": 128.0,
+        "avg_ttft_s": 0.6611,
+        "avg_ttft_ms": 661.1,
+        "avg_tokens_per_second": 164.44,
+        "distinct_outputs_count": 3,
+        "identical_across_repeats": false,
+        "outputs": [
+          "**Main bottleneck of the decode (generation) phase**\n\nDuring autoregressive generation the model has to compute the attention for the *new* token against **all** tokens that have already been produced.  \nIn a na\u00efve implementation the full query\u2011key\u2011value (Q\u2011K\u2011V) matrices for the whole sequence would be recomputed at every step, which would be dominated by FLOPs. Modern kernels, however, **reuse** the previously\u2011computed keys and",
+          "**Main bottleneck in the decode (token\u2011by\u2011token) phase**\n\nDuring decoding the model has to attend the current query vector **Q\u2099** to *all*",
+          "**Main bottleneck of the decode (generation) phase**\n\nDuring token\u2011by\u2011token generation the model must compute attention of the *current* token against"
+        ]
+      },
+      {
+        "prompt": "Modern autoregressive Transformer inference consists of two distinct computational regimes: the prefill (prompt processing) phase and the decode (token-by-token generation) phase. In the prefill phase, all prompt tokens are processed simultaneously in parallel via matrix multiplications, populating the Key-Value (KV) cache. In the decode phase, each new token requires reading all previous KV states from High Bandwidth Memory (HBM) to compute attention, rendering single-batch decoding heavily memory-bandwidth bound. Techniques such as continuous batching, PagedAttention, and Speculative Decoding attempt to maximize compute throughput. Based on this overview, identify the main bottleneck of the decode phase and how KV caching mitigates recomputation.",
+        "prompt_char_length": 758,
+        "temperature": 1.2,
+        "top_p": 1.0,
+        "repeats": 3,
+        "avg_prompt_tokens": 214.0,
+        "avg_completion_tokens": 128.0,
+        "avg_ttft_s": 0.6514,
+        "avg_ttft_ms": 651.4,
+        "avg_tokens_per_second": 170.29,
+        "distinct_outputs_count": 3,
+        "identical_across_repeats": false,
+        "outputs": [
+          "**Main bottleneck of the decode phase**\n\nDuring token\u2011by\u2011token generation the model must attend the new token to **all previously generated tokens**",
+          "### The decode\u2011phase bottleneck  \n\nWhen a Transformer model generates text token\u2011by\u2011token, each new token must attend to **all** tokens that have already been generated.  \n",
+          "**Main bottleneck in the decode (token\u2011by\u2011token) phase**\n\nThe decode phase is dominated by **memory\u2011bandwidth pressure on the KV cache**.  \nWhen a new token is generated the model has to:\n\n1. **Read the whole sequence of stored keys and values** (\u202f\\(K_{1:L},V_{1:L}\\)\u202f) from high\u2011bandwidth memory (HBM/DRAM).  \n"
+        ]
+      }
+    ]
+  },
+  "runs": [
+    {
+      "prompt": "Explain what a token is in 10 words.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "prompt_tokens": 81,
+      "completion_tokens": 120,
+      "ttft_s": 0.7098,
+      "total_s": 0.7342,
+      "tokens_per_second": 163.44,
+      "output_text": "A token is a discrete unit of text or data.",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.709821
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.713197
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.715013
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.716933
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.717784
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.721273
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.725293
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.725443
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.726093
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.733595
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.733751
+        }
+      ]
+    },
+    {
+      "prompt": "Explain what a token is in 10 words.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "prompt_tokens": 81,
+      "completion_tokens": 120,
+      "ttft_s": 0.6456,
+      "total_s": 0.6711,
+      "tokens_per_second": 178.81,
+      "output_text": "A token is a discrete unit of text or data.",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.645552
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.645763
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.645883
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.653533
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.653718
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.670105
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.670297
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.670405
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.670508
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.670523
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.670624
+        }
+      ]
+    },
+    {
+      "prompt": "Explain what a token is in 10 words.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "prompt_tokens": 81,
+      "completion_tokens": 120,
+      "ttft_s": 0.4602,
+      "total_s": 0.4702,
+      "tokens_per_second": 255.24,
+      "output_text": "A token is a discrete unit of text or data.",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.460223
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.460385
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.46047
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.460553
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.460631
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.460708
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.460782
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.462656
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.46735
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.469581
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.469769
+        }
+      ]
+    },
+    {
+      "prompt": "Explain what a token is in 10 words.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.7,
+      "top_p": 0.9,
+      "prompt_tokens": 81,
+      "completion_tokens": 126,
+      "ttft_s": 0.6271,
+      "total_s": 0.6544,
+      "tokens_per_second": 192.55,
+      "output_text": "A token is a unit of text processed by AI.",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.627132
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.631351
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.631589
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.633296
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.635395
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.637505
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.642105
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.647519
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.647562
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.647583
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.647924
+        }
+      ]
+    },
+    {
+      "prompt": "Explain what a token is in 10 words.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.7,
+      "top_p": 0.9,
+      "prompt_tokens": 81,
+      "completion_tokens": 121,
+      "ttft_s": 0.6735,
+      "total_s": 0.6961,
+      "tokens_per_second": 173.83,
+      "output_text": "A token is a unit of text for language models.",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.673493
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.674513
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.680677
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.68086
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.680969
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.681067
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.686006
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.686186
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.68629
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.695437
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.695599
+        }
+      ]
+    },
+    {
+      "prompt": "Explain what a token is in 10 words.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.7,
+      "top_p": 0.9,
+      "prompt_tokens": 81,
+      "completion_tokens": 99,
+      "ttft_s": 0.4765,
+      "total_s": 0.5045,
+      "tokens_per_second": 196.22,
+      "output_text": "A token is a unit of text processed by models.",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.476532
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.483527
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.483554
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.483565
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.489927
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.49116
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.491192
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.491408
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.495373
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.495599
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.503878
+        }
+      ]
+    },
+    {
+      "prompt": "Explain what a token is in 10 words.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 1.2,
+      "top_p": 1.0,
+      "prompt_tokens": 81,
+      "completion_tokens": 125,
+      "ttft_s": 0.7381,
+      "total_s": 0.7669,
+      "tokens_per_second": 163.0,
+      "output_text": "A token represents a piece of text for language models.",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.738143
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.74036
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.745908
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.746993
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.747124
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.753727
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.753741
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.754086
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.756903
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.760527
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.760643
+        }
+      ]
+    },
+    {
+      "prompt": "Explain what a token is in 10 words.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 1.2,
+      "top_p": 1.0,
+      "prompt_tokens": 81,
+      "completion_tokens": 115,
+      "ttft_s": 0.6512,
+      "total_s": 0.6748,
+      "tokens_per_second": 170.41,
+      "output_text": "A token is a unit of text processed by models.",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.651182
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.652876
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.65496
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.659094
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.663087
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.663103
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.665077
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.666246
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.669752
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.672545
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.672896
+        }
+      ]
+    },
+    {
+      "prompt": "Explain what a token is in 10 words.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 1.2,
+      "top_p": 1.0,
+      "prompt_tokens": 81,
+      "completion_tokens": 128,
+      "ttft_s": 0.6973,
+      "total_s": 0.6973,
+      "tokens_per_second": 183.56,
+      "output_text": "",
+      "token_timings": []
+    },
+    {
+      "prompt": "Compare self-attention and cross-attention mechanisms in Transformer architectures. Highlight the primary difference in how keys, queries, and values are sourced.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "prompt_tokens": 99,
+      "completion_tokens": 128,
+      "ttft_s": 0.5131,
+      "total_s": 0.7131,
+      "tokens_per_second": 179.5,
+      "output_text": "## Self\u2011Attention vs. Cross\u2011Attention in Transformers  \n\n| Aspect | Self\u2011Attention | Cross\u2011Attention |\n|--------|----------------|-----------------|\n| **Typical use\u2011case** | Encoding a single sequence (e.g., the tokens of a sentence) so that each token can attend to every other token in the *same* sequence. | Connecting two different sequences (",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.513056
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.515329
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.51547
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.520609
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.522947
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.522962
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.524853
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.528209
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.528225
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.535509
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.535637
+        },
+        {
+          "token_index": 12,
+          "elapsed_since_start_s": 0.535723
+        },
+        {
+          "token_index": 13,
+          "elapsed_since_start_s": 0.536952
+        },
+        {
+          "token_index": 14,
+          "elapsed_since_start_s": 0.539816
+        },
+        {
+          "token_index": 15,
+          "elapsed_since_start_s": 0.541121
+        },
+        {
+          "token_index": 16,
+          "elapsed_since_start_s": 0.543854
+        },
+        {
+          "token_index": 17,
+          "elapsed_since_start_s": 0.547707
+        },
+        {
+          "token_index": 18,
+          "elapsed_since_start_s": 0.547841
+        },
+        {
+          "token_index": 19,
+          "elapsed_since_start_s": 0.551386
+        },
+        {
+          "token_index": 20,
+          "elapsed_since_start_s": 0.551505
+        },
+        {
+          "token_index": 21,
+          "elapsed_since_start_s": 0.554821
+        },
+        {
+          "token_index": 22,
+          "elapsed_since_start_s": 0.557781
+        },
+        {
+          "token_index": 23,
+          "elapsed_since_start_s": 0.557897
+        },
+        {
+          "token_index": 24,
+          "elapsed_since_start_s": 0.559771
+        },
+        {
+          "token_index": 25,
+          "elapsed_since_start_s": 0.562371
+        },
+        {
+          "token_index": 26,
+          "elapsed_since_start_s": 0.563992
+        },
+        {
+          "token_index": 27,
+          "elapsed_since_start_s": 0.565233
+        },
+        {
+          "token_index": 28,
+          "elapsed_since_start_s": 0.568948
+        },
+        {
+          "token_index": 29,
+          "elapsed_since_start_s": 0.570847
+        },
+        {
+          "token_index": 30,
+          "elapsed_since_start_s": 0.573343
+        },
+        {
+          "token_index": 31,
+          "elapsed_since_start_s": 0.573496
+        },
+        {
+          "token_index": 32,
+          "elapsed_since_start_s": 0.57893
+        },
+        {
+          "token_index": 33,
+          "elapsed_since_start_s": 0.579098
+        },
+        {
+          "token_index": 34,
+          "elapsed_since_start_s": 0.580601
+        },
+        {
+          "token_index": 35,
+          "elapsed_since_start_s": 0.583637
+        },
+        {
+          "token_index": 36,
+          "elapsed_since_start_s": 0.585978
+        },
+        {
+          "token_index": 37,
+          "elapsed_since_start_s": 0.586135
+        },
+        {
+          "token_index": 38,
+          "elapsed_since_start_s": 0.589796
+        },
+        {
+          "token_index": 39,
+          "elapsed_since_start_s": 0.593353
+        },
+        {
+          "token_index": 40,
+          "elapsed_since_start_s": 0.59351
+        },
+        {
+          "token_index": 41,
+          "elapsed_since_start_s": 0.60022
+        },
+        {
+          "token_index": 42,
+          "elapsed_since_start_s": 0.600376
+        },
+        {
+          "token_index": 43,
+          "elapsed_since_start_s": 0.600463
+        },
+        {
+          "token_index": 44,
+          "elapsed_since_start_s": 0.600546
+        },
+        {
+          "token_index": 45,
+          "elapsed_since_start_s": 0.633239
+        },
+        {
+          "token_index": 46,
+          "elapsed_since_start_s": 0.633266
+        },
+        {
+          "token_index": 47,
+          "elapsed_since_start_s": 0.633278
+        },
+        {
+          "token_index": 48,
+          "elapsed_since_start_s": 0.633287
+        },
+        {
+          "token_index": 49,
+          "elapsed_since_start_s": 0.635917
+        },
+        {
+          "token_index": 50,
+          "elapsed_since_start_s": 0.635945
+        },
+        {
+          "token_index": 51,
+          "elapsed_since_start_s": 0.635957
+        },
+        {
+          "token_index": 52,
+          "elapsed_since_start_s": 0.635968
+        },
+        {
+          "token_index": 53,
+          "elapsed_since_start_s": 0.63755
+        },
+        {
+          "token_index": 54,
+          "elapsed_since_start_s": 0.637578
+        },
+        {
+          "token_index": 55,
+          "elapsed_since_start_s": 0.63759
+        },
+        {
+          "token_index": 56,
+          "elapsed_since_start_s": 0.6376
+        },
+        {
+          "token_index": 57,
+          "elapsed_since_start_s": 0.637794
+        },
+        {
+          "token_index": 58,
+          "elapsed_since_start_s": 0.640443
+        },
+        {
+          "token_index": 59,
+          "elapsed_since_start_s": 0.640473
+        },
+        {
+          "token_index": 60,
+          "elapsed_since_start_s": 0.640485
+        },
+        {
+          "token_index": 61,
+          "elapsed_since_start_s": 0.640496
+        },
+        {
+          "token_index": 62,
+          "elapsed_since_start_s": 0.672424
+        },
+        {
+          "token_index": 63,
+          "elapsed_since_start_s": 0.672486
+        },
+        {
+          "token_index": 64,
+          "elapsed_since_start_s": 0.672515
+        },
+        {
+          "token_index": 65,
+          "elapsed_since_start_s": 0.67254
+        },
+        {
+          "token_index": 66,
+          "elapsed_since_start_s": 0.672566
+        },
+        {
+          "token_index": 67,
+          "elapsed_since_start_s": 0.672589
+        },
+        {
+          "token_index": 68,
+          "elapsed_since_start_s": 0.672621
+        },
+        {
+          "token_index": 69,
+          "elapsed_since_start_s": 0.67266
+        },
+        {
+          "token_index": 70,
+          "elapsed_since_start_s": 0.681151
+        },
+        {
+          "token_index": 71,
+          "elapsed_since_start_s": 0.681232
+        },
+        {
+          "token_index": 72,
+          "elapsed_since_start_s": 0.681273
+        },
+        {
+          "token_index": 73,
+          "elapsed_since_start_s": 0.681312
+        },
+        {
+          "token_index": 74,
+          "elapsed_since_start_s": 0.681346
+        },
+        {
+          "token_index": 75,
+          "elapsed_since_start_s": 0.68138
+        },
+        {
+          "token_index": 76,
+          "elapsed_since_start_s": 0.71173
+        }
+      ]
+    },
+    {
+      "prompt": "Compare self-attention and cross-attention mechanisms in Transformer architectures. Highlight the primary difference in how keys, queries, and values are sourced.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "prompt_tokens": 99,
+      "completion_tokens": 128,
+      "ttft_s": 0.5831,
+      "total_s": 0.7404,
+      "tokens_per_second": 172.87,
+      "output_text": "## Self\u2011Attention vs. Cross\u2011Attention in Transformers  \n\n| Aspect | Self\u2011Attention | Cross\u2011Attention |\n|--------|----------------|-----------------|\n| **Typical use\u2011case** | Encoding a single sequence (e.g., the tokens of a sentence) so that each token can attend to every other token in the *same* sequence. | Connecting two different sequences (",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.583136
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.585533
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.587982
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.589089
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.593296
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.594467
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.596198
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.598201
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.60041
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.605762
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.608528
+        },
+        {
+          "token_index": 12,
+          "elapsed_since_start_s": 0.609082
+        },
+        {
+          "token_index": 13,
+          "elapsed_since_start_s": 0.609461
+        },
+        {
+          "token_index": 14,
+          "elapsed_since_start_s": 0.611409
+        },
+        {
+          "token_index": 15,
+          "elapsed_since_start_s": 0.614596
+        },
+        {
+          "token_index": 16,
+          "elapsed_since_start_s": 0.615177
+        },
+        {
+          "token_index": 17,
+          "elapsed_since_start_s": 0.617431
+        },
+        {
+          "token_index": 18,
+          "elapsed_since_start_s": 0.617619
+        },
+        {
+          "token_index": 19,
+          "elapsed_since_start_s": 0.621472
+        },
+        {
+          "token_index": 20,
+          "elapsed_since_start_s": 0.621653
+        },
+        {
+          "token_index": 21,
+          "elapsed_since_start_s": 0.624159
+        },
+        {
+          "token_index": 22,
+          "elapsed_since_start_s": 0.626726
+        },
+        {
+          "token_index": 23,
+          "elapsed_since_start_s": 0.628696
+        },
+        {
+          "token_index": 24,
+          "elapsed_since_start_s": 0.633583
+        },
+        {
+          "token_index": 25,
+          "elapsed_since_start_s": 0.636806
+        },
+        {
+          "token_index": 26,
+          "elapsed_since_start_s": 0.636822
+        },
+        {
+          "token_index": 27,
+          "elapsed_since_start_s": 0.639157
+        },
+        {
+          "token_index": 28,
+          "elapsed_since_start_s": 0.639282
+        },
+        {
+          "token_index": 29,
+          "elapsed_since_start_s": 0.64389
+        },
+        {
+          "token_index": 30,
+          "elapsed_since_start_s": 0.65023
+        },
+        {
+          "token_index": 31,
+          "elapsed_since_start_s": 0.650354
+        },
+        {
+          "token_index": 32,
+          "elapsed_since_start_s": 0.65044
+        },
+        {
+          "token_index": 33,
+          "elapsed_since_start_s": 0.650451
+        },
+        {
+          "token_index": 34,
+          "elapsed_since_start_s": 0.657768
+        },
+        {
+          "token_index": 35,
+          "elapsed_since_start_s": 0.657784
+        },
+        {
+          "token_index": 36,
+          "elapsed_since_start_s": 0.657911
+        },
+        {
+          "token_index": 37,
+          "elapsed_since_start_s": 0.657996
+        },
+        {
+          "token_index": 38,
+          "elapsed_since_start_s": 0.660339
+        },
+        {
+          "token_index": 39,
+          "elapsed_since_start_s": 0.662108
+        },
+        {
+          "token_index": 40,
+          "elapsed_since_start_s": 0.665886
+        },
+        {
+          "token_index": 41,
+          "elapsed_since_start_s": 0.6659
+        },
+        {
+          "token_index": 42,
+          "elapsed_since_start_s": 0.66902
+        },
+        {
+          "token_index": 43,
+          "elapsed_since_start_s": 0.671702
+        },
+        {
+          "token_index": 44,
+          "elapsed_since_start_s": 0.671823
+        },
+        {
+          "token_index": 45,
+          "elapsed_since_start_s": 0.673872
+        },
+        {
+          "token_index": 46,
+          "elapsed_since_start_s": 0.675333
+        },
+        {
+          "token_index": 47,
+          "elapsed_since_start_s": 0.678212
+        },
+        {
+          "token_index": 48,
+          "elapsed_since_start_s": 0.679665
+        },
+        {
+          "token_index": 49,
+          "elapsed_since_start_s": 0.683045
+        },
+        {
+          "token_index": 50,
+          "elapsed_since_start_s": 0.683814
+        },
+        {
+          "token_index": 51,
+          "elapsed_since_start_s": 0.685308
+        },
+        {
+          "token_index": 52,
+          "elapsed_since_start_s": 0.68886
+        },
+        {
+          "token_index": 53,
+          "elapsed_since_start_s": 0.691954
+        },
+        {
+          "token_index": 54,
+          "elapsed_since_start_s": 0.692074
+        },
+        {
+          "token_index": 55,
+          "elapsed_since_start_s": 0.697758
+        },
+        {
+          "token_index": 56,
+          "elapsed_since_start_s": 0.69791
+        },
+        {
+          "token_index": 57,
+          "elapsed_since_start_s": 0.698074
+        },
+        {
+          "token_index": 58,
+          "elapsed_since_start_s": 0.700868
+        },
+        {
+          "token_index": 59,
+          "elapsed_since_start_s": 0.706067
+        },
+        {
+          "token_index": 60,
+          "elapsed_since_start_s": 0.706274
+        },
+        {
+          "token_index": 61,
+          "elapsed_since_start_s": 0.708183
+        },
+        {
+          "token_index": 62,
+          "elapsed_since_start_s": 0.715168
+        },
+        {
+          "token_index": 63,
+          "elapsed_since_start_s": 0.715188
+        },
+        {
+          "token_index": 64,
+          "elapsed_since_start_s": 0.715329
+        },
+        {
+          "token_index": 65,
+          "elapsed_since_start_s": 0.715415
+        },
+        {
+          "token_index": 66,
+          "elapsed_since_start_s": 0.716792
+        },
+        {
+          "token_index": 67,
+          "elapsed_since_start_s": 0.718569
+        },
+        {
+          "token_index": 68,
+          "elapsed_since_start_s": 0.721093
+        },
+        {
+          "token_index": 69,
+          "elapsed_since_start_s": 0.723292
+        },
+        {
+          "token_index": 70,
+          "elapsed_since_start_s": 0.724875
+        },
+        {
+          "token_index": 71,
+          "elapsed_since_start_s": 0.726874
+        },
+        {
+          "token_index": 72,
+          "elapsed_since_start_s": 0.728556
+        },
+        {
+          "token_index": 73,
+          "elapsed_since_start_s": 0.7321
+        },
+        {
+          "token_index": 74,
+          "elapsed_since_start_s": 0.732223
+        },
+        {
+          "token_index": 75,
+          "elapsed_since_start_s": 0.735997
+        },
+        {
+          "token_index": 76,
+          "elapsed_since_start_s": 0.740109
+        }
+      ]
+    },
+    {
+      "prompt": "Compare self-attention and cross-attention mechanisms in Transformer architectures. Highlight the primary difference in how keys, queries, and values are sourced.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "prompt_tokens": 99,
+      "completion_tokens": 128,
+      "ttft_s": 0.5418,
+      "total_s": 0.6897,
+      "tokens_per_second": 185.58,
+      "output_text": "## Self\u2011Attention vs. Cross\u2011Attention in Transformers  \n\n| Aspect | Self\u2011Attention | Cross\u2011Attention |\n|--------|----------------|-----------------|\n| **Typical use\u2011case** | Encoding a single sequence (e.g., the tokens of a sentence) so that each token can attend to every other token in the *same* sequence. | Connecting two different sequences (",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.541806
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.542617
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.543056
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.543456
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.543828
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.544598
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.545124
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.546578
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.549283
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.552461
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.554543
+        },
+        {
+          "token_index": 12,
+          "elapsed_since_start_s": 0.554688
+        },
+        {
+          "token_index": 13,
+          "elapsed_since_start_s": 0.555997
+        },
+        {
+          "token_index": 14,
+          "elapsed_since_start_s": 0.557875
+        },
+        {
+          "token_index": 15,
+          "elapsed_since_start_s": 0.561223
+        },
+        {
+          "token_index": 16,
+          "elapsed_since_start_s": 0.561369
+        },
+        {
+          "token_index": 17,
+          "elapsed_since_start_s": 0.568125
+        },
+        {
+          "token_index": 18,
+          "elapsed_since_start_s": 0.568265
+        },
+        {
+          "token_index": 19,
+          "elapsed_since_start_s": 0.568353
+        },
+        {
+          "token_index": 20,
+          "elapsed_since_start_s": 0.571523
+        },
+        {
+          "token_index": 21,
+          "elapsed_since_start_s": 0.574035
+        },
+        {
+          "token_index": 22,
+          "elapsed_since_start_s": 0.574159
+        },
+        {
+          "token_index": 23,
+          "elapsed_since_start_s": 0.57643
+        },
+        {
+          "token_index": 24,
+          "elapsed_since_start_s": 0.578335
+        },
+        {
+          "token_index": 25,
+          "elapsed_since_start_s": 0.581588
+        },
+        {
+          "token_index": 26,
+          "elapsed_since_start_s": 0.583646
+        },
+        {
+          "token_index": 27,
+          "elapsed_since_start_s": 0.600978
+        },
+        {
+          "token_index": 28,
+          "elapsed_since_start_s": 0.601099
+        },
+        {
+          "token_index": 29,
+          "elapsed_since_start_s": 0.601195
+        },
+        {
+          "token_index": 30,
+          "elapsed_since_start_s": 0.601272
+        },
+        {
+          "token_index": 31,
+          "elapsed_since_start_s": 0.601347
+        },
+        {
+          "token_index": 32,
+          "elapsed_since_start_s": 0.60142
+        },
+        {
+          "token_index": 33,
+          "elapsed_since_start_s": 0.601491
+        },
+        {
+          "token_index": 34,
+          "elapsed_since_start_s": 0.601563
+        },
+        {
+          "token_index": 35,
+          "elapsed_since_start_s": 0.605246
+        },
+        {
+          "token_index": 36,
+          "elapsed_since_start_s": 0.605411
+        },
+        {
+          "token_index": 37,
+          "elapsed_since_start_s": 0.606948
+        },
+        {
+          "token_index": 38,
+          "elapsed_since_start_s": 0.607127
+        },
+        {
+          "token_index": 39,
+          "elapsed_since_start_s": 0.610418
+        },
+        {
+          "token_index": 40,
+          "elapsed_since_start_s": 0.61221
+        },
+        {
+          "token_index": 41,
+          "elapsed_since_start_s": 0.61372
+        },
+        {
+          "token_index": 42,
+          "elapsed_since_start_s": 0.61833
+        },
+        {
+          "token_index": 43,
+          "elapsed_since_start_s": 0.618446
+        },
+        {
+          "token_index": 44,
+          "elapsed_since_start_s": 0.620562
+        },
+        {
+          "token_index": 45,
+          "elapsed_since_start_s": 0.623363
+        },
+        {
+          "token_index": 46,
+          "elapsed_since_start_s": 0.623476
+        },
+        {
+          "token_index": 47,
+          "elapsed_since_start_s": 0.626376
+        },
+        {
+          "token_index": 48,
+          "elapsed_since_start_s": 0.626488
+        },
+        {
+          "token_index": 49,
+          "elapsed_since_start_s": 0.629931
+        },
+        {
+          "token_index": 50,
+          "elapsed_since_start_s": 0.634445
+        },
+        {
+          "token_index": 51,
+          "elapsed_since_start_s": 0.634558
+        },
+        {
+          "token_index": 52,
+          "elapsed_since_start_s": 0.640563
+        },
+        {
+          "token_index": 53,
+          "elapsed_since_start_s": 0.640577
+        },
+        {
+          "token_index": 54,
+          "elapsed_since_start_s": 0.641044
+        },
+        {
+          "token_index": 55,
+          "elapsed_since_start_s": 0.648143
+        },
+        {
+          "token_index": 56,
+          "elapsed_since_start_s": 0.648233
+        },
+        {
+          "token_index": 57,
+          "elapsed_since_start_s": 0.648337
+        },
+        {
+          "token_index": 58,
+          "elapsed_since_start_s": 0.653039
+        },
+        {
+          "token_index": 59,
+          "elapsed_since_start_s": 0.655142
+        },
+        {
+          "token_index": 60,
+          "elapsed_since_start_s": 0.655155
+        },
+        {
+          "token_index": 61,
+          "elapsed_since_start_s": 0.656281
+        },
+        {
+          "token_index": 62,
+          "elapsed_since_start_s": 0.661383
+        },
+        {
+          "token_index": 63,
+          "elapsed_since_start_s": 0.663467
+        },
+        {
+          "token_index": 64,
+          "elapsed_since_start_s": 0.663617
+        },
+        {
+          "token_index": 65,
+          "elapsed_since_start_s": 0.668539
+        },
+        {
+          "token_index": 66,
+          "elapsed_since_start_s": 0.678238
+        },
+        {
+          "token_index": 67,
+          "elapsed_since_start_s": 0.678253
+        },
+        {
+          "token_index": 68,
+          "elapsed_since_start_s": 0.678368
+        },
+        {
+          "token_index": 69,
+          "elapsed_since_start_s": 0.678378
+        },
+        {
+          "token_index": 70,
+          "elapsed_since_start_s": 0.67846
+        },
+        {
+          "token_index": 71,
+          "elapsed_since_start_s": 0.678534
+        },
+        {
+          "token_index": 72,
+          "elapsed_since_start_s": 0.68111
+        },
+        {
+          "token_index": 73,
+          "elapsed_since_start_s": 0.681123
+        },
+        {
+          "token_index": 74,
+          "elapsed_since_start_s": 0.681235
+        },
+        {
+          "token_index": 75,
+          "elapsed_since_start_s": 0.687704
+        },
+        {
+          "token_index": 76,
+          "elapsed_since_start_s": 0.689438
+        }
+      ]
+    },
+    {
+      "prompt": "Compare self-attention and cross-attention mechanisms in Transformer architectures. Highlight the primary difference in how keys, queries, and values are sourced.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.7,
+      "top_p": 0.9,
+      "prompt_tokens": 99,
+      "completion_tokens": 128,
+      "ttft_s": 0.6549,
+      "total_s": 0.765,
+      "tokens_per_second": 167.32,
+      "output_text": "## Self\u2011Attention vs. Cross\u2011Attention in Transformers  \n\n| Aspect | Self\u2011Attention | Cross\u2011Attention |\n|--------|----------------|-----------------|\n| **Typical place in a model** | Encoder layers (e.g., BERT, ViT) and decoder layers of the original \u201cencoder\u2011decoder\u201d transformer when the decoder attends to its",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.654923
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.654945
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.654957
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.654965
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.654972
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.654979
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.654985
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.654993
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.655737
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.655751
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.655759
+        },
+        {
+          "token_index": 12,
+          "elapsed_since_start_s": 0.655766
+        },
+        {
+          "token_index": 13,
+          "elapsed_since_start_s": 0.655773
+        },
+        {
+          "token_index": 14,
+          "elapsed_since_start_s": 0.655779
+        },
+        {
+          "token_index": 15,
+          "elapsed_since_start_s": 0.655785
+        },
+        {
+          "token_index": 16,
+          "elapsed_since_start_s": 0.655794
+        },
+        {
+          "token_index": 17,
+          "elapsed_since_start_s": 0.655803
+        },
+        {
+          "token_index": 18,
+          "elapsed_since_start_s": 0.65581
+        },
+        {
+          "token_index": 19,
+          "elapsed_since_start_s": 0.655816
+        },
+        {
+          "token_index": 20,
+          "elapsed_since_start_s": 0.655823
+        },
+        {
+          "token_index": 21,
+          "elapsed_since_start_s": 0.65583
+        },
+        {
+          "token_index": 22,
+          "elapsed_since_start_s": 0.655838
+        },
+        {
+          "token_index": 23,
+          "elapsed_since_start_s": 0.655998
+        },
+        {
+          "token_index": 24,
+          "elapsed_since_start_s": 0.656008
+        },
+        {
+          "token_index": 25,
+          "elapsed_since_start_s": 0.656085
+        },
+        {
+          "token_index": 26,
+          "elapsed_since_start_s": 0.660167
+        },
+        {
+          "token_index": 27,
+          "elapsed_since_start_s": 0.661049
+        },
+        {
+          "token_index": 28,
+          "elapsed_since_start_s": 0.66498
+        },
+        {
+          "token_index": 29,
+          "elapsed_since_start_s": 0.665093
+        },
+        {
+          "token_index": 30,
+          "elapsed_since_start_s": 0.670821
+        },
+        {
+          "token_index": 31,
+          "elapsed_since_start_s": 0.670834
+        },
+        {
+          "token_index": 32,
+          "elapsed_since_start_s": 0.67243
+        },
+        {
+          "token_index": 33,
+          "elapsed_since_start_s": 0.672541
+        },
+        {
+          "token_index": 34,
+          "elapsed_since_start_s": 0.681368
+        },
+        {
+          "token_index": 35,
+          "elapsed_since_start_s": 0.681491
+        },
+        {
+          "token_index": 36,
+          "elapsed_since_start_s": 0.686075
+        },
+        {
+          "token_index": 37,
+          "elapsed_since_start_s": 0.686129
+        },
+        {
+          "token_index": 38,
+          "elapsed_since_start_s": 0.687089
+        },
+        {
+          "token_index": 39,
+          "elapsed_since_start_s": 0.687103
+        },
+        {
+          "token_index": 40,
+          "elapsed_since_start_s": 0.687212
+        },
+        {
+          "token_index": 41,
+          "elapsed_since_start_s": 0.694277
+        },
+        {
+          "token_index": 42,
+          "elapsed_since_start_s": 0.694392
+        },
+        {
+          "token_index": 43,
+          "elapsed_since_start_s": 0.706373
+        },
+        {
+          "token_index": 44,
+          "elapsed_since_start_s": 0.706493
+        },
+        {
+          "token_index": 45,
+          "elapsed_since_start_s": 0.75017
+        },
+        {
+          "token_index": 46,
+          "elapsed_since_start_s": 0.750194
+        },
+        {
+          "token_index": 47,
+          "elapsed_since_start_s": 0.750219
+        },
+        {
+          "token_index": 48,
+          "elapsed_since_start_s": 0.750247
+        },
+        {
+          "token_index": 49,
+          "elapsed_since_start_s": 0.750255
+        },
+        {
+          "token_index": 50,
+          "elapsed_since_start_s": 0.750262
+        },
+        {
+          "token_index": 51,
+          "elapsed_since_start_s": 0.750272
+        },
+        {
+          "token_index": 52,
+          "elapsed_since_start_s": 0.750279
+        },
+        {
+          "token_index": 53,
+          "elapsed_since_start_s": 0.750285
+        },
+        {
+          "token_index": 54,
+          "elapsed_since_start_s": 0.75031
+        },
+        {
+          "token_index": 55,
+          "elapsed_since_start_s": 0.750317
+        },
+        {
+          "token_index": 56,
+          "elapsed_since_start_s": 0.750324
+        },
+        {
+          "token_index": 57,
+          "elapsed_since_start_s": 0.75033
+        },
+        {
+          "token_index": 58,
+          "elapsed_since_start_s": 0.750336
+        },
+        {
+          "token_index": 59,
+          "elapsed_since_start_s": 0.750346
+        },
+        {
+          "token_index": 60,
+          "elapsed_since_start_s": 0.75049
+        },
+        {
+          "token_index": 61,
+          "elapsed_since_start_s": 0.750503
+        },
+        {
+          "token_index": 62,
+          "elapsed_since_start_s": 0.750511
+        },
+        {
+          "token_index": 63,
+          "elapsed_since_start_s": 0.750519
+        },
+        {
+          "token_index": 64,
+          "elapsed_since_start_s": 0.750526
+        },
+        {
+          "token_index": 65,
+          "elapsed_since_start_s": 0.750617
+        },
+        {
+          "token_index": 66,
+          "elapsed_since_start_s": 0.750628
+        },
+        {
+          "token_index": 67,
+          "elapsed_since_start_s": 0.750706
+        },
+        {
+          "token_index": 68,
+          "elapsed_since_start_s": 0.750715
+        },
+        {
+          "token_index": 69,
+          "elapsed_since_start_s": 0.750792
+        },
+        {
+          "token_index": 70,
+          "elapsed_since_start_s": 0.764666
+        }
+      ]
+    },
+    {
+      "prompt": "Compare self-attention and cross-attention mechanisms in Transformer architectures. Highlight the primary difference in how keys, queries, and values are sourced.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.7,
+      "top_p": 0.9,
+      "prompt_tokens": 99,
+      "completion_tokens": 128,
+      "ttft_s": 0.6031,
+      "total_s": 0.7562,
+      "tokens_per_second": 169.27,
+      "output_text": "## Self\u2011Attention vs. Cross\u2011Attention in Transformers  \n\n| Aspect | Self\u2011Attention | Cross\u2011Attention |\n|--------|----------------|-----------------|\n| **Typical use\u2011case** | Encoding a single sequence (e.g., the words of a sentence, image patches, protein residues). | Connecting two different sequences (e.g., decoder attending to encoder",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.60312
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.60329
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.607644
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.607821
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.609313
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.611197
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.613272
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.615066
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.619302
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.620559
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.62342
+        },
+        {
+          "token_index": 12,
+          "elapsed_since_start_s": 0.62357
+        },
+        {
+          "token_index": 13,
+          "elapsed_since_start_s": 0.629297
+        },
+        {
+          "token_index": 14,
+          "elapsed_since_start_s": 0.629456
+        },
+        {
+          "token_index": 15,
+          "elapsed_since_start_s": 0.632745
+        },
+        {
+          "token_index": 16,
+          "elapsed_since_start_s": 0.633924
+        },
+        {
+          "token_index": 17,
+          "elapsed_since_start_s": 0.640598
+        },
+        {
+          "token_index": 18,
+          "elapsed_since_start_s": 0.640765
+        },
+        {
+          "token_index": 19,
+          "elapsed_since_start_s": 0.640858
+        },
+        {
+          "token_index": 20,
+          "elapsed_since_start_s": 0.642382
+        },
+        {
+          "token_index": 21,
+          "elapsed_since_start_s": 0.644167
+        },
+        {
+          "token_index": 22,
+          "elapsed_since_start_s": 0.647191
+        },
+        {
+          "token_index": 23,
+          "elapsed_since_start_s": 0.647357
+        },
+        {
+          "token_index": 24,
+          "elapsed_since_start_s": 0.650456
+        },
+        {
+          "token_index": 25,
+          "elapsed_since_start_s": 0.653397
+        },
+        {
+          "token_index": 26,
+          "elapsed_since_start_s": 0.657976
+        },
+        {
+          "token_index": 27,
+          "elapsed_since_start_s": 0.658137
+        },
+        {
+          "token_index": 28,
+          "elapsed_since_start_s": 0.658295
+        },
+        {
+          "token_index": 29,
+          "elapsed_since_start_s": 0.66048
+        },
+        {
+          "token_index": 30,
+          "elapsed_since_start_s": 0.661624
+        },
+        {
+          "token_index": 31,
+          "elapsed_since_start_s": 0.66588
+        },
+        {
+          "token_index": 32,
+          "elapsed_since_start_s": 0.666039
+        },
+        {
+          "token_index": 33,
+          "elapsed_since_start_s": 0.668824
+        },
+        {
+          "token_index": 34,
+          "elapsed_since_start_s": 0.670669
+        },
+        {
+          "token_index": 35,
+          "elapsed_since_start_s": 0.67438
+        },
+        {
+          "token_index": 36,
+          "elapsed_since_start_s": 0.674543
+        },
+        {
+          "token_index": 37,
+          "elapsed_since_start_s": 0.676267
+        },
+        {
+          "token_index": 38,
+          "elapsed_since_start_s": 0.680001
+        },
+        {
+          "token_index": 39,
+          "elapsed_since_start_s": 0.682917
+        },
+        {
+          "token_index": 40,
+          "elapsed_since_start_s": 0.685861
+        },
+        {
+          "token_index": 41,
+          "elapsed_since_start_s": 0.686979
+        },
+        {
+          "token_index": 42,
+          "elapsed_since_start_s": 0.690565
+        },
+        {
+          "token_index": 43,
+          "elapsed_since_start_s": 0.691361
+        },
+        {
+          "token_index": 44,
+          "elapsed_since_start_s": 0.694481
+        },
+        {
+          "token_index": 45,
+          "elapsed_since_start_s": 0.697404
+        },
+        {
+          "token_index": 46,
+          "elapsed_since_start_s": 0.698518
+        },
+        {
+          "token_index": 47,
+          "elapsed_since_start_s": 0.700017
+        },
+        {
+          "token_index": 48,
+          "elapsed_since_start_s": 0.70282
+        },
+        {
+          "token_index": 49,
+          "elapsed_since_start_s": 0.704919
+        },
+        {
+          "token_index": 50,
+          "elapsed_since_start_s": 0.707019
+        },
+        {
+          "token_index": 51,
+          "elapsed_since_start_s": 0.708442
+        },
+        {
+          "token_index": 52,
+          "elapsed_since_start_s": 0.711934
+        },
+        {
+          "token_index": 53,
+          "elapsed_since_start_s": 0.713814
+        },
+        {
+          "token_index": 54,
+          "elapsed_since_start_s": 0.719054
+        },
+        {
+          "token_index": 55,
+          "elapsed_since_start_s": 0.719255
+        },
+        {
+          "token_index": 56,
+          "elapsed_since_start_s": 0.720822
+        },
+        {
+          "token_index": 57,
+          "elapsed_since_start_s": 0.722957
+        },
+        {
+          "token_index": 58,
+          "elapsed_since_start_s": 0.723141
+        },
+        {
+          "token_index": 59,
+          "elapsed_since_start_s": 0.727538
+        },
+        {
+          "token_index": 60,
+          "elapsed_since_start_s": 0.728742
+        },
+        {
+          "token_index": 61,
+          "elapsed_since_start_s": 0.730483
+        },
+        {
+          "token_index": 62,
+          "elapsed_since_start_s": 0.731275
+        },
+        {
+          "token_index": 63,
+          "elapsed_since_start_s": 0.734111
+        },
+        {
+          "token_index": 64,
+          "elapsed_since_start_s": 0.736968
+        },
+        {
+          "token_index": 65,
+          "elapsed_since_start_s": 0.738272
+        },
+        {
+          "token_index": 66,
+          "elapsed_since_start_s": 0.740999
+        },
+        {
+          "token_index": 67,
+          "elapsed_since_start_s": 0.745075
+        },
+        {
+          "token_index": 68,
+          "elapsed_since_start_s": 0.745199
+        },
+        {
+          "token_index": 69,
+          "elapsed_since_start_s": 0.748398
+        },
+        {
+          "token_index": 70,
+          "elapsed_since_start_s": 0.75128
+        },
+        {
+          "token_index": 71,
+          "elapsed_since_start_s": 0.751448
+        },
+        {
+          "token_index": 72,
+          "elapsed_since_start_s": 0.755674
+        }
+      ]
+    },
+    {
+      "prompt": "Compare self-attention and cross-attention mechanisms in Transformer architectures. Highlight the primary difference in how keys, queries, and values are sourced.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.7,
+      "top_p": 0.9,
+      "prompt_tokens": 99,
+      "completion_tokens": 128,
+      "ttft_s": 0.6247,
+      "total_s": 0.7466,
+      "tokens_per_second": 171.44,
+      "output_text": "**Self\u2011Attention vs. Cross\u2011Attention in Transformers**  \n\n| Aspect | Self\u2011Attention | Cross\u2011Attention |\n|--------|----------------|-----------------|\n| **Where it appears** | Inside a **single** stack (encoder or decoder) where the same sequence is processed repeatedly. | In",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.624718
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.624886
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.62692
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.628188
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.631046
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.633012
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.634113
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.636277
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.638384
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.64076
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.643333
+        },
+        {
+          "token_index": 12,
+          "elapsed_since_start_s": 0.646962
+        },
+        {
+          "token_index": 13,
+          "elapsed_since_start_s": 0.647138
+        },
+        {
+          "token_index": 14,
+          "elapsed_since_start_s": 0.649294
+        },
+        {
+          "token_index": 15,
+          "elapsed_since_start_s": 0.652026
+        },
+        {
+          "token_index": 16,
+          "elapsed_since_start_s": 0.654767
+        },
+        {
+          "token_index": 17,
+          "elapsed_since_start_s": 0.659264
+        },
+        {
+          "token_index": 18,
+          "elapsed_since_start_s": 0.659443
+        },
+        {
+          "token_index": 19,
+          "elapsed_since_start_s": 0.659548
+        },
+        {
+          "token_index": 20,
+          "elapsed_since_start_s": 0.670875
+        },
+        {
+          "token_index": 21,
+          "elapsed_since_start_s": 0.68054
+        },
+        {
+          "token_index": 22,
+          "elapsed_since_start_s": 0.680692
+        },
+        {
+          "token_index": 23,
+          "elapsed_since_start_s": 0.680774
+        },
+        {
+          "token_index": 24,
+          "elapsed_since_start_s": 0.680848
+        },
+        {
+          "token_index": 25,
+          "elapsed_since_start_s": 0.680919
+        },
+        {
+          "token_index": 26,
+          "elapsed_since_start_s": 0.680989
+        },
+        {
+          "token_index": 27,
+          "elapsed_since_start_s": 0.681055
+        },
+        {
+          "token_index": 28,
+          "elapsed_since_start_s": 0.681122
+        },
+        {
+          "token_index": 29,
+          "elapsed_since_start_s": 0.681187
+        },
+        {
+          "token_index": 30,
+          "elapsed_since_start_s": 0.684081
+        },
+        {
+          "token_index": 31,
+          "elapsed_since_start_s": 0.684349
+        },
+        {
+          "token_index": 32,
+          "elapsed_since_start_s": 0.686394
+        },
+        {
+          "token_index": 33,
+          "elapsed_since_start_s": 0.690537
+        },
+        {
+          "token_index": 34,
+          "elapsed_since_start_s": 0.69065
+        },
+        {
+          "token_index": 35,
+          "elapsed_since_start_s": 0.693608
+        },
+        {
+          "token_index": 36,
+          "elapsed_since_start_s": 0.695108
+        },
+        {
+          "token_index": 37,
+          "elapsed_since_start_s": 0.697347
+        },
+        {
+          "token_index": 38,
+          "elapsed_since_start_s": 0.698304
+        },
+        {
+          "token_index": 39,
+          "elapsed_since_start_s": 0.702908
+        },
+        {
+          "token_index": 40,
+          "elapsed_since_start_s": 0.70307
+        },
+        {
+          "token_index": 41,
+          "elapsed_since_start_s": 0.70399
+        },
+        {
+          "token_index": 42,
+          "elapsed_since_start_s": 0.70696
+        },
+        {
+          "token_index": 43,
+          "elapsed_since_start_s": 0.70845
+        },
+        {
+          "token_index": 44,
+          "elapsed_since_start_s": 0.713469
+        },
+        {
+          "token_index": 45,
+          "elapsed_since_start_s": 0.713663
+        },
+        {
+          "token_index": 46,
+          "elapsed_since_start_s": 0.718544
+        },
+        {
+          "token_index": 47,
+          "elapsed_since_start_s": 0.718571
+        },
+        {
+          "token_index": 48,
+          "elapsed_since_start_s": 0.718761
+        },
+        {
+          "token_index": 49,
+          "elapsed_since_start_s": 0.722417
+        },
+        {
+          "token_index": 50,
+          "elapsed_since_start_s": 0.726757
+        },
+        {
+          "token_index": 51,
+          "elapsed_since_start_s": 0.726786
+        },
+        {
+          "token_index": 52,
+          "elapsed_since_start_s": 0.728107
+        },
+        {
+          "token_index": 53,
+          "elapsed_since_start_s": 0.731429
+        },
+        {
+          "token_index": 54,
+          "elapsed_since_start_s": 0.731678
+        },
+        {
+          "token_index": 55,
+          "elapsed_since_start_s": 0.735798
+        },
+        {
+          "token_index": 56,
+          "elapsed_since_start_s": 0.736086
+        },
+        {
+          "token_index": 57,
+          "elapsed_since_start_s": 0.738223
+        },
+        {
+          "token_index": 58,
+          "elapsed_since_start_s": 0.738978
+        },
+        {
+          "token_index": 59,
+          "elapsed_since_start_s": 0.742187
+        },
+        {
+          "token_index": 60,
+          "elapsed_since_start_s": 0.745817
+        }
+      ]
+    },
+    {
+      "prompt": "Compare self-attention and cross-attention mechanisms in Transformer architectures. Highlight the primary difference in how keys, queries, and values are sourced.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 1.2,
+      "top_p": 1.0,
+      "prompt_tokens": 99,
+      "completion_tokens": 128,
+      "ttft_s": 0.7151,
+      "total_s": 0.7639,
+      "tokens_per_second": 167.57,
+      "output_text": "## Self\u2011Attention vs. Cross\u2011Attention  \n\n| Aspect | Self\u2011Attention | Cross\u2011",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.715069
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.717186
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.717209
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.717347
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.720757
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.721933
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.727088
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.727237
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.727697
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.730321
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.731168
+        },
+        {
+          "token_index": 12,
+          "elapsed_since_start_s": 0.734087
+        },
+        {
+          "token_index": 13,
+          "elapsed_since_start_s": 0.739118
+        },
+        {
+          "token_index": 14,
+          "elapsed_since_start_s": 0.745157
+        },
+        {
+          "token_index": 15,
+          "elapsed_since_start_s": 0.74531
+        },
+        {
+          "token_index": 16,
+          "elapsed_since_start_s": 0.749829
+        },
+        {
+          "token_index": 17,
+          "elapsed_since_start_s": 0.752678
+        },
+        {
+          "token_index": 18,
+          "elapsed_since_start_s": 0.763342
+        },
+        {
+          "token_index": 19,
+          "elapsed_since_start_s": 0.763515
+        }
+      ]
+    },
+    {
+      "prompt": "Compare self-attention and cross-attention mechanisms in Transformer architectures. Highlight the primary difference in how keys, queries, and values are sourced.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 1.2,
+      "top_p": 1.0,
+      "prompt_tokens": 99,
+      "completion_tokens": 128,
+      "ttft_s": 0.7386,
+      "total_s": 0.7554,
+      "tokens_per_second": 169.46,
+      "output_text": "**Self\u2011Attention vs. Cross\u2011Attention in",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.738625
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.738651
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.740144
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.744382
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.744524
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.746892
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.747751
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.753406
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.753573
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.75496
+        }
+      ]
+    },
+    {
+      "prompt": "Compare self-attention and cross-attention mechanisms in Transformer architectures. Highlight the primary difference in how keys, queries, and values are sourced.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 1.2,
+      "top_p": 1.0,
+      "prompt_tokens": 99,
+      "completion_tokens": 128,
+      "ttft_s": 0.4147,
+      "total_s": 0.5547,
+      "tokens_per_second": 230.76,
+      "output_text": "## Self\u2011Attention vs. Cross\u2011Attention in Transformers  \n\n| Aspect | Self\u2011Attention | Cross\u2011Attention |\n|--------|----------------|-----------------|\n| **Typical place in the model** | Every encoder layer (and often the decoder\u2019s *self\u2011attention* sub\u2011layer). | Decoder layers (the *encoder\u2011decoder",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.414721
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.416175
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.418805
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.421318
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.423142
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.425195
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.428352
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.428511
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.431351
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.434091
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.435315
+        },
+        {
+          "token_index": 12,
+          "elapsed_since_start_s": 0.439148
+        },
+        {
+          "token_index": 13,
+          "elapsed_since_start_s": 0.439889
+        },
+        {
+          "token_index": 14,
+          "elapsed_since_start_s": 0.441507
+        },
+        {
+          "token_index": 15,
+          "elapsed_since_start_s": 0.444449
+        },
+        {
+          "token_index": 16,
+          "elapsed_since_start_s": 0.446032
+        },
+        {
+          "token_index": 17,
+          "elapsed_since_start_s": 0.448742
+        },
+        {
+          "token_index": 18,
+          "elapsed_since_start_s": 0.451946
+        },
+        {
+          "token_index": 19,
+          "elapsed_since_start_s": 0.452176
+        },
+        {
+          "token_index": 20,
+          "elapsed_since_start_s": 0.453571
+        },
+        {
+          "token_index": 21,
+          "elapsed_since_start_s": 0.45539
+        },
+        {
+          "token_index": 22,
+          "elapsed_since_start_s": 0.458539
+        },
+        {
+          "token_index": 23,
+          "elapsed_since_start_s": 0.460596
+        },
+        {
+          "token_index": 24,
+          "elapsed_since_start_s": 0.466343
+        },
+        {
+          "token_index": 25,
+          "elapsed_since_start_s": 0.466361
+        },
+        {
+          "token_index": 26,
+          "elapsed_since_start_s": 0.466371
+        },
+        {
+          "token_index": 27,
+          "elapsed_since_start_s": 0.469104
+        },
+        {
+          "token_index": 28,
+          "elapsed_since_start_s": 0.470993
+        },
+        {
+          "token_index": 29,
+          "elapsed_since_start_s": 0.472954
+        },
+        {
+          "token_index": 30,
+          "elapsed_since_start_s": 0.47462
+        },
+        {
+          "token_index": 31,
+          "elapsed_since_start_s": 0.476765
+        },
+        {
+          "token_index": 32,
+          "elapsed_since_start_s": 0.479546
+        },
+        {
+          "token_index": 33,
+          "elapsed_since_start_s": 0.481561
+        },
+        {
+          "token_index": 34,
+          "elapsed_since_start_s": 0.485453
+        },
+        {
+          "token_index": 35,
+          "elapsed_since_start_s": 0.485606
+        },
+        {
+          "token_index": 36,
+          "elapsed_since_start_s": 0.487156
+        },
+        {
+          "token_index": 37,
+          "elapsed_since_start_s": 0.491116
+        },
+        {
+          "token_index": 38,
+          "elapsed_since_start_s": 0.491272
+        },
+        {
+          "token_index": 39,
+          "elapsed_since_start_s": 0.496459
+        },
+        {
+          "token_index": 40,
+          "elapsed_since_start_s": 0.49662
+        },
+        {
+          "token_index": 41,
+          "elapsed_since_start_s": 0.497681
+        },
+        {
+          "token_index": 42,
+          "elapsed_since_start_s": 0.499578
+        },
+        {
+          "token_index": 43,
+          "elapsed_since_start_s": 0.50094
+        },
+        {
+          "token_index": 44,
+          "elapsed_since_start_s": 0.505376
+        },
+        {
+          "token_index": 45,
+          "elapsed_since_start_s": 0.505525
+        },
+        {
+          "token_index": 46,
+          "elapsed_since_start_s": 0.508823
+        },
+        {
+          "token_index": 47,
+          "elapsed_since_start_s": 0.510675
+        },
+        {
+          "token_index": 48,
+          "elapsed_since_start_s": 0.514541
+        },
+        {
+          "token_index": 49,
+          "elapsed_since_start_s": 0.516164
+        },
+        {
+          "token_index": 50,
+          "elapsed_since_start_s": 0.516296
+        },
+        {
+          "token_index": 51,
+          "elapsed_since_start_s": 0.519295
+        },
+        {
+          "token_index": 52,
+          "elapsed_since_start_s": 0.520594
+        },
+        {
+          "token_index": 53,
+          "elapsed_since_start_s": 0.523487
+        },
+        {
+          "token_index": 54,
+          "elapsed_since_start_s": 0.526447
+        },
+        {
+          "token_index": 55,
+          "elapsed_since_start_s": 0.526571
+        },
+        {
+          "token_index": 56,
+          "elapsed_since_start_s": 0.52877
+        },
+        {
+          "token_index": 57,
+          "elapsed_since_start_s": 0.531437
+        },
+        {
+          "token_index": 58,
+          "elapsed_since_start_s": 0.533795
+        },
+        {
+          "token_index": 59,
+          "elapsed_since_start_s": 0.536843
+        },
+        {
+          "token_index": 60,
+          "elapsed_since_start_s": 0.538113
+        },
+        {
+          "token_index": 61,
+          "elapsed_since_start_s": 0.540814
+        },
+        {
+          "token_index": 62,
+          "elapsed_since_start_s": 0.542661
+        },
+        {
+          "token_index": 63,
+          "elapsed_since_start_s": 0.543959
+        },
+        {
+          "token_index": 64,
+          "elapsed_since_start_s": 0.546635
+        },
+        {
+          "token_index": 65,
+          "elapsed_since_start_s": 0.550584
+        },
+        {
+          "token_index": 66,
+          "elapsed_since_start_s": 0.550609
+        },
+        {
+          "token_index": 67,
+          "elapsed_since_start_s": 0.554198
+        }
+      ]
+    },
+    {
+      "prompt": "Modern autoregressive Transformer inference consists of two distinct computational regimes: the prefill (prompt processing) phase and the decode (token-by-token generation) phase. In the prefill phase, all prompt tokens are processed simultaneously in parallel via matrix multiplications, populating the Key-Value (KV) cache. In the decode phase, each new token requires reading all previous KV states from High Bandwidth Memory (HBM) to compute attention, rendering single-batch decoding heavily memory-bandwidth bound. Techniques such as continuous batching, PagedAttention, and Speculative Decoding attempt to maximize compute throughput. Based on this overview, identify the main bottleneck of the decode phase and how KV caching mitigates recomputation.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "prompt_tokens": 214,
+      "completion_tokens": 128,
+      "ttft_s": 0.6927,
+      "total_s": 0.8064,
+      "tokens_per_second": 158.73,
+      "output_text": "**Main bottleneck of the decode (generation) phase**\n\nDuring token\u2011by\u2011token generation the model must attend to **all previously generated tokens**. For every new token the attention kernel needs:\n\n1. **The query vector** for",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.692686
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.692711
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.692723
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.724119
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.724141
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.72415
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.724158
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.724299
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.724311
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.724319
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.724327
+        },
+        {
+          "token_index": 12,
+          "elapsed_since_start_s": 0.72442
+        },
+        {
+          "token_index": 13,
+          "elapsed_since_start_s": 0.72443
+        },
+        {
+          "token_index": 14,
+          "elapsed_since_start_s": 0.724437
+        },
+        {
+          "token_index": 15,
+          "elapsed_since_start_s": 0.724449
+        },
+        {
+          "token_index": 16,
+          "elapsed_since_start_s": 0.724462
+        },
+        {
+          "token_index": 17,
+          "elapsed_since_start_s": 0.729944
+        },
+        {
+          "token_index": 18,
+          "elapsed_since_start_s": 0.72996
+        },
+        {
+          "token_index": 19,
+          "elapsed_since_start_s": 0.729969
+        },
+        {
+          "token_index": 20,
+          "elapsed_since_start_s": 0.729977
+        },
+        {
+          "token_index": 21,
+          "elapsed_since_start_s": 0.758713
+        },
+        {
+          "token_index": 22,
+          "elapsed_since_start_s": 0.758727
+        },
+        {
+          "token_index": 23,
+          "elapsed_since_start_s": 0.758735
+        },
+        {
+          "token_index": 24,
+          "elapsed_since_start_s": 0.758742
+        },
+        {
+          "token_index": 25,
+          "elapsed_since_start_s": 0.758858
+        },
+        {
+          "token_index": 26,
+          "elapsed_since_start_s": 0.758869
+        },
+        {
+          "token_index": 27,
+          "elapsed_since_start_s": 0.758876
+        },
+        {
+          "token_index": 28,
+          "elapsed_since_start_s": 0.758883
+        },
+        {
+          "token_index": 29,
+          "elapsed_since_start_s": 0.758889
+        },
+        {
+          "token_index": 30,
+          "elapsed_since_start_s": 0.776176
+        },
+        {
+          "token_index": 31,
+          "elapsed_since_start_s": 0.776201
+        },
+        {
+          "token_index": 32,
+          "elapsed_since_start_s": 0.776211
+        },
+        {
+          "token_index": 33,
+          "elapsed_since_start_s": 0.776219
+        },
+        {
+          "token_index": 34,
+          "elapsed_since_start_s": 0.776394
+        },
+        {
+          "token_index": 35,
+          "elapsed_since_start_s": 0.776408
+        },
+        {
+          "token_index": 36,
+          "elapsed_since_start_s": 0.776416
+        },
+        {
+          "token_index": 37,
+          "elapsed_since_start_s": 0.776425
+        },
+        {
+          "token_index": 38,
+          "elapsed_since_start_s": 0.776432
+        },
+        {
+          "token_index": 39,
+          "elapsed_since_start_s": 0.796254
+        },
+        {
+          "token_index": 40,
+          "elapsed_since_start_s": 0.796283
+        },
+        {
+          "token_index": 41,
+          "elapsed_since_start_s": 0.796295
+        },
+        {
+          "token_index": 42,
+          "elapsed_since_start_s": 0.796309
+        },
+        {
+          "token_index": 43,
+          "elapsed_since_start_s": 0.796517
+        },
+        {
+          "token_index": 44,
+          "elapsed_since_start_s": 0.796534
+        },
+        {
+          "token_index": 45,
+          "elapsed_since_start_s": 0.796544
+        },
+        {
+          "token_index": 46,
+          "elapsed_since_start_s": 0.796552
+        },
+        {
+          "token_index": 47,
+          "elapsed_since_start_s": 0.805804
+        },
+        {
+          "token_index": 48,
+          "elapsed_since_start_s": 0.805837
+        }
+      ]
+    },
+    {
+      "prompt": "Modern autoregressive Transformer inference consists of two distinct computational regimes: the prefill (prompt processing) phase and the decode (token-by-token generation) phase. In the prefill phase, all prompt tokens are processed simultaneously in parallel via matrix multiplications, populating the Key-Value (KV) cache. In the decode phase, each new token requires reading all previous KV states from High Bandwidth Memory (HBM) to compute attention, rendering single-batch decoding heavily memory-bandwidth bound. Techniques such as continuous batching, PagedAttention, and Speculative Decoding attempt to maximize compute throughput. Based on this overview, identify the main bottleneck of the decode phase and how KV caching mitigates recomputation.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "prompt_tokens": 214,
+      "completion_tokens": 128,
+      "ttft_s": 0.7527,
+      "total_s": 0.8428,
+      "tokens_per_second": 151.87,
+      "output_text": "**Main bottleneck of the decode (token\u2011by\u2011token) phase**\n\nDuring decoding the model must attend the newly generated token to **all** previously generated tokens.  \nFor every step the attention kernel needs:\n\n1. **Read",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.752742
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.753341
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.753718
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.754072
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.754122
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.75618
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.761833
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.7619
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.762432
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.764246
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.769579
+        },
+        {
+          "token_index": 12,
+          "elapsed_since_start_s": 0.769604
+        },
+        {
+          "token_index": 13,
+          "elapsed_since_start_s": 0.769762
+        },
+        {
+          "token_index": 14,
+          "elapsed_since_start_s": 0.772227
+        },
+        {
+          "token_index": 15,
+          "elapsed_since_start_s": 0.778491
+        },
+        {
+          "token_index": 16,
+          "elapsed_since_start_s": 0.778516
+        },
+        {
+          "token_index": 17,
+          "elapsed_since_start_s": 0.77853
+        },
+        {
+          "token_index": 18,
+          "elapsed_since_start_s": 0.778698
+        },
+        {
+          "token_index": 19,
+          "elapsed_since_start_s": 0.78422
+        },
+        {
+          "token_index": 20,
+          "elapsed_since_start_s": 0.784341
+        },
+        {
+          "token_index": 21,
+          "elapsed_since_start_s": 0.784425
+        },
+        {
+          "token_index": 22,
+          "elapsed_since_start_s": 0.787652
+        },
+        {
+          "token_index": 23,
+          "elapsed_since_start_s": 0.787824
+        },
+        {
+          "token_index": 24,
+          "elapsed_since_start_s": 0.791482
+        },
+        {
+          "token_index": 25,
+          "elapsed_since_start_s": 0.796608
+        },
+        {
+          "token_index": 26,
+          "elapsed_since_start_s": 0.796623
+        },
+        {
+          "token_index": 27,
+          "elapsed_since_start_s": 0.796743
+        },
+        {
+          "token_index": 28,
+          "elapsed_since_start_s": 0.803244
+        },
+        {
+          "token_index": 29,
+          "elapsed_since_start_s": 0.803723
+        },
+        {
+          "token_index": 30,
+          "elapsed_since_start_s": 0.804399
+        },
+        {
+          "token_index": 31,
+          "elapsed_since_start_s": 0.808697
+        },
+        {
+          "token_index": 32,
+          "elapsed_since_start_s": 0.809278
+        },
+        {
+          "token_index": 33,
+          "elapsed_since_start_s": 0.810686
+        },
+        {
+          "token_index": 34,
+          "elapsed_since_start_s": 0.814617
+        },
+        {
+          "token_index": 35,
+          "elapsed_since_start_s": 0.815238
+        },
+        {
+          "token_index": 36,
+          "elapsed_since_start_s": 0.8163
+        },
+        {
+          "token_index": 37,
+          "elapsed_since_start_s": 0.821552
+        },
+        {
+          "token_index": 38,
+          "elapsed_since_start_s": 0.821627
+        },
+        {
+          "token_index": 39,
+          "elapsed_since_start_s": 0.823446
+        },
+        {
+          "token_index": 40,
+          "elapsed_since_start_s": 0.833081
+        },
+        {
+          "token_index": 41,
+          "elapsed_since_start_s": 0.83368
+        },
+        {
+          "token_index": 42,
+          "elapsed_since_start_s": 0.833737
+        },
+        {
+          "token_index": 43,
+          "elapsed_since_start_s": 0.83413
+        },
+        {
+          "token_index": 44,
+          "elapsed_since_start_s": 0.83448
+        },
+        {
+          "token_index": 45,
+          "elapsed_since_start_s": 0.841547
+        },
+        {
+          "token_index": 46,
+          "elapsed_since_start_s": 0.841624
+        },
+        {
+          "token_index": 47,
+          "elapsed_since_start_s": 0.841661
+        }
+      ]
+    },
+    {
+      "prompt": "Modern autoregressive Transformer inference consists of two distinct computational regimes: the prefill (prompt processing) phase and the decode (token-by-token generation) phase. In the prefill phase, all prompt tokens are processed simultaneously in parallel via matrix multiplications, populating the Key-Value (KV) cache. In the decode phase, each new token requires reading all previous KV states from High Bandwidth Memory (HBM) to compute attention, rendering single-batch decoding heavily memory-bandwidth bound. Techniques such as continuous batching, PagedAttention, and Speculative Decoding attempt to maximize compute throughput. Based on this overview, identify the main bottleneck of the decode phase and how KV caching mitigates recomputation.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "prompt_tokens": 214,
+      "completion_tokens": 128,
+      "ttft_s": 0.6507,
+      "total_s": 0.7735,
+      "tokens_per_second": 165.48,
+      "output_text": "**Main bottleneck of the decode (generation) phase**\n\nDuring token\u2011by\u2011token generation the model must attend to **all previously generated tokens**. For every new token the attention kernel needs:\n\n1. **The query vector** for",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.650655
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.653415
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.653538
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.659787
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.659908
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.659995
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.661823
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.662176
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.665343
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.667872
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.669074
+        },
+        {
+          "token_index": 12,
+          "elapsed_since_start_s": 0.670695
+        },
+        {
+          "token_index": 13,
+          "elapsed_since_start_s": 0.674034
+        },
+        {
+          "token_index": 14,
+          "elapsed_since_start_s": 0.677057
+        },
+        {
+          "token_index": 15,
+          "elapsed_since_start_s": 0.680219
+        },
+        {
+          "token_index": 16,
+          "elapsed_since_start_s": 0.680249
+        },
+        {
+          "token_index": 17,
+          "elapsed_since_start_s": 0.680552
+        },
+        {
+          "token_index": 18,
+          "elapsed_since_start_s": 0.685591
+        },
+        {
+          "token_index": 19,
+          "elapsed_since_start_s": 0.685709
+        },
+        {
+          "token_index": 20,
+          "elapsed_since_start_s": 0.690049
+        },
+        {
+          "token_index": 21,
+          "elapsed_since_start_s": 0.690161
+        },
+        {
+          "token_index": 22,
+          "elapsed_since_start_s": 0.694145
+        },
+        {
+          "token_index": 23,
+          "elapsed_since_start_s": 0.694257
+        },
+        {
+          "token_index": 24,
+          "elapsed_since_start_s": 0.696486
+        },
+        {
+          "token_index": 25,
+          "elapsed_since_start_s": 0.699293
+        },
+        {
+          "token_index": 26,
+          "elapsed_since_start_s": 0.702922
+        },
+        {
+          "token_index": 27,
+          "elapsed_since_start_s": 0.703034
+        },
+        {
+          "token_index": 28,
+          "elapsed_since_start_s": 0.70311
+        },
+        {
+          "token_index": 29,
+          "elapsed_since_start_s": 0.709139
+        },
+        {
+          "token_index": 30,
+          "elapsed_since_start_s": 0.709153
+        },
+        {
+          "token_index": 31,
+          "elapsed_since_start_s": 0.709261
+        },
+        {
+          "token_index": 32,
+          "elapsed_since_start_s": 0.71525
+        },
+        {
+          "token_index": 33,
+          "elapsed_since_start_s": 0.715364
+        },
+        {
+          "token_index": 34,
+          "elapsed_since_start_s": 0.759996
+        },
+        {
+          "token_index": 35,
+          "elapsed_since_start_s": 0.760012
+        },
+        {
+          "token_index": 36,
+          "elapsed_since_start_s": 0.760041
+        },
+        {
+          "token_index": 37,
+          "elapsed_since_start_s": 0.760048
+        },
+        {
+          "token_index": 38,
+          "elapsed_since_start_s": 0.7646
+        },
+        {
+          "token_index": 39,
+          "elapsed_since_start_s": 0.764614
+        },
+        {
+          "token_index": 40,
+          "elapsed_since_start_s": 0.764623
+        },
+        {
+          "token_index": 41,
+          "elapsed_since_start_s": 0.76463
+        },
+        {
+          "token_index": 42,
+          "elapsed_since_start_s": 0.764637
+        },
+        {
+          "token_index": 43,
+          "elapsed_since_start_s": 0.764643
+        },
+        {
+          "token_index": 44,
+          "elapsed_since_start_s": 0.764649
+        },
+        {
+          "token_index": 45,
+          "elapsed_since_start_s": 0.764658
+        },
+        {
+          "token_index": 46,
+          "elapsed_since_start_s": 0.773147
+        },
+        {
+          "token_index": 47,
+          "elapsed_since_start_s": 0.77316
+        },
+        {
+          "token_index": 48,
+          "elapsed_since_start_s": 0.773168
+        }
+      ]
+    },
+    {
+      "prompt": "Modern autoregressive Transformer inference consists of two distinct computational regimes: the prefill (prompt processing) phase and the decode (token-by-token generation) phase. In the prefill phase, all prompt tokens are processed simultaneously in parallel via matrix multiplications, populating the Key-Value (KV) cache. In the decode phase, each new token requires reading all previous KV states from High Bandwidth Memory (HBM) to compute attention, rendering single-batch decoding heavily memory-bandwidth bound. Techniques such as continuous batching, PagedAttention, and Speculative Decoding attempt to maximize compute throughput. Based on this overview, identify the main bottleneck of the decode phase and how KV caching mitigates recomputation.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.7,
+      "top_p": 0.9,
+      "prompt_tokens": 214,
+      "completion_tokens": 128,
+      "ttft_s": 0.6017,
+      "total_s": 0.8001,
+      "tokens_per_second": 159.98,
+      "output_text": "**Main bottleneck of the decode (generation) phase**\n\nDuring autoregressive generation the model has to compute the attention for the *new* token against **all** tokens that have already been produced.  \nIn a na\u00efve implementation the full query\u2011key\u2011value (Q\u2011K\u2011V) matrices for the whole sequence would be recomputed at every step, which would be dominated by FLOPs. Modern kernels, however, **reuse** the previously\u2011computed keys and",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.601666
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.603348
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.604575
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.606755
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.609099
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.615191
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.615212
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.618299
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.618506
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.619998
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.62013
+        },
+        {
+          "token_index": 12,
+          "elapsed_since_start_s": 0.623922
+        },
+        {
+          "token_index": 13,
+          "elapsed_since_start_s": 0.625631
+        },
+        {
+          "token_index": 14,
+          "elapsed_since_start_s": 0.629018
+        },
+        {
+          "token_index": 15,
+          "elapsed_since_start_s": 0.630439
+        },
+        {
+          "token_index": 16,
+          "elapsed_since_start_s": 0.631888
+        },
+        {
+          "token_index": 17,
+          "elapsed_since_start_s": 0.635322
+        },
+        {
+          "token_index": 18,
+          "elapsed_since_start_s": 0.637701
+        },
+        {
+          "token_index": 19,
+          "elapsed_since_start_s": 0.640463
+        },
+        {
+          "token_index": 20,
+          "elapsed_since_start_s": 0.643425
+        },
+        {
+          "token_index": 21,
+          "elapsed_since_start_s": 0.643448
+        },
+        {
+          "token_index": 22,
+          "elapsed_since_start_s": 0.646755
+        },
+        {
+          "token_index": 23,
+          "elapsed_since_start_s": 0.650514
+        },
+        {
+          "token_index": 24,
+          "elapsed_since_start_s": 0.65699
+        },
+        {
+          "token_index": 25,
+          "elapsed_since_start_s": 0.657009
+        },
+        {
+          "token_index": 26,
+          "elapsed_since_start_s": 0.657018
+        },
+        {
+          "token_index": 27,
+          "elapsed_since_start_s": 0.657025
+        },
+        {
+          "token_index": 28,
+          "elapsed_since_start_s": 0.660792
+        },
+        {
+          "token_index": 29,
+          "elapsed_since_start_s": 0.660808
+        },
+        {
+          "token_index": 30,
+          "elapsed_since_start_s": 0.66101
+        },
+        {
+          "token_index": 31,
+          "elapsed_since_start_s": 0.664827
+        },
+        {
+          "token_index": 32,
+          "elapsed_since_start_s": 0.667927
+        },
+        {
+          "token_index": 33,
+          "elapsed_since_start_s": 0.675223
+        },
+        {
+          "token_index": 34,
+          "elapsed_since_start_s": 0.675247
+        },
+        {
+          "token_index": 35,
+          "elapsed_since_start_s": 0.675256
+        },
+        {
+          "token_index": 36,
+          "elapsed_since_start_s": 0.677188
+        },
+        {
+          "token_index": 37,
+          "elapsed_since_start_s": 0.677323
+        },
+        {
+          "token_index": 38,
+          "elapsed_since_start_s": 0.680618
+        },
+        {
+          "token_index": 39,
+          "elapsed_since_start_s": 0.68096
+        },
+        {
+          "token_index": 40,
+          "elapsed_since_start_s": 0.682224
+        },
+        {
+          "token_index": 41,
+          "elapsed_since_start_s": 0.685776
+        },
+        {
+          "token_index": 42,
+          "elapsed_since_start_s": 0.686633
+        },
+        {
+          "token_index": 43,
+          "elapsed_since_start_s": 0.689226
+        },
+        {
+          "token_index": 44,
+          "elapsed_since_start_s": 0.690869
+        },
+        {
+          "token_index": 45,
+          "elapsed_since_start_s": 0.696545
+        },
+        {
+          "token_index": 46,
+          "elapsed_since_start_s": 0.696693
+        },
+        {
+          "token_index": 47,
+          "elapsed_since_start_s": 0.696781
+        },
+        {
+          "token_index": 48,
+          "elapsed_since_start_s": 0.704002
+        },
+        {
+          "token_index": 49,
+          "elapsed_since_start_s": 0.704227
+        },
+        {
+          "token_index": 50,
+          "elapsed_since_start_s": 0.712923
+        },
+        {
+          "token_index": 51,
+          "elapsed_since_start_s": 0.713033
+        },
+        {
+          "token_index": 52,
+          "elapsed_since_start_s": 0.713121
+        },
+        {
+          "token_index": 53,
+          "elapsed_since_start_s": 0.713271
+        },
+        {
+          "token_index": 54,
+          "elapsed_since_start_s": 0.719536
+        },
+        {
+          "token_index": 55,
+          "elapsed_since_start_s": 0.726322
+        },
+        {
+          "token_index": 56,
+          "elapsed_since_start_s": 0.726356
+        },
+        {
+          "token_index": 57,
+          "elapsed_since_start_s": 0.726367
+        },
+        {
+          "token_index": 58,
+          "elapsed_since_start_s": 0.726378
+        },
+        {
+          "token_index": 59,
+          "elapsed_since_start_s": 0.726387
+        },
+        {
+          "token_index": 60,
+          "elapsed_since_start_s": 0.726394
+        },
+        {
+          "token_index": 61,
+          "elapsed_since_start_s": 0.729617
+        },
+        {
+          "token_index": 62,
+          "elapsed_since_start_s": 0.730818
+        },
+        {
+          "token_index": 63,
+          "elapsed_since_start_s": 0.731086
+        },
+        {
+          "token_index": 64,
+          "elapsed_since_start_s": 0.737503
+        },
+        {
+          "token_index": 65,
+          "elapsed_since_start_s": 0.743841
+        },
+        {
+          "token_index": 66,
+          "elapsed_since_start_s": 0.744055
+        },
+        {
+          "token_index": 67,
+          "elapsed_since_start_s": 0.744168
+        },
+        {
+          "token_index": 68,
+          "elapsed_since_start_s": 0.74665
+        },
+        {
+          "token_index": 69,
+          "elapsed_since_start_s": 0.746677
+        },
+        {
+          "token_index": 70,
+          "elapsed_since_start_s": 0.748941
+        },
+        {
+          "token_index": 71,
+          "elapsed_since_start_s": 0.749111
+        },
+        {
+          "token_index": 72,
+          "elapsed_since_start_s": 0.750048
+        },
+        {
+          "token_index": 73,
+          "elapsed_since_start_s": 0.752929
+        },
+        {
+          "token_index": 74,
+          "elapsed_since_start_s": 0.754763
+        },
+        {
+          "token_index": 75,
+          "elapsed_since_start_s": 0.756337
+        },
+        {
+          "token_index": 76,
+          "elapsed_since_start_s": 0.758581
+        },
+        {
+          "token_index": 77,
+          "elapsed_since_start_s": 0.759991
+        },
+        {
+          "token_index": 78,
+          "elapsed_since_start_s": 0.762826
+        },
+        {
+          "token_index": 79,
+          "elapsed_since_start_s": 0.764496
+        },
+        {
+          "token_index": 80,
+          "elapsed_since_start_s": 0.768352
+        },
+        {
+          "token_index": 81,
+          "elapsed_since_start_s": 0.768536
+        },
+        {
+          "token_index": 82,
+          "elapsed_since_start_s": 0.773004
+        },
+        {
+          "token_index": 83,
+          "elapsed_since_start_s": 0.778425
+        },
+        {
+          "token_index": 84,
+          "elapsed_since_start_s": 0.77861
+        },
+        {
+          "token_index": 85,
+          "elapsed_since_start_s": 0.778731
+        },
+        {
+          "token_index": 86,
+          "elapsed_since_start_s": 0.778845
+        },
+        {
+          "token_index": 87,
+          "elapsed_since_start_s": 0.783876
+        },
+        {
+          "token_index": 88,
+          "elapsed_since_start_s": 0.783904
+        },
+        {
+          "token_index": 89,
+          "elapsed_since_start_s": 0.78526
+        },
+        {
+          "token_index": 90,
+          "elapsed_since_start_s": 0.787649
+        },
+        {
+          "token_index": 91,
+          "elapsed_since_start_s": 0.789676
+        },
+        {
+          "token_index": 92,
+          "elapsed_since_start_s": 0.793053
+        },
+        {
+          "token_index": 93,
+          "elapsed_since_start_s": 0.794286
+        },
+        {
+          "token_index": 94,
+          "elapsed_since_start_s": 0.797029
+        },
+        {
+          "token_index": 95,
+          "elapsed_since_start_s": 0.799649
+        }
+      ]
+    },
+    {
+      "prompt": "Modern autoregressive Transformer inference consists of two distinct computational regimes: the prefill (prompt processing) phase and the decode (token-by-token generation) phase. In the prefill phase, all prompt tokens are processed simultaneously in parallel via matrix multiplications, populating the Key-Value (KV) cache. In the decode phase, each new token requires reading all previous KV states from High Bandwidth Memory (HBM) to compute attention, rendering single-batch decoding heavily memory-bandwidth bound. Techniques such as continuous batching, PagedAttention, and Speculative Decoding attempt to maximize compute throughput. Based on this overview, identify the main bottleneck of the decode phase and how KV caching mitigates recomputation.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.7,
+      "top_p": 0.9,
+      "prompt_tokens": 214,
+      "completion_tokens": 128,
+      "ttft_s": 0.6849,
+      "total_s": 0.7618,
+      "tokens_per_second": 168.03,
+      "output_text": "**Main bottleneck in the decode (token\u2011by\u2011token) phase**\n\nDuring decoding the model has to attend the current query vector **Q\u2099** to *all*",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.684928
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.689088
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.689111
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.691533
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.697162
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.697187
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.697197
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.701429
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.705409
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.70544
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.708789
+        },
+        {
+          "token_index": 12,
+          "elapsed_since_start_s": 0.710823
+        },
+        {
+          "token_index": 13,
+          "elapsed_since_start_s": 0.710854
+        },
+        {
+          "token_index": 14,
+          "elapsed_since_start_s": 0.712446
+        },
+        {
+          "token_index": 15,
+          "elapsed_since_start_s": 0.713452
+        },
+        {
+          "token_index": 16,
+          "elapsed_since_start_s": 0.718125
+        },
+        {
+          "token_index": 17,
+          "elapsed_since_start_s": 0.720112
+        },
+        {
+          "token_index": 18,
+          "elapsed_since_start_s": 0.720146
+        },
+        {
+          "token_index": 19,
+          "elapsed_since_start_s": 0.721823
+        },
+        {
+          "token_index": 20,
+          "elapsed_since_start_s": 0.725852
+        },
+        {
+          "token_index": 21,
+          "elapsed_since_start_s": 0.730937
+        },
+        {
+          "token_index": 22,
+          "elapsed_since_start_s": 0.730981
+        },
+        {
+          "token_index": 23,
+          "elapsed_since_start_s": 0.731001
+        },
+        {
+          "token_index": 24,
+          "elapsed_since_start_s": 0.733849
+        },
+        {
+          "token_index": 25,
+          "elapsed_since_start_s": 0.735074
+        },
+        {
+          "token_index": 26,
+          "elapsed_since_start_s": 0.739514
+        },
+        {
+          "token_index": 27,
+          "elapsed_since_start_s": 0.740047
+        },
+        {
+          "token_index": 28,
+          "elapsed_since_start_s": 0.740347
+        },
+        {
+          "token_index": 29,
+          "elapsed_since_start_s": 0.754147
+        },
+        {
+          "token_index": 30,
+          "elapsed_since_start_s": 0.754713
+        },
+        {
+          "token_index": 31,
+          "elapsed_since_start_s": 0.755086
+        },
+        {
+          "token_index": 32,
+          "elapsed_since_start_s": 0.755422
+        },
+        {
+          "token_index": 33,
+          "elapsed_since_start_s": 0.755739
+        },
+        {
+          "token_index": 34,
+          "elapsed_since_start_s": 0.757067
+        },
+        {
+          "token_index": 35,
+          "elapsed_since_start_s": 0.761423
+        }
+      ]
+    },
+    {
+      "prompt": "Modern autoregressive Transformer inference consists of two distinct computational regimes: the prefill (prompt processing) phase and the decode (token-by-token generation) phase. In the prefill phase, all prompt tokens are processed simultaneously in parallel via matrix multiplications, populating the Key-Value (KV) cache. In the decode phase, each new token requires reading all previous KV states from High Bandwidth Memory (HBM) to compute attention, rendering single-batch decoding heavily memory-bandwidth bound. Techniques such as continuous batching, PagedAttention, and Speculative Decoding attempt to maximize compute throughput. Based on this overview, identify the main bottleneck of the decode phase and how KV caching mitigates recomputation.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 0.7,
+      "top_p": 0.9,
+      "prompt_tokens": 214,
+      "completion_tokens": 128,
+      "ttft_s": 0.6968,
+      "total_s": 0.7742,
+      "tokens_per_second": 165.32,
+      "output_text": "**Main bottleneck of the decode (generation) phase**\n\nDuring token\u2011by\u2011token generation the model must compute attention of the *current* token against",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.696822
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.708391
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.708654
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.708896
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.709038
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.709169
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.710485
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.711949
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.715633
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.715962
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.723486
+        },
+        {
+          "token_index": 12,
+          "elapsed_since_start_s": 0.723712
+        },
+        {
+          "token_index": 13,
+          "elapsed_since_start_s": 0.723876
+        },
+        {
+          "token_index": 14,
+          "elapsed_since_start_s": 0.735545
+        },
+        {
+          "token_index": 15,
+          "elapsed_since_start_s": 0.735839
+        },
+        {
+          "token_index": 16,
+          "elapsed_since_start_s": 0.735996
+        },
+        {
+          "token_index": 17,
+          "elapsed_since_start_s": 0.736169
+        },
+        {
+          "token_index": 18,
+          "elapsed_since_start_s": 0.73633
+        },
+        {
+          "token_index": 19,
+          "elapsed_since_start_s": 0.736493
+        },
+        {
+          "token_index": 20,
+          "elapsed_since_start_s": 0.738012
+        },
+        {
+          "token_index": 21,
+          "elapsed_since_start_s": 0.740054
+        },
+        {
+          "token_index": 22,
+          "elapsed_since_start_s": 0.742317
+        },
+        {
+          "token_index": 23,
+          "elapsed_since_start_s": 0.743594
+        },
+        {
+          "token_index": 24,
+          "elapsed_since_start_s": 0.747048
+        },
+        {
+          "token_index": 25,
+          "elapsed_since_start_s": 0.754283
+        },
+        {
+          "token_index": 26,
+          "elapsed_since_start_s": 0.75432
+        },
+        {
+          "token_index": 27,
+          "elapsed_since_start_s": 0.759883
+        },
+        {
+          "token_index": 28,
+          "elapsed_since_start_s": 0.760087
+        },
+        {
+          "token_index": 29,
+          "elapsed_since_start_s": 0.760195
+        },
+        {
+          "token_index": 30,
+          "elapsed_since_start_s": 0.773556
+        },
+        {
+          "token_index": 31,
+          "elapsed_since_start_s": 0.773747
+        }
+      ]
+    },
+    {
+      "prompt": "Modern autoregressive Transformer inference consists of two distinct computational regimes: the prefill (prompt processing) phase and the decode (token-by-token generation) phase. In the prefill phase, all prompt tokens are processed simultaneously in parallel via matrix multiplications, populating the Key-Value (KV) cache. In the decode phase, each new token requires reading all previous KV states from High Bandwidth Memory (HBM) to compute attention, rendering single-batch decoding heavily memory-bandwidth bound. Techniques such as continuous batching, PagedAttention, and Speculative Decoding attempt to maximize compute throughput. Based on this overview, identify the main bottleneck of the decode phase and how KV caching mitigates recomputation.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 1.2,
+      "top_p": 1.0,
+      "prompt_tokens": 214,
+      "completion_tokens": 128,
+      "ttft_s": 0.6179,
+      "total_s": 0.6849,
+      "tokens_per_second": 186.9,
+      "output_text": "**Main bottleneck of the decode phase**\n\nDuring token\u2011by\u2011token generation the model must attend the new token to **all previously generated tokens**",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.617915
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.620094
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.625239
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.625859
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.63136
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.63144
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.633584
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.633687
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.638628
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.638711
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.63932
+        },
+        {
+          "token_index": 12,
+          "elapsed_since_start_s": 0.641241
+        },
+        {
+          "token_index": 13,
+          "elapsed_since_start_s": 0.641826
+        },
+        {
+          "token_index": 14,
+          "elapsed_since_start_s": 0.645792
+        },
+        {
+          "token_index": 15,
+          "elapsed_since_start_s": 0.647022
+        },
+        {
+          "token_index": 16,
+          "elapsed_since_start_s": 0.653298
+        },
+        {
+          "token_index": 17,
+          "elapsed_since_start_s": 0.655427
+        },
+        {
+          "token_index": 18,
+          "elapsed_since_start_s": 0.655497
+        },
+        {
+          "token_index": 19,
+          "elapsed_since_start_s": 0.656056
+        },
+        {
+          "token_index": 20,
+          "elapsed_since_start_s": 0.659468
+        },
+        {
+          "token_index": 21,
+          "elapsed_since_start_s": 0.65955
+        },
+        {
+          "token_index": 22,
+          "elapsed_since_start_s": 0.662
+        },
+        {
+          "token_index": 23,
+          "elapsed_since_start_s": 0.667589
+        },
+        {
+          "token_index": 24,
+          "elapsed_since_start_s": 0.668212
+        },
+        {
+          "token_index": 25,
+          "elapsed_since_start_s": 0.668612
+        },
+        {
+          "token_index": 26,
+          "elapsed_since_start_s": 0.670024
+        },
+        {
+          "token_index": 27,
+          "elapsed_since_start_s": 0.673457
+        },
+        {
+          "token_index": 28,
+          "elapsed_since_start_s": 0.681816
+        },
+        {
+          "token_index": 29,
+          "elapsed_since_start_s": 0.682452
+        },
+        {
+          "token_index": 30,
+          "elapsed_since_start_s": 0.683503
+        }
+      ]
+    },
+    {
+      "prompt": "Modern autoregressive Transformer inference consists of two distinct computational regimes: the prefill (prompt processing) phase and the decode (token-by-token generation) phase. In the prefill phase, all prompt tokens are processed simultaneously in parallel via matrix multiplications, populating the Key-Value (KV) cache. In the decode phase, each new token requires reading all previous KV states from High Bandwidth Memory (HBM) to compute attention, rendering single-batch decoding heavily memory-bandwidth bound. Techniques such as continuous batching, PagedAttention, and Speculative Decoding attempt to maximize compute throughput. Based on this overview, identify the main bottleneck of the decode phase and how KV caching mitigates recomputation.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 1.2,
+      "top_p": 1.0,
+      "prompt_tokens": 214,
+      "completion_tokens": 128,
+      "ttft_s": 0.6817,
+      "total_s": 0.7509,
+      "tokens_per_second": 170.47,
+      "output_text": "### The decode\u2011phase bottleneck  \n\nWhen a Transformer model generates text token\u2011by\u2011token, each new token must attend to **all** tokens that have already been generated.  \n",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.681656
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.681779
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.681857
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.681969
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.682041
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.683267
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.685269
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.685355
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.688192
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.690051
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.692571
+        },
+        {
+          "token_index": 12,
+          "elapsed_since_start_s": 0.69513
+        },
+        {
+          "token_index": 13,
+          "elapsed_since_start_s": 0.696751
+        },
+        {
+          "token_index": 14,
+          "elapsed_since_start_s": 0.701753
+        },
+        {
+          "token_index": 15,
+          "elapsed_since_start_s": 0.701865
+        },
+        {
+          "token_index": 16,
+          "elapsed_since_start_s": 0.704032
+        },
+        {
+          "token_index": 17,
+          "elapsed_since_start_s": 0.706771
+        },
+        {
+          "token_index": 18,
+          "elapsed_since_start_s": 0.708227
+        },
+        {
+          "token_index": 19,
+          "elapsed_since_start_s": 0.710253
+        },
+        {
+          "token_index": 20,
+          "elapsed_since_start_s": 0.710366
+        },
+        {
+          "token_index": 21,
+          "elapsed_since_start_s": 0.717244
+        },
+        {
+          "token_index": 22,
+          "elapsed_since_start_s": 0.717418
+        },
+        {
+          "token_index": 23,
+          "elapsed_since_start_s": 0.719118
+        },
+        {
+          "token_index": 24,
+          "elapsed_since_start_s": 0.721235
+        },
+        {
+          "token_index": 25,
+          "elapsed_since_start_s": 0.721348
+        },
+        {
+          "token_index": 26,
+          "elapsed_since_start_s": 0.723689
+        },
+        {
+          "token_index": 27,
+          "elapsed_since_start_s": 0.725813
+        },
+        {
+          "token_index": 28,
+          "elapsed_since_start_s": 0.728914
+        },
+        {
+          "token_index": 29,
+          "elapsed_since_start_s": 0.729026
+        },
+        {
+          "token_index": 30,
+          "elapsed_since_start_s": 0.7335
+        },
+        {
+          "token_index": 31,
+          "elapsed_since_start_s": 0.735311
+        },
+        {
+          "token_index": 32,
+          "elapsed_since_start_s": 0.738219
+        },
+        {
+          "token_index": 33,
+          "elapsed_since_start_s": 0.741402
+        },
+        {
+          "token_index": 34,
+          "elapsed_since_start_s": 0.741515
+        },
+        {
+          "token_index": 35,
+          "elapsed_since_start_s": 0.743002
+        },
+        {
+          "token_index": 36,
+          "elapsed_since_start_s": 0.749036
+        },
+        {
+          "token_index": 37,
+          "elapsed_since_start_s": 0.750551
+        }
+      ]
+    },
+    {
+      "prompt": "Modern autoregressive Transformer inference consists of two distinct computational regimes: the prefill (prompt processing) phase and the decode (token-by-token generation) phase. In the prefill phase, all prompt tokens are processed simultaneously in parallel via matrix multiplications, populating the Key-Value (KV) cache. In the decode phase, each new token requires reading all previous KV states from High Bandwidth Memory (HBM) to compute attention, rendering single-batch decoding heavily memory-bandwidth bound. Techniques such as continuous batching, PagedAttention, and Speculative Decoding attempt to maximize compute throughput. Based on this overview, identify the main bottleneck of the decode phase and how KV caching mitigates recomputation.",
+      "model": "openai/gpt-oss-120b",
+      "temperature": 1.2,
+      "top_p": 1.0,
+      "prompt_tokens": 214,
+      "completion_tokens": 128,
+      "ttft_s": 0.6545,
+      "total_s": 0.8338,
+      "tokens_per_second": 153.51,
+      "output_text": "**Main bottleneck in the decode (token\u2011by\u2011token) phase**\n\nThe decode phase is dominated by **memory\u2011bandwidth pressure on the KV cache**.  \nWhen a new token is generated the model has to:\n\n1. **Read the whole sequence of stored keys and values** (\u202f\\(K_{1:L},V_{1:L}\\)\u202f) from high\u2011bandwidth memory (HBM/DRAM).  \n",
+      "token_timings": [
+        {
+          "token_index": 1,
+          "elapsed_since_start_s": 0.654497
+        },
+        {
+          "token_index": 2,
+          "elapsed_since_start_s": 0.654638
+        },
+        {
+          "token_index": 3,
+          "elapsed_since_start_s": 0.654733
+        },
+        {
+          "token_index": 4,
+          "elapsed_since_start_s": 0.662208
+        },
+        {
+          "token_index": 5,
+          "elapsed_since_start_s": 0.662343
+        },
+        {
+          "token_index": 6,
+          "elapsed_since_start_s": 0.678156
+        },
+        {
+          "token_index": 7,
+          "elapsed_since_start_s": 0.678267
+        },
+        {
+          "token_index": 8,
+          "elapsed_since_start_s": 0.678345
+        },
+        {
+          "token_index": 9,
+          "elapsed_since_start_s": 0.678417
+        },
+        {
+          "token_index": 10,
+          "elapsed_since_start_s": 0.678493
+        },
+        {
+          "token_index": 11,
+          "elapsed_since_start_s": 0.678569
+        },
+        {
+          "token_index": 12,
+          "elapsed_since_start_s": 0.678643
+        },
+        {
+          "token_index": 13,
+          "elapsed_since_start_s": 0.678713
+        },
+        {
+          "token_index": 14,
+          "elapsed_since_start_s": 0.678783
+        },
+        {
+          "token_index": 15,
+          "elapsed_since_start_s": 0.678851
+        },
+        {
+          "token_index": 16,
+          "elapsed_since_start_s": 0.681962
+        },
+        {
+          "token_index": 17,
+          "elapsed_since_start_s": 0.682062
+        },
+        {
+          "token_index": 18,
+          "elapsed_since_start_s": 0.689037
+        },
+        {
+          "token_index": 19,
+          "elapsed_since_start_s": 0.689149
+        },
+        {
+          "token_index": 20,
+          "elapsed_since_start_s": 0.694278
+        },
+        {
+          "token_index": 21,
+          "elapsed_since_start_s": 0.694291
+        },
+        {
+          "token_index": 22,
+          "elapsed_since_start_s": 0.694299
+        },
+        {
+          "token_index": 23,
+          "elapsed_since_start_s": 0.697577
+        },
+        {
+          "token_index": 24,
+          "elapsed_since_start_s": 0.697689
+        },
+        {
+          "token_index": 25,
+          "elapsed_since_start_s": 0.702216
+        },
+        {
+          "token_index": 26,
+          "elapsed_since_start_s": 0.702331
+        },
+        {
+          "token_index": 27,
+          "elapsed_since_start_s": 0.704704
+        },
+        {
+          "token_index": 28,
+          "elapsed_since_start_s": 0.704817
+        },
+        {
+          "token_index": 29,
+          "elapsed_since_start_s": 0.708586
+        },
+        {
+          "token_index": 30,
+          "elapsed_since_start_s": 0.716992
+        },
+        {
+          "token_index": 31,
+          "elapsed_since_start_s": 0.717537
+        },
+        {
+          "token_index": 32,
+          "elapsed_since_start_s": 0.717885
+        },
+        {
+          "token_index": 33,
+          "elapsed_since_start_s": 0.71821
+        },
+        {
+          "token_index": 34,
+          "elapsed_since_start_s": 0.720896
+        },
+        {
+          "token_index": 35,
+          "elapsed_since_start_s": 0.721458
+        },
+        {
+          "token_index": 36,
+          "elapsed_since_start_s": 0.726941
+        },
+        {
+          "token_index": 37,
+          "elapsed_since_start_s": 0.727476
+        },
+        {
+          "token_index": 38,
+          "elapsed_since_start_s": 0.728476
+        },
+        {
+          "token_index": 39,
+          "elapsed_since_start_s": 0.732466
+        },
+        {
+          "token_index": 40,
+          "elapsed_since_start_s": 0.733006
+        },
+        {
+          "token_index": 41,
+          "elapsed_since_start_s": 0.73489
+        },
+        {
+          "token_index": 42,
+          "elapsed_since_start_s": 0.737046
+        },
+        {
+          "token_index": 43,
+          "elapsed_since_start_s": 0.737601
+        },
+        {
+          "token_index": 44,
+          "elapsed_since_start_s": 0.739787
+        },
+        {
+          "token_index": 45,
+          "elapsed_since_start_s": 0.743185
+        },
+        {
+          "token_index": 46,
+          "elapsed_since_start_s": 0.743745
+        },
+        {
+          "token_index": 47,
+          "elapsed_since_start_s": 0.748722
+        },
+        {
+          "token_index": 48,
+          "elapsed_since_start_s": 0.74914
+        },
+        {
+          "token_index": 49,
+          "elapsed_since_start_s": 0.754326
+        },
+        {
+          "token_index": 50,
+          "elapsed_since_start_s": 0.754443
+        },
+        {
+          "token_index": 51,
+          "elapsed_since_start_s": 0.755761
+        },
+        {
+          "token_index": 52,
+          "elapsed_since_start_s": 0.755944
+        },
+        {
+          "token_index": 53,
+          "elapsed_since_start_s": 0.761949
+        },
+        {
+          "token_index": 54,
+          "elapsed_since_start_s": 0.76564
+        },
+        {
+          "token_index": 55,
+          "elapsed_since_start_s": 0.765821
+        },
+        {
+          "token_index": 56,
+          "elapsed_since_start_s": 0.765833
+        },
+        {
+          "token_index": 57,
+          "elapsed_since_start_s": 0.765906
+        },
+        {
+          "token_index": 58,
+          "elapsed_since_start_s": 0.769133
+        },
+        {
+          "token_index": 59,
+          "elapsed_since_start_s": 0.77246
+        },
+        {
+          "token_index": 60,
+          "elapsed_since_start_s": 0.772474
+        },
+        {
+          "token_index": 61,
+          "elapsed_since_start_s": 0.781787
+        },
+        {
+          "token_index": 62,
+          "elapsed_since_start_s": 0.781804
+        },
+        {
+          "token_index": 63,
+          "elapsed_since_start_s": 0.781924
+        },
+        {
+          "token_index": 64,
+          "elapsed_since_start_s": 0.782007
+        },
+        {
+          "token_index": 65,
+          "elapsed_since_start_s": 0.782327
+        },
+        {
+          "token_index": 66,
+          "elapsed_since_start_s": 0.787645
+        },
+        {
+          "token_index": 67,
+          "elapsed_since_start_s": 0.791225
+        },
+        {
+          "token_index": 68,
+          "elapsed_since_start_s": 0.791243
+        },
+        {
+          "token_index": 69,
+          "elapsed_since_start_s": 0.79136
+        },
+        {
+          "token_index": 70,
+          "elapsed_since_start_s": 0.800861
+        },
+        {
+          "token_index": 71,
+          "elapsed_since_start_s": 0.800985
+        },
+        {
+          "token_index": 72,
+          "elapsed_since_start_s": 0.801069
+        },
+        {
+          "token_index": 73,
+          "elapsed_since_start_s": 0.801147
+        },
+        {
+          "token_index": 74,
+          "elapsed_since_start_s": 0.801226
+        },
+        {
+          "token_index": 75,
+          "elapsed_since_start_s": 0.802626
+        },
+        {
+          "token_index": 76,
+          "elapsed_since_start_s": 0.805498
+        },
+        {
+          "token_index": 77,
+          "elapsed_since_start_s": 0.809303
+        },
+        {
+          "token_index": 78,
+          "elapsed_since_start_s": 0.809523
+        },
+        {
+          "token_index": 79,
+          "elapsed_since_start_s": 0.809639
+        },
+        {
+          "token_index": 80,
+          "elapsed_since_start_s": 0.813177
+        },
+        {
+          "token_index": 81,
+          "elapsed_since_start_s": 0.818369
+        },
+        {
+          "token_index": 82,
+          "elapsed_since_start_s": 0.818493
+        },
+        {
+          "token_index": 83,
+          "elapsed_since_start_s": 0.822827
+        },
+        {
+          "token_index": 84,
+          "elapsed_since_start_s": 0.822949
+        },
+        {
+          "token_index": 85,
+          "elapsed_since_start_s": 0.823108
+        },
+        {
+          "token_index": 86,
+          "elapsed_since_start_s": 0.827424
+        },
+        {
+          "token_index": 87,
+          "elapsed_since_start_s": 0.827506
+        },
+        {
+          "token_index": 88,
+          "elapsed_since_start_s": 0.833413
+        },
+        {
+          "token_index": 89,
+          "elapsed_since_start_s": 0.833524
+        }
+      ]
+    }
+  ]
+}
