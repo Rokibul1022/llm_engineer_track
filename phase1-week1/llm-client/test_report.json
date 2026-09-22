@@ -2,7 +2,7 @@
   "report_metadata": {
     "project": "LLM Engineer Track - Phase 1 Week 2",
     "component": "AsyncLLMClient, Inference Pipeline & Token Generation Benchmark Suite",
-    "generated_at": "2026-09-22T13:45:21+0600",
+    "generated_at": "2026-09-22T21:58:12+0600",
     "version": "0.2.0",
     "author": "Rokibul",
     "overall_status": "PASSED",
@@ -28,7 +28,7 @@
     "skipped": 0,
     "flaky": 0,
     "pass_rate_percent": 100.0,
-    "total_duration_seconds": 0.39
+    "total_duration_seconds": 0.46
   },
   "unit_tests": [
     {
@@ -136,27 +136,11 @@
     "provider": "Groq Cloud (api.groq.com)",
     "summary_metrics": [
       {
-        "prompt_category": "Medium (103 chars)",
-        "temperature": 0.0,
-        "top_p": 1.0,
-        "avg_ttft_ms": 713.0,
-        "avg_tokens_per_second": 179.59,
-        "identical_across_repeats": true
-      },
-      {
-        "prompt_category": "Medium (103 chars)",
+        "prompt_category": "Medium (73 chars)",
         "temperature": 0.7,
         "top_p": 0.9,
-        "avg_ttft_ms": 780.0,
-        "avg_tokens_per_second": 157.95,
-        "identical_across_repeats": false
-      },
-      {
-        "prompt_category": "Medium (103 chars)",
-        "temperature": 1.2,
-        "top_p": 1.0,
-        "avg_ttft_ms": 696.7,
-        "avg_tokens_per_second": 188.59,
+        "avg_ttft_ms": 602.3,
+        "avg_tokens_per_second": 136.2,
         "identical_across_repeats": true
       }
     ]

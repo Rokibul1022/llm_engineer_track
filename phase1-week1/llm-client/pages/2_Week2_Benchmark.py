@@ -7,10 +7,12 @@ from __future__ import annotations
 
 import asyncio
 import json
+import math
 import os
 import re
 import subprocess
 import sys
+import textwrap
 import time
 from pathlib import Path
 from typing import Any
@@ -36,20 +38,188 @@ from scripts.run_benchmark import load_env_file
 # Load environment configuration
 load_env_file(PROJECT_DIR / ".env")
 
+
+def safe_html(content: str, target: Any = None) -> None:
+    """Safely renders HTML without markdown CommonMark 4-space indentation interference."""
+    dedented = textwrap.dedent(content).strip()
+    # Strip any leading spaces on lines that could trigger CommonMark indented code blocks (4+ spaces)
+    cleaned_lines = [
+        line.lstrip() if line.startswith("    ") else line
+        for line in dedented.splitlines()
+    ]
+    cleaned = "\n".join(cleaned_lines)
+    if target is not None:
+        if hasattr(target, "html"):
+            target.html(cleaned)
+        else:
+            target.markdown(cleaned, unsafe_allow_html=True)
+    else:
+        if hasattr(st, "html"):
+            st.html(cleaned)
+        else:
+            st.markdown(cleaned, unsafe_allow_html=True)
+
+
 st.set_page_config(
     page_title="Week 2: Token Benchmark & Test Report",
     page_icon="⚡",
     layout="wide",
 )
 
-st.title("⚡ Week 2 — Live Token Generation & Benchmarking Lab")
-st.caption(
-    "Interactive studio powered by `AsyncLLMClient`. Test live streaming generation in real-time, "
-    "measure **Time to First Token (TTFT)**, **decode throughput (tokens/sec)**, inspect "
-    "**output nondeterminism**, and **generate formal test reports directly from the UI**."
-)
+CUSTOM_THEME_CSS = """
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
-st.markdown("---")
+html, body, [class*="css"], .stApp {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    color: #e2e8f0;
+}
+
+/* Deep Canvas */
+.stApp {
+    background: radial-gradient(circle at 50% -10%, #131c31 0%, #090d16 60%, #05070d 100%) !important;
+    background-attachment: fixed !important;
+}
+
+/* Monospace & Code */
+code, kbd, pre, samp, [data-testid="stCodeBlock"] {
+    font-family: 'JetBrains Mono', monospace !important;
+    border-radius: 8px !important;
+}
+
+/* Sidebar styling */
+[data-testid="stSidebar"] {
+    background-color: #080c14 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
+/* Metric Cards */
+[data-testid="stMetric"] {
+    background: rgba(14, 20, 34, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    padding: 14px 18px !important;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25) !important;
+    backdrop-filter: blur(10px) !important;
+    transition: all 0.2s ease !important;
+}
+[data-testid="stMetric"]:hover {
+    border-color: rgba(56, 189, 248, 0.4) !important;
+    transform: translateY(-1px) !important;
+}
+[data-testid="stMetricLabel"] {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    color: #94a3b8 !important;
+}
+[data-testid="stMetricValue"] {
+    font-size: 24px !important;
+    font-weight: 800 !important;
+    color: #f8fafc !important;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Tabs styling */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px !important;
+    background-color: rgba(14, 20, 34, 0.65) !important;
+    padding: 6px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    margin-bottom: 20px !important;
+}
+.stTabs [data-baseweb="tab"] {
+    height: 40px !important;
+    border-radius: 8px !important;
+    color: #94a3b8 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    padding: 0 16px !important;
+    transition: all 0.2s ease !important;
+}
+.stTabs [data-baseweb="tab"]:hover {
+    color: #f1f5f9 !important;
+    background-color: rgba(255, 255, 255, 0.04) !important;
+}
+.stTabs [aria-selected="true"] {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.3), rgba(59, 130, 246, 0.15)) !important;
+    color: #60a5fa !important;
+    border: 1px solid rgba(59, 130, 246, 0.45) !important;
+}
+
+/* Primary Button */
+.stButton > button[kind="primary"], .stButton > button[data-testid="baseButton-primary"] {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+    border: 1px solid rgba(96, 165, 250, 0.45) !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 13.5px !important;
+    letter-spacing: 0.3px !important;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35) !important;
+    transition: all 0.2s ease !important;
+}
+.stButton > button[kind="primary"]:hover, .stButton > button[data-testid="baseButton-primary"]:hover {
+    box-shadow: 0 6px 22px rgba(37, 99, 235, 0.55) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Input Fields */
+.stTextArea textarea, .stTextInput input, .stSelectbox [data-baseweb="select"] {
+    background-color: #0b0f19 !important;
+    border: 1px solid #1e293b !important;
+    border-radius: 8px !important;
+    color: #f1f5f9 !important;
+}
+.stTextArea textarea:focus, .stTextInput input:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Dataframe & Tables */
+[data-testid="stDataFrame"] {
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+}
+
+/* Custom horizontal rule */
+hr {
+    border-color: rgba(255, 255, 255, 0.07) !important;
+    margin: 20px 0 !important;
+}
+</style>
+"""
+safe_html(CUSTOM_THEME_CSS)
+
+# Executive Hero Banner
+safe_html(
+    """
+    <div style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(20, 30, 55, 0.65)); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 20px 24px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                <span style="font-size: 11px; font-weight: 800; color: #38bdf8; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); padding: 3px 8px; border-radius: 6px; letter-spacing: 0.5px;">PHASE 1 · WEEK 2</span>
+                <span style="font-size: 11px; color: #64748b; font-family: monospace;">AsyncLLMClient v0.2.0</span>
+            </div>
+            <h1 style="margin: 0; font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">Live Token Generation & Hardware Benchmark Studio</h1>
+            <p style="margin: 4px 0 0; color: #94a3b8; font-size: 13.5px; line-height: 1.4;">
+                Profile end-to-end token latency, visualize prefill self-attention ($O(N^2)$) vs. autoregressive decode ($O(1)$), observe temperature nondeterminism, and generate formal compliance reports.
+            </p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <span style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; font-size: 11.5px; font-weight: 700; padding: 5px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: #34d399; display: inline-block;"></span> HTTP/2 ACTIVE
+            </span>
+            <span style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; font-size: 11.5px; font-weight: 700; padding: 5px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: #60a5fa; display: inline-block;"></span> GQA KV-CACHE PRIMED
+            </span>
+        </div>
+    </div>
+    """
+)
 
 # Configuration Sidebar
 with st.sidebar:
@@ -98,11 +268,238 @@ def build_mock_transport() -> httpx.MockTransport:
     return httpx.MockTransport(handler)
 
 
+def render_transformer_stepper(
+    placeholder: Any,
+    active_stage: int,
+    ttft_ms: float = 0.0,
+    tok_count: int = 0,
+    tps: float = 0.0,
+    total_ms: float = 0.0,
+    prompt_chars: int = 0,
+) -> None:
+    """Renders a spacious, high-impact 5-stage hardware/software execution pipeline monitor
+    with clear visual progression, glowing active state, and live telemetry badges.
+    """
+    stages = [
+        (
+            1,
+            "CONTRACT",
+            "📥 Ingestion & Schema",
+            "Validates prompt, temperature & sampling constraints",
+            "SCHEMA: VALIDATED" if active_stage >= 1 else "STANDBY",
+            "#38bdf8",
+        ),
+        (
+            2,
+            "TRANSPORT",
+            "⚡ Wire HTTP/2 Socket",
+            "Opens TLS connection with text/event-stream headers",
+            "SOCKET: CONNECTED" if active_stage >= 2 else "STANDBY",
+            "#60a5fa",
+        ),
+        (
+            3,
+            "PREFILL ATTN",
+            "🚀 Prefill Phase (O(N²))",
+            "Multi-head self-attention computes prompt & primes KV cache",
+            f"TTFT: {ttft_ms:.0f} ms" if ttft_ms > 0 else ("COMPUTING ATTENTION..." if active_stage == 3 else "STANDBY"),
+            "#a855f7",
+        ),
+        (
+            4,
+            "DECODE LOOP",
+            "✍️ Autoregressive Decode",
+            "Token-by-token forward pass, logits & KV cache lookup",
+            f"{tok_count} tok @ {tps:.1f} t/s" if tok_count > 0 else ("DECODING..." if active_stage == 4 else "STANDBY"),
+            "#ec4899",
+        ),
+        (
+            5,
+            "EMISSION",
+            "📦 SSE Stream & Output",
+            "UTF-8 delta chunks delivered to UI; terminal usage parsed",
+            f"TOTAL: {total_ms:.0f} ms" if total_ms > 0 else ("STREAMING..." if active_stage >= 4 else "STANDBY"),
+            "#10b981",
+        ),
+    ]
+
+    phase_labels = {
+        1: "1 / 5 — CONTRACT INGESTION",
+        2: "2 / 5 — WIRE TRANSPORT CONNECTED",
+        3: "3 / 5 — TRANSFORMER PREFILL (COMPUTING TTFT)",
+        4: "4 / 5 — AUTOREGRESSIVE DECODE LOOP",
+        5: "5 / 5 — STREAM COMPLETED & BILLING RECORDED",
+    }
+    active_label = phase_labels.get(active_stage, "READY TO GENERATE")
+
+    cards_html = []
+    for num, tag, title, desc, stat, accent in stages:
+        if num < active_stage:
+            border = "rgba(16,185,129,0.5)"
+            bg = "rgba(16,185,129,0.06)"
+            badge_bg = "rgba(16,185,129,0.15)"
+            badge_color = "#34d399"
+            badge_text = "✓ DONE"
+            stat_color = "#34d399"
+            shadow = "none"
+            opacity = "1"
+        elif num == active_stage:
+            border = accent
+            bg = "rgba(59,130,246,0.12)"
+            badge_bg = "rgba(59,130,246,0.25)"
+            badge_color = "#93c5fd"
+            badge_text = "● ACTIVE"
+            stat_color = "#38bdf8"
+            shadow = f"0 0 15px {accent}44"
+            opacity = "1"
+        else:
+            border = "#1e293b"
+            bg = "#0f141f"
+            badge_bg = "#1e293b"
+            badge_color = "#64748b"
+            badge_text = "○ QUEUED"
+            stat_color = "#64748b"
+            shadow = "none"
+            opacity = "0.6"
+
+        card = (
+            f'<div style="background:{bg}; border:1px solid {border}; border-radius:10px; padding:12px 14px; '
+            f'display:flex; flex-direction:column; justify-content:space-between; box-shadow:{shadow}; opacity:{opacity}; min-height:130px;">'
+            f'<div>'
+            f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">'
+            f'<span style="font-size:10px; font-weight:800; color:{badge_color}; background:{badge_bg}; padding:2px 6px; border-radius:4px;">{badge_text}</span>'
+            f'<span style="font-size:10px; font-weight:800; color:#64748b; font-family:monospace;">STEP 0{num}</span>'
+            f'</div>'
+            f'<div style="font-size:12.5px; font-weight:800; color:#f1f5f9; margin-bottom:3px;">{title}</div>'
+            f'<div style="font-size:10.5px; color:#94a3b8; line-height:1.3;">{desc}</div>'
+            f'</div>'
+            f'<div style="margin-top:10px; font-family:monospace; font-size:11px; font-weight:700; color:{stat_color}; background:#06080e; border:1px solid #1e293b; border-radius:5px; padding:4px 8px; text-align:center;">'
+            f'{stat}'
+            f'</div>'
+            f'</div>'
+        )
+        cards_html.append(card)
+
+    cards_joined = "".join(cards_html)
+    container_html = (
+        f'<div style="background:#0b0f17; border:1px solid #1e293b; border-radius:12px; padding:16px; margin:14px 0; box-shadow:0 4px 20px rgba(0,0,0,0.3);">'
+        f'<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid #1e293b;">'
+        f'<div style="display:flex; align-items:center; gap:8px;">'
+        f'<span style="background:rgba(59,130,246,0.15); border:1px solid rgba(59,130,246,0.3); color:#60a5fa; font-size:10.5px; font-weight:800; padding:3px 8px; border-radius:4px; letter-spacing:0.5px;">LIVE PIPELINE MONITOR</span>'
+        f'<span style="color:#94a3b8; font-size:12px; font-weight:600;">Transformer Hardware & Software Execution Stepper</span>'
+        f'</div>'
+        f'<div style="font-family:monospace; font-size:11px; font-weight:700; color:#38bdf8; background:#0e1626; border:1px solid #1e3a5f; padding:3px 10px; border-radius:20px;">'
+        f'{active_label}'
+        f'</div>'
+        f'</div>'
+        f'<div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:10px;">'
+        f'{cards_joined}'
+        f'</div>'
+        f'</div>'
+    )
+    safe_html(container_html, target=placeholder)
+
+
+def render_api_wire_inspector(
+    model_name: str,
+    prompt: str,
+    temperature: float,
+    top_p: float,
+    max_tokens: int,
+    is_mock: bool,
+    base_url: str,
+) -> None:
+    """Renders real-time HTTP wire protocol details and SSE connection telemetry."""
+    endpoint_url = f"{base_url}/chat/completions" if not is_mock else "mock://in-memory/v1/chat/completions"
+    payload_dict = {
+        "model": model_name,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": temperature,
+        "top_p": top_p,
+        "max_tokens": max_tokens,
+        "stream": True,
+        "stream_options": {"include_usage": True},
+    }
+    with st.expander("🔍 Live API Hit & Wire Protocol Inspector (Request Headers, JSON Body, SSE Stream)", expanded=False):
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("##### 📤 Client Wire Dispatch (HTTP/1.1 POST)")
+            host_header = base_url.replace("https://", "").replace("http://", "").split("/")[0]
+            st.code(
+                f"POST {endpoint_url} HTTP/1.1\n"
+                f"Host: {host_header}\n"
+                "Authorization: Bearer gsk_************************\n"
+                "Content-Type: application/json\n"
+                "Accept: text/event-stream\n"
+                "Cache-Control: no-cache\n"
+                "Connection: keep-alive",
+                language="http",
+            )
+            st.markdown("**Wire JSON Body (Pydantic Encoded):**")
+            st.json(payload_dict)
+        with c2:
+            st.markdown("##### 📥 Upstream SSE Packet Protocol (Server-Sent Events)")
+            st.code(
+                "HTTP/2 200 OK\n"
+                "content-type: text/event-stream; charset=utf-8\n"
+                "transfer-encoding: chunked\n\n"
+                'data: {"id":"chat-1","choices":[{"delta":{"content":"Attention"}}]}\n\n'
+                'data: {"id":"chat-1","choices":[{"delta":{"content":" is"}}]}\n\n'
+                'data: {"id":"chat-1","choices":[{"delta":{}}],"usage":{"prompt_tokens":12,"completion_tokens":2}}\n\n'
+                "data: [DONE]\n",
+                language="http",
+            )
+            st.caption(
+                "💡 **Why Server-Sent Events (SSE)?** The provider immediately begins streaming tokens the moment "
+                "the Transformer finishes its **Prefill Phase**. This delivers instant interactive feedback (TTFT) "
+                "instead of forcing the client to block for seconds waiting for complete generation."
+            )
+
+
+def simulate_subword_tokenization(text: str) -> list[dict[str, Any]]:
+    """Simulates Byte-Pair Encoding (BPE) subword tokenization for visual inspection."""
+    raw_tokens = re.findall(r"\w+|[^\w\s]|\s+", text)
+    tokens_info = []
+    for idx, tok in enumerate(raw_tokens):
+        token_id = (abs(hash(tok)) % 120000) + 1000
+        tokens_info.append({
+            "token": tok,
+            "display": tok.replace(" ", "␣") if tok.isspace() else tok,
+            "id": token_id,
+            "bytes": len(tok.encode("utf-8")),
+        })
+    return tokens_info
+
+
+def compute_sampling_distribution(logits: dict[str, float], temperature: float, top_p: float) -> dict[str, float]:
+    """Calculates exact softmax probabilities with temperature scaling and Top-P nucleus truncation."""
+    temp = max(0.01, temperature)
+    scaled = {k: v / temp for k, v in logits.items()}
+    max_val = max(scaled.values())
+    exp_vals = {k: math.exp(v - max_val) for k, v in scaled.items()}
+    sum_exp = sum(exp_vals.values())
+    probs = {k: v / sum_exp for k, v in exp_vals.items()}
+
+    sorted_items = sorted(probs.items(), key=lambda x: x[1], reverse=True)
+    cum = 0.0
+    filtered = []
+    for k, p in sorted_items:
+        filtered.append((k, p))
+        cum += p
+        if cum >= top_p:
+            break
+
+    tot_filtered = sum(p for _, p in filtered)
+    return {k: (p / tot_filtered) if tot_filtered > 0 else p for k, p in filtered}
+
+
 def run_and_save_test_report(benchmark_summary: dict[str, Any] | None = None) -> tuple[dict[str, Any], str]:
     """Runs pytest via subprocess, compiles all 11 test outcomes, incorporates
     live benchmark metrics, and writes test_report.json to disk.
     """
-    cmd = [sys.executable, "-m", "pytest", "tests/", "-v"]
+    venv_py = PROJECT_DIR / ".venv" / "Scripts" / "python.exe"
+    py_bin = str(venv_py) if venv_py.is_file() else sys.executable
+    cmd = [py_bin, "-m", "pytest", "tests/", "-v"]
     proc = subprocess.run(cmd, cwd=str(PROJECT_DIR), capture_output=True, text=True)
     stdout = proc.stdout
 
@@ -239,7 +636,7 @@ def render_visual_test_report(report_data: dict[str, Any]) -> None:
     bench = report_data.get("live_model_benchmark_results", {})
 
     # Top Executive HUD
-    st.markdown(
+    safe_html(
         f"""
         <div style="background:#0d1117; border:1px solid #232b3b; border-radius:10px; padding:14px 18px; margin-bottom:14px;">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -263,8 +660,7 @@ def render_visual_test_report(report_data: dict[str, Any]) -> None:
                 <span>⏱️ <b>Suite Duration:</b> {summary.get('total_duration_seconds', 0.48):.2f}s</span>
             </div>
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
     # Metric Row
@@ -329,19 +725,23 @@ def render_visual_test_report(report_data: dict[str, Any]) -> None:
             st.json(report_data)
 
 
-tab_live, tab_benchmark, tab_report = st.tabs([
-    "💬 1. Live Interactive Streaming",
+tab_live, tab_benchmark, tab_report, tab_transformer = st.tabs([
+    "💬 1. Live Interactive Streaming & Pipeline",
     "📊 2. Benchmark Suite & Nondeterminism Explorer",
     "🧪 3. Acceptance & Unit Test Report Generator",
+    "🧠 4. Transformer Architecture & Backend Story",
 ])
 
 
 # ==============================================================================
-# TAB 1: LIVE STREAMING PLAYGROUND
+# TAB 1: LIVE STREAMING PLAYGROUND & TRANSFORMER PIPELINE
 # ==============================================================================
 with tab_live:
-    st.subheader("💬 Test Live Generation with Real-Time Telemetry")
-    st.caption("Type any prompt below, hit **Generate Response**, and watch tokens stream live with instantaneous TTFT and throughput metrics.")
+    st.subheader("💬 Live Generation & Hardware/Software Execution Pipeline")
+    st.caption(
+        "Watch the complete backend journey unfold live: from prompt ingestion and HTTP POST wire dispatch, "
+        "through BPE tokenization, Transformer prefill attention, KV-cache lookup, to autoregressive decode streaming."
+    )
 
     col_input, col_params = st.columns([3, 1])
 
@@ -357,6 +757,20 @@ with tab_live:
         live_temp = st.slider("Temperature", 0.0, 1.5, 0.7, 0.1, key="live_temp")
         live_top_p = st.slider("Top-P", 0.0, 1.0, 0.9, 0.05, key="live_top_p")
         live_max_tokens = st.number_input("Max Tokens", 16, 1024, 256, 32, key="live_max_tokens")
+
+    base_url_val = os.getenv("LLM_BASE_URL", "https://api.groq.com/openai/v1")
+    render_api_wire_inspector(
+        model_name=default_model,
+        prompt=live_prompt,
+        temperature=live_temp,
+        top_p=live_top_p,
+        max_tokens=int(live_max_tokens),
+        is_mock=is_mock,
+        base_url=base_url_val,
+    )
+
+    stepper_placeholder = st.empty()
+    render_transformer_stepper(stepper_placeholder, active_stage=1, prompt_chars=len(live_prompt))
 
     live_button = st.button("⚡ Generate Response (Live Stream)", type="primary", use_container_width=True)
 
@@ -386,6 +800,15 @@ with tab_live:
                 stream=True,
             )
 
+            # Stage 1: Contract validation
+            render_transformer_stepper(stepper_placeholder, active_stage=1, prompt_chars=len(live_prompt))
+            await asyncio.sleep(0.04)
+            # Stage 2: Wire connection
+            render_transformer_stepper(stepper_placeholder, active_stage=2, prompt_chars=len(live_prompt))
+            await asyncio.sleep(0.04)
+            # Stage 3: Prefill attention computing
+            render_transformer_stepper(stepper_placeholder, active_stage=3, prompt_chars=len(live_prompt))
+
             start_t = time.perf_counter()
             first_t: float | None = None
             collected_text = ""
@@ -401,8 +824,21 @@ with tab_live:
                     now = time.perf_counter()
                     if first_t is None:
                         first_t = now
+                        prefill_ms = (first_t - start_t) * 1000
+                        render_transformer_stepper(
+                            stepper_placeholder,
+                            active_stage=4,
+                            ttft_ms=prefill_ms,
+                            tok_count=1,
+                            prompt_chars=len(live_prompt),
+                        )
+
                     token_count += 1
                     collected_text += chunk
+
+                    # If mock, add subtle delay so user can enjoy the visual animation
+                    if is_mock:
+                        await asyncio.sleep(0.03)
 
                     # Update live text stream
                     response_placeholder.markdown(collected_text + " ▌")
@@ -411,6 +847,15 @@ with tab_live:
                     current_elapsed = now - start_t
                     current_ttft_ms = (first_t - start_t) * 1000 if first_t else current_elapsed * 1000
                     current_tps = (token_count / current_elapsed) if current_elapsed > 0 else 0
+
+                    render_transformer_stepper(
+                        stepper_placeholder,
+                        active_stage=4,
+                        ttft_ms=current_ttft_ms,
+                        tok_count=token_count,
+                        tps=current_tps,
+                        prompt_chars=len(live_prompt),
+                    )
 
                     with metrics_placeholder.container():
                         m1, m2, m3, m4 = st.columns(4)
@@ -428,6 +873,16 @@ with tab_live:
                 final_tokens = captured_usage.completion_tokens if (captured_usage and captured_usage.completion_tokens > 0) else token_count
                 final_prompt_toks = captured_usage.prompt_tokens if (captured_usage and captured_usage.prompt_tokens > 0) else len(live_prompt.split())
                 final_tps = (final_tokens / total_duration) if total_duration > 0 else 0
+
+                render_transformer_stepper(
+                    stepper_placeholder,
+                    active_stage=5,
+                    ttft_ms=final_ttft_ms,
+                    tok_count=final_tokens,
+                    tps=final_tps,
+                    total_ms=total_duration * 1000,
+                    prompt_chars=len(live_prompt),
+                )
 
                 with metrics_placeholder.container():
                     m1, m2, m3, m4 = st.columns(4)
@@ -621,20 +1076,316 @@ with tab_report:
             except Exception:
                 pass
 
+
+# ==============================================================================
+# TAB 4: TRANSFORMER ARCHITECTURE & FULL BACKEND STORY
+# ==============================================================================
+with tab_transformer:
+    st.subheader("🧠 Transformer Architecture, API Wire Mechanics & End-to-End Backend Story")
+    st.caption(
+        "Interactive architectural blueprint showing **where and how the Transformer operates**, "
+        "**how the API hit travels the wire**, and **how answer tokens are generated**."
+    )
+
+    # Executive HUD Pill Bar
+    safe_html(
+        """
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+            <span style="background:rgba(59,130,246,0.15); border:1px solid rgba(59,130,246,0.3); color:#60a5fa; font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:6px;">
+                ● ARCHITECTURE: Decoder-Only Transformer (GQA + RoPE + SwiGLU)
+            </span>
+            <span style="background:rgba(168,85,247,0.15); border:1px solid rgba(168,85,247,0.3); color:#c084fc; font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:6px;">
+                ● WIRE PROTOCOL: HTTP/2 TLS with Server-Sent Events (SSE)
+            </span>
+            <span style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); color:#34d399; font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:6px;">
+                ● ACCELERATION: Paged Key-Value (KV) Cache (O(1) Decode Scaling)
+            </span>
+        </div>
+        """
+    )
+
+    # ==========================================================================
+    # ARTIFACT 1: TRANSFORMER LAYER ARCHITECTURE BLOCK DIAGRAM
+    # ==========================================================================
+    st.markdown("#### 📐 1. Transformer Block Architecture Diagram")
+    safe_html(
+        """
+        <div style="background:#0b0f17; border:1px solid #1e293b; border-radius:12px; padding:20px; margin-bottom:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <span style="font-size:12px; font-weight:800; color:#38bdf8; letter-spacing:0.5px;">DIAGRAM 01: TRANSFORMER LAYER DATA FLOW (LLAMA-3 / GPT-OSS SPEC)</span>
+                <span style="font-size:11px; color:#64748b; font-family:monospace;">d_model = 4096 / heads = 32</span>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:10px; max-width:860px; margin:0 auto;">
+                
+                <!-- Input Layer -->
+                <div style="background:#0f172a; border:1px solid #3b82f6; border-radius:8px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <span style="font-size:10px; font-weight:800; color:#60a5fa; background:rgba(59,130,246,0.15); padding:2px 6px; border-radius:4px;">STAGE 1: INPUT ENCODING</span>
+                        <div style="font-size:13px; font-weight:800; color:#f8fafc; margin-top:3px;">Prompt Text ➔ BPE Subword Token IDs [t₁..tₙ] ➔ Dense Embeddings (d_model) + RoPE Position Angles</div>
+                    </div>
+                    <span style="font-family:monospace; font-size:11px; color:#93c5fd; background:#0b1120; padding:4px 8px; border-radius:4px; border:1px solid #1e3a8a;">X ∈ ℝ^{N × 4096}</span>
+                </div>
+
+                <div style="text-align:center; color:#38bdf8; font-size:13px; margin:-4px 0;">▼</div>
+
+                <!-- Deep Transformer Layer Box -->
+                <div style="background:rgba(15,23,42,0.4); border:2px dashed #334155; border-radius:10px; padding:14px; position:relative;">
+                    <div style="position:absolute; top:-10px; right:16px; background:#0f172a; border:1px solid #475569; border-radius:4px; padding:1px 8px; font-size:10px; font-weight:800; color:#94a3b8;">
+                        REPEATED ACROSS 32–96 LAYERS
+                    </div>
+
+                    <!-- RMSNorm 1 -->
+                    <div style="background:#0c101a; border:1px solid #1e293b; border-radius:6px; padding:6px 12px; font-size:11px; font-weight:700; color:#cbd5e1; text-align:center; margin-bottom:8px;">
+                        RMSNorm (Root Mean Square Pre-Normalization)
+                    </div>
+
+                    <!-- Attention Sublayer -->
+                    <div style="background:#13152e; border:1px solid #6366f1; border-radius:8px; padding:12px 16px; margin-bottom:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:10px; font-weight:800; color:#a5b4fc; background:rgba(99,102,241,0.2); padding:2px 6px; border-radius:4px;">CORE ATTENTION MECHANISM</span>
+                            <span style="font-size:11px; color:#c7d2fe; font-family:monospace;">Attention(Q,K,V) = softmax(Q·Kᵀ / √d_k) · V</span>
+                        </div>
+                        <div style="font-size:13px; font-weight:800; color:#ffffff; margin:4px 0;">Grouped-Query Multi-Head Self-Attention (GQA)</div>
+                        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-top:8px;">
+                            <div style="background:#0a0c1a; border:1px solid #3730a3; border-radius:4px; padding:6px; font-size:11px; color:#e0e7ff; text-align:center;"><b>Queries (Q = X·W_Q):</b> Context Search Vectors</div>
+                            <div style="background:#0a0c1a; border:1px solid #3730a3; border-radius:4px; padding:6px; font-size:11px; color:#e0e7ff; text-align:center;"><b>Keys (K = X·W_K):</b> Token Representations (Saved in KV Cache)</div>
+                            <div style="background:#0a0c1a; border:1px solid #3730a3; border-radius:4px; padding:6px; font-size:11px; color:#e0e7ff; text-align:center;"><b>Values (V = X·W_V):</b> Semantic Information Payload</div>
+                        </div>
+                    </div>
+
+                    <!-- Residual Addition 1 -->
+                    <div style="font-size:11px; color:#818cf8; text-align:center; font-family:monospace; margin-bottom:8px;">
+                        ↳ Residual Addition: X_mid = X_in + Attention(RMSNorm(X_in))
+                    </div>
+
+                    <!-- RMSNorm 2 -->
+                    <div style="background:#0c101a; border:1px solid #1e293b; border-radius:6px; padding:6px 12px; font-size:11px; font-weight:700; color:#cbd5e1; text-align:center; margin-bottom:8px;">
+                        RMSNorm (Layer Pre-Normalization)
+                    </div>
+
+                    <!-- Feed Forward Network Sublayer -->
+                    <div style="background:#1b1126; border:1px solid #a855f7; border-radius:8px; padding:12px 16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:10px; font-weight:800; color:#d8b4fe; background:rgba(168,85,247,0.2); padding:2px 6px; border-radius:4px;">KNOWLEDGE RETRIEVAL</span>
+                            <span style="font-size:11px; color:#e9d5ff; font-family:monospace;">FFN(X) = (SiLU(X·W₁) ⊗ X·W₂) · W₃</span>
+                        </div>
+                        <div style="font-size:13px; font-weight:800; color:#ffffff; margin:4px 0;">SwiGLU Feed-Forward Network (FFN)</div>
+                        <div style="font-size:11px; color:#cbd5e1; margin-top:2px;">Expands feature dimension to d_ff ≈ 14,336 to retrieve stored parametric world knowledge and reasoning paths.</div>
+                    </div>
+
+                    <!-- Residual Addition 2 -->
+                    <div style="font-size:11px; color:#c084fc; text-align:center; font-family:monospace; margin-top:8px;">
+                        ↳ Residual Addition: X_out = X_mid + FFN(RMSNorm(X_mid))
+                    </div>
+                </div>
+
+                <div style="text-align:center; color:#a855f7; font-size:13px; margin:-4px 0;">▼</div>
+
+                <!-- Output Projection Layer -->
+                <div style="background:#0f1d14; border:1px solid #16a34a; border-radius:8px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <span style="font-size:10px; font-weight:800; color:#4ade80; background:rgba(22,163,74,0.2); padding:2px 6px; border-radius:4px;">FINAL STAGE: SAMPLING & LOGITS</span>
+                        <div style="font-size:13px; font-weight:800; color:#f8fafc; margin-top:3px;">Linear Head (d_model ➔ Vocabulary ~128k) ➔ Logits (z) ➔ Temperature Softmax ➔ Next Token Sampled</div>
+                    </div>
+                    <span style="font-family:monospace; font-size:11px; color:#86efac; background:#07120a; padding:4px 8px; border-radius:4px; border:1px solid #15803d;">P(w_i) = e^{z_i/T} / ∑e^{z_j/T}</span>
+                </div>
+
+            </div>
+        </div>
+        """
+    )
+
+    # ==========================================================================
+    # ARTIFACT 2: API WIRE HIT & SSE SEQUENCE DIAGRAM
+    # ==========================================================================
+    st.markdown("#### 🌐 2. API Wire Hit & Server-Sent Events (SSE) Protocol Artifact")
+    safe_html(
+        """
+        <div style="background:#0b0f17; border:1px solid #1e293b; border-radius:12px; padding:20px; margin-bottom:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <span style="font-size:12px; font-weight:800; color:#38bdf8; letter-spacing:0.5px;">DIAGRAM 02: NETWORK PACKET WIRE TIMELINE</span>
+                <span style="font-size:11px; color:#64748b; font-family:monospace;">Client Browser ⇄ Reverse Proxy ⇄ GPU Cluster</span>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                
+                <!-- Packet 1: HTTP POST -->
+                <div style="background:#0f172a; border-left:4px solid #3b82f6; border-radius:6px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <span style="font-size:10px; font-weight:800; color:#60a5fa;">1. DISPATCH REQUEST</span>
+                        <div style="font-size:12px; font-weight:700; color:#e2e8f0;">POST /v1/chat/completions (TLS 1.3 Socket Open)</div>
+                        <div style="font-size:10.5px; color:#94a3b8; font-family:monospace;">Headers: Authorization: Bearer *** | Accept: text/event-stream | Content-Type: application/json</div>
+                    </div>
+                    <span style="font-family:monospace; font-size:11px; color:#93c5fd; background:#1e293b; padding:2px 8px; border-radius:4px;">CLIENT ➔ WIRE</span>
+                </div>
+
+                <!-- Packet 2: HTTP 200 OK -->
+                <div style="background:#0f172a; border-left:4px solid #10b981; border-radius:6px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <span style="font-size:10px; font-weight:800; color:#34d399;">2. SSE HANDSHAKE ESTABLISHED</span>
+                        <div style="font-size:12px; font-weight:700; color:#e2e8f0;">HTTP/2 200 OK (Content-Type: text/event-stream; charset=utf-8)</div>
+                        <div style="font-size:10.5px; color:#94a3b8; font-family:monospace;">Connection kept open; chunked transfer encoding enabled</div>
+                    </div>
+                    <span style="font-family:monospace; font-size:11px; color:#34d399; background:#064e3b; padding:2px 8px; border-radius:4px;">SERVER ➔ CLIENT</span>
+                </div>
+
+                <!-- Packet 3: TTFT Chunk -->
+                <div style="background:#131126; border-left:4px solid #a855f7; border-radius:6px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <span style="font-size:10px; font-weight:800; color:#c084fc;">3. TIME TO FIRST TOKEN (TTFT MILESTONE)</span>
+                        <div style="font-size:12px; font-weight:700; color:#e2e8f0;">data: {"choices": [{"delta": {"content": "Attention"}}]}</div>
+                        <div style="font-size:10.5px; color:#94a3b8; font-family:monospace;">Prefill Phase complete (all prompt tokens ingested into KV cache); first token emitted!</div>
+                    </div>
+                    <span style="font-family:monospace; font-size:11px; color:#c084fc; background:#2e1065; padding:2px 8px; border-radius:4px;">TTFT ~ 140ms</span>
+                </div>
+
+                <!-- Packet 4: Autoregressive stream -->
+                <div style="background:#161022; border-left:4px solid #ec4899; border-radius:6px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <span style="font-size:10px; font-weight:800; color:#f472b6;">4. AUTOREGRESSIVE DECODE STREAM</span>
+                        <div style="font-size:12px; font-weight:700; color:#e2e8f0;">data: {"choices": [{"delta": {"content": " is"}}]}&nbsp;&nbsp;...&nbsp;&nbsp;data: {"choices": [{"delta": {"content": " mechanisms."}}]}</div>
+                        <div style="font-size:10.5px; color:#94a3b8; font-family:monospace;">Each SSE delta maps 1:1 to one sequential forward pass reading the KV cache</div>
+                    </div>
+                    <span style="font-family:monospace; font-size:11px; color:#f472b6; background:#831843; padding:2px 8px; border-radius:4px;">~85 TOK/SEC</span>
+                </div>
+
+                <!-- Packet 5: Terminal Usage & Done -->
+                <div style="background:#0f172a; border-left:4px solid #64748b; border-radius:6px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <span style="font-size:10px; font-weight:800; color:#94a3b8;">5. TERMINAL USAGE & STREAM CLOSURE</span>
+                        <div style="font-size:12px; font-weight:700; color:#e2e8f0;">data: {"choices":[], "usage": {"prompt_tokens": 14, "completion_tokens": 38}} \n\n data: [DONE]</div>
+                        <div style="font-size:10.5px; color:#94a3b8; font-family:monospace;">on_usage callback updates benchmark metrics & audit logs; TCP stream cleanly closed</div>
+                    </div>
+                    <span style="font-family:monospace; font-size:11px; color:#94a3b8; background:#1e293b; padding:2px 8px; border-radius:4px;">COMPLETED</span>
+                </div>
+
+            </div>
+        </div>
+        """
+    )
+
+    # ==========================================================================
+    # ARTIFACT 3: PREFILL VS DECODE HARDWARE DUALITY CARDS
+    # ==========================================================================
+    st.markdown("#### ⚖️ 3. Prefill Phase vs. Autoregressive Decode Phase Duality")
+    col_prefill, col_decode = st.columns(2)
+
+    with col_prefill:
+        safe_html(
+            """
+            <div style="background:#0f172a; border:1px solid #3b82f6; border-radius:10px; padding:16px; height:100%;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <span style="background:rgba(59,130,246,0.2); color:#60a5fa; font-weight:800; font-size:10.5px; padding:3px 8px; border-radius:4px;">PHASE 1: PREFILL</span>
+                    <span style="color:#ef4444; font-weight:800; font-size:11px;">🔥 COMPUTE-BOUND</span>
+                </div>
+                <h4 style="margin:4px 0 8px; color:#f8fafc; font-size:16px;">Prompt Ingestion (Parallel GEMM)</h4>
+                <div style="font-size:12px; color:#94a3b8; line-height:1.4;">
+                    Ingests <b>all N prompt tokens simultaneously</b> in a single forward pass.
+                </div>
+                <div style="margin-top:12px; display:flex; flex-direction:column; gap:6px; font-size:11.5px; font-family:monospace;">
+                    <div style="background:#1e293b; padding:4px 8px; border-radius:4px; color:#e2e8f0;">● Mathematical Operation: GEMM (Matrix-Matrix Multiply)</div>
+                    <div style="background:#1e293b; padding:4px 8px; border-radius:4px; color:#e2e8f0;">● Attention Scaling: O(N²) quadratic scaling</div>
+                    <div style="background:#1e293b; padding:4px 8px; border-radius:4px; color:#38bdf8;">● Observed Latency: Governs TTFT (Time To First Token)</div>
+                    <div style="background:#1e293b; padding:4px 8px; border-radius:4px; color:#34d399;">● Core Objective: Generates token 1 & Primes the KV Cache</div>
+                </div>
+            </div>
+            """
+        )
+
+    with col_decode:
+        safe_html(
+            """
+            <div style="background:#0f172a; border:1px solid #10b981; border-radius:10px; padding:16px; height:100%;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <span style="background:rgba(16,185,129,0.2); color:#34d399; font-weight:800; font-size:10.5px; padding:3px 8px; border-radius:4px;">PHASE 2: DECODE</span>
+                    <span style="color:#38bdf8; font-weight:800; font-size:11px;">🌊 MEMORY-BANDWIDTH BOUND</span>
+                </div>
+                <h4 style="margin:4px 0 8px; color:#f8fafc; font-size:16px;">Token Generation (Sequential GEMV)</h4>
+                <div style="font-size:12px; color:#94a3b8; line-height:1.4;">
+                    Generates <b>exactly one token per forward pass</b> using cached key-values.
+                </div>
+                <div style="margin-top:12px; display:flex; flex-direction:column; gap:6px; font-size:11.5px; font-family:monospace;">
+                    <div style="background:#1e293b; padding:4px 8px; border-radius:4px; color:#e2e8f0;">● Mathematical Operation: GEMV (Matrix-Vector Multiply)</div>
+                    <div style="background:#1e293b; padding:4px 8px; border-radius:4px; color:#e2e8f0;">● Attention Scaling: O(1) constant step via KV Cache</div>
+                    <div style="background:#1e293b; padding:4px 8px; border-radius:4px; color:#34d399;">● Observed Latency: Governs Throughput (Tokens / Second)</div>
+                    <div style="background:#1e293b; padding:4px 8px; border-radius:4px; color:#cbd5e1;">● Bottleneck: GPU High Bandwidth Memory (HBM) read speeds</div>
+                </div>
+            </div>
+            """
+        )
+
+    safe_html("<div style='height:12px;'></div>")
+
+    # ==========================================================================
+    # ARTIFACT 4: INTERACTIVE TOKENIZER & KV CACHE SIZER
+    # ==========================================================================
+    st.markdown("#### 🔤 4. Interactive Subword Tokenizer & KV-Cache Memory Sizer")
+    tok_c1, tok_c2 = st.columns([1, 1])
+
+    with tok_c1:
+        st.markdown("##### 🔤 Subword Tokenization Visualizer")
+        t_input = st.text_input("Type any sentence:", value="Attention is all you need for Transformer reasoning.", key="t4_tok_in")
+        if t_input:
+            t_data = simulate_subword_tokenization(t_input)
+            chip_colors = [
+                ("rgba(59,130,246,0.2)", "#60a5fa", "#3b82f6"),
+                ("rgba(16,185,129,0.2)", "#34d399", "#10b981"),
+                ("rgba(245,158,11,0.2)", "#fbbf24", "#f59e0b"),
+                ("rgba(168,85,247,0.2)", "#c084fc", "#a855f7"),
+            ]
+            chips = []
+            for i, tok in enumerate(t_data):
+                bg, text_c, border_c = chip_colors[i % len(chip_colors)]
+                chips.append(
+                    f"<span style='background:{bg}; color:{text_c}; border:1px solid {border_c}; padding:3px 7px; border-radius:4px; font-family:monospace; font-size:11px; margin:2px; display:inline-block;'>{tok['display']} <span style='font-size:9px; opacity:0.7;'>#{tok['id']}</span></span>"
+                )
+            safe_html(f"<div style='background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:10px; margin:8px 0;'>{''.join(chips)}</div>")
+            st.caption(f"**Tokens:** {len(t_data)} | **Characters:** {len(t_input)} | **Compression:** {len(t_input)/max(1, len(t_data)):.1f} chars/tok")
+
+    with tok_c2:
+        st.markdown("##### 💾 Interactive KV Cache Memory Sizer")
+        m_profile = st.selectbox("Model Architecture", ["gpt-oss-120b (96 layers, 16 KV heads, 128 dim)", "Llama-3 70B (80 layers, 8 KV heads, 128 dim)", "Llama-3 8B (32 layers, 8 KV heads, 128 dim)"], key="t4_kv_prof")
+        c_len = st.select_slider("Context Length (Tokens)", options=[1024, 2048, 4096, 8192, 16384, 32768, 65536], value=8192, key="t4_kv_len")
+        
+        if "8B" in m_profile:
+            l, kv_h, d = 32, 8, 128
+        elif "70B" in m_profile:
+            l, kv_h, d = 80, 8, 128
+        else:
+            l, kv_h, d = 96, 16, 128
+
+        kv_bytes = 2 * l * kv_h * d * c_len * 2
+        kv_gb = kv_bytes / (1024 ** 3)
+        st.metric("KV Cache VRAM (Per User)", f"{kv_gb:.2f} GB", f"{c_len:,} Context Tokens (FP16)")
+        st.caption(f"`2 (K+V) × {l} layers × {kv_h} KV heads × {d} head_dim × {c_len:,} ctx × 2 bytes` = **{kv_gb:.2f} GB VRAM**")
+
+    # ==========================================================================
+    # ARTIFACT 5: INTERACTIVE SAMPLING & REPO MAP
+    # ==========================================================================
+    st.markdown("#### 🎯 5. Temperature Softmax Simulator & Codebase Mapping")
+    s_col1, s_col2 = st.columns([1, 1])
+
+    with s_col1:
+        st.markdown("##### 🎛️ Interactive Temperature & Top-P Probability Shift")
+        s_temp = st.slider("Temperature (T)", 0.01, 2.0, 0.7, 0.05, key="t4_temp")
+        s_topp = st.slider("Top-P Cutoff (p)", 0.1, 1.0, 0.9, 0.05, key="t4_topp")
+        
+        base_scores = {" attention": 4.5, " mechanism": 3.8, " weights": 3.2, " matrix": 2.4, " vectors": 1.8, " layers": 1.2, " banana": -1.5}
+        dist = compute_sampling_distribution(base_scores, s_temp, s_topp)
+        chart_items = [{"Candidate Token": k, "Probability (%)": round(v * 100, 1)} for k, v in dist.items()]
+        st.dataframe(chart_items, use_container_width=True)
+
+    with s_col2:
+        st.markdown("##### 📚 Codebase Cross-Reference Mapping")
+        code_map = [
+            {"Stage": "1. Ingestion & Constraints", "Repo Location": "llm_client/schemas.py", "Responsibility": "LLMRequest schema validates temp [0, 2], top_p [0, 1], messages"},
+            {"Stage": "2. Wire Transport", "Repo Location": "llm_client/client.py", "Responsibility": "AsyncLLMClient.stream() initiates HTTP/2 POST with stream: true"},
+            {"Stage": "3. SSE Chunk Parser", "Repo Location": "llm_client/client.py", "Responsibility": "aiter_lines() parses data: {choices: [{delta: {content}}]} live"},
+            {"Stage": "4. TTFT & Speed Instrumentation", "Repo Location": "llm_client/benchmark.py", "Responsibility": "time.perf_counter() measures TTFT & tokens_per_second"},
+            {"Stage": "5. Terminal Billing & Usage", "Repo Location": "llm_client/schemas.py", "Responsibility": "Usage captures prompt_tokens, completion_tokens, total_tokens"},
+        ]
+        st.dataframe(code_map, use_container_width=True)
+
+
 st.markdown("---")
-
-
-# Pedagogical summary section
-st.markdown("### 📖 What this page demonstrates")
-st.markdown(
-    """
-1. **Inference Pipeline**: Text enters through **Tokenization** (subwords $\\to$ token IDs), gets projected into dense **Embeddings** with positional signals, passes through multi-head **Self-Attention** blocks, produces vocabulary **Logits**, and undergoes **Sampling** before being detokenized.
-2. **Autoregressive Decoding**: Each forward pass produces exactly one token. The first token latency (**TTFT**) includes full prompt ingestion (prefill), whereas subsequent tokens leverage the **KV Cache** for fast decode steps.
-3. **Sampling Controls & Nondeterminism**:
-   - `temperature=0.0` collapses the distribution toward the argmax token, yielding deterministic or near-deterministic outputs across repeats.
-   - Higher temperature ($\ge 0.7$) and `top_p` nucleus sampling broaden candidate choices, producing distinct, varied phrasing for identical inputs.
-4. **Context Window & Attention Tradeoffs**: Longer prompts require quadratic attention matrix allocations during prefill, visibly increasing TTFT.
-
-*(For complete technical details, see [`PIPELINE.md`](./PIPELINE.md), [`LIMITATIONS.md`](./LIMITATIONS.md), and [`ANSWERS.md`](./ANSWERS.md)).*
-"""
-)

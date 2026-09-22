@@ -17,8 +17,10 @@ from __future__ import annotations
 import asyncio
 import os
 import sys
+import textwrap
 import time
 from pathlib import Path
+from typing import Any
 
 # Ensure project root is in sys.path
 PROJECT_DIR = Path(__file__).resolve().parent
@@ -34,6 +36,155 @@ from scripts.run_benchmark import load_env_file
 
 # Load credentials from .env
 load_env_file(PROJECT_DIR / ".env")
+
+
+def safe_html(content: str, target: Any = None) -> None:
+    """Safely renders HTML without markdown CommonMark 4-space indentation interference."""
+    dedented = textwrap.dedent(content).strip()
+    cleaned_lines = [
+        line.lstrip() if line.startswith("    ") else line
+        for line in dedented.splitlines()
+    ]
+    cleaned = "\n".join(cleaned_lines)
+    if target is not None:
+        if hasattr(target, "html"):
+            target.html(cleaned)
+        else:
+            target.markdown(cleaned, unsafe_allow_html=True)
+    else:
+        if hasattr(st, "html"):
+            st.html(cleaned)
+        else:
+            st.markdown(cleaned, unsafe_allow_html=True)
+
+
+CUSTOM_THEME_CSS = """
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+html, body, [class*="css"], .stApp {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    color: #e2e8f0;
+}
+
+/* Deep Canvas */
+.stApp {
+    background: radial-gradient(circle at 50% -10%, #131c31 0%, #090d16 60%, #05070d 100%) !important;
+    background-attachment: fixed !important;
+}
+
+/* Monospace & Code */
+code, kbd, pre, samp, [data-testid="stCodeBlock"] {
+    font-family: 'JetBrains Mono', monospace !important;
+    border-radius: 8px !important;
+}
+
+/* Sidebar styling */
+[data-testid="stSidebar"] {
+    background-color: #080c14 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
+/* Metric Cards */
+[data-testid="stMetric"] {
+    background: rgba(14, 20, 34, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    padding: 14px 18px !important;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25) !important;
+    backdrop-filter: blur(10px) !important;
+    transition: all 0.2s ease !important;
+}
+[data-testid="stMetric"]:hover {
+    border-color: rgba(56, 189, 248, 0.4) !important;
+    transform: translateY(-1px) !important;
+}
+[data-testid="stMetricLabel"] {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    color: #94a3b8 !important;
+}
+[data-testid="stMetricValue"] {
+    font-size: 24px !important;
+    font-weight: 800 !important;
+    color: #f8fafc !important;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Tabs styling */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px !important;
+    background-color: rgba(14, 20, 34, 0.65) !important;
+    padding: 6px !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    margin-bottom: 20px !important;
+}
+.stTabs [data-baseweb="tab"] {
+    height: 40px !important;
+    border-radius: 8px !important;
+    color: #94a3b8 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    padding: 0 16px !important;
+    transition: all 0.2s ease !important;
+}
+.stTabs [data-baseweb="tab"]:hover {
+    color: #f1f5f9 !important;
+    background-color: rgba(255, 255, 255, 0.04) !important;
+}
+.stTabs [aria-selected="true"] {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.3), rgba(59, 130, 246, 0.15)) !important;
+    color: #60a5fa !important;
+    border: 1px solid rgba(59, 130, 246, 0.45) !important;
+}
+
+/* Primary Button */
+.stButton > button[kind="primary"], .stButton > button[data-testid="baseButton-primary"] {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+    border: 1px solid rgba(96, 165, 250, 0.45) !important;
+    border-radius: 8px !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 13.5px !important;
+    letter-spacing: 0.3px !important;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35) !important;
+    transition: all 0.2s ease !important;
+}
+.stButton > button[kind="primary"]:hover, .stButton > button[data-testid="baseButton-primary"]:hover {
+    box-shadow: 0 6px 22px rgba(37, 99, 235, 0.55) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Input Fields */
+.stTextArea textarea, .stTextInput input, .stSelectbox [data-baseweb="select"] {
+    background-color: #0b0f19 !important;
+    border: 1px solid #1e293b !important;
+    border-radius: 8px !important;
+    color: #f1f5f9 !important;
+}
+.stTextArea textarea:focus, .stTextInput input:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Dataframe & Tables */
+[data-testid="stDataFrame"] {
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+}
+
+/* Custom horizontal rule */
+hr {
+    border-color: rgba(255, 255, 255, 0.07) !important;
+    margin: 20px 0 !important;
+}
+</style>
+"""
 
 SCENARIOS = {
     "🔁 500 Provider Error": {
@@ -125,20 +276,18 @@ async def run_fault_scenario(script: list[str], max_retries: int, base_delay_s: 
         with log_placeholder.container():
             for r in rows:
                 icon, label, color = OUTCOME_ICONS.get(r.outcome, ("ℹ️", r.outcome, "#94a3b8"))
-                st.markdown(
-                    f"""
-                    <div style="background:#131720; border:1px solid #232b3b; border-left:4px solid {color}; border-radius:8px; padding:10px 14px; margin-bottom:8px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span style="font-weight:700; color:#e2e8f0;">{icon} Attempt {r.attempt} — {label}</span>
-                            <span style="font-family:monospace; font-size:12px; color:#94a3b8; background:#0b0d13; padding:2px 8px; border-radius:4px;">{r.elapsed_ms:.0f} ms</span>
-                        </div>
-                        <div style="font-size:12px; color:#94a3b8; margin-top:4px;">
-                            {'↳ <b>Will retry</b> after ' + f'{r.delay_before_retry_s:.2f}s backoff (exponential full jitter)' if r.will_retry else ('↳ 🛑 <b>Fast-Fail circuit breaker triggered</b> — terminated without retrying' if r.outcome != 'success' else '↳ 🎯 Resolved cleanly')}
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
+                card_html = (
+                    f'<div style="background:#131720; border:1px solid #232b3b; border-left:4px solid {color}; border-radius:8px; padding:10px 14px; margin-bottom:8px;">'
+                    f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+                    f'<span style="font-weight:700; color:#e2e8f0;">{icon} Attempt {r.attempt} — {label}</span>'
+                    f'<span style="font-family:\'JetBrains Mono\', monospace; font-size:12px; color:#94a3b8; background:#0b0d13; padding:2px 8px; border-radius:4px;">{r.elapsed_ms:.0f} ms</span>'
+                    f'</div>'
+                    f'<div style="font-size:12px; color:#94a3b8; margin-top:4px;">'
+                    f'{"↳ <b>Will retry</b> after " + f"{r.delay_before_retry_s:.2f}s backoff (exponential full jitter)" if r.will_retry else ("↳ 🛑 <b>Fast-Fail circuit breaker triggered</b> — terminated without retrying" if r.outcome != "success" else "↳ 🎯 Resolved cleanly")}'
+                    f'</div>'
+                    f'</div>'
                 )
+                safe_html(card_html)
                 if r.detail and r.outcome != "success":
                     st.code(r.detail, language=None)
 
@@ -165,22 +314,31 @@ def render_week1_full_studio(set_config: bool = False) -> None:
         except Exception:
             pass
 
-    st.markdown(
+    safe_html(CUSTOM_THEME_CSS)
+
+    safe_html(
         """
-        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:12px;">
+        <div style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(20, 30, 55, 0.65)); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 20px 24px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
             <div>
-                <h1 style="margin:0; font-size:24px; font-weight:800; letter-spacing:-0.5px;">⚡ Phase 1 Week 1 — Live Service & Acceptance Studio</h1>
-                <p style="margin:4px 0 0; color:#94a3b8; font-size:14px;">
-                    Production-grade Async LLM Client with real-time speed insights, latency decomposition, and fault-injection acceptance matrix.
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                    <span style="font-size: 11px; font-weight: 800; color: #38bdf8; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); padding: 3px 8px; border-radius: 6px; letter-spacing: 0.5px;">PHASE 1 · WEEK 1</span>
+                    <span style="font-size: 11px; color: #64748b; font-family: monospace;">AsyncLLMClient v0.1.0</span>
+                </div>
+                <h1 style="margin: 0; font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">Live Client Service & Acceptance Studio</h1>
+                <p style="margin: 4px 0 0; color: #94a3b8; font-size: 13.5px; line-height: 1.4;">
+                    Production-grade Async LLM Client featuring real-time speed insights, quadratic latency decomposition, and deterministic fault-injection circuit breakers.
                 </p>
             </div>
-            <div style="display:flex; gap:6px; margin-top:6px;">
-                <span style="background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); font-size:11.5px; font-weight:700; padding:4px 8px; border-radius:6px;">HTTP POST /v1/stream</span>
-                <span style="background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); font-size:11.5px; font-weight:700; padding:4px 8px; border-radius:6px;">Full Jitter Backoff</span>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <span style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; font-size: 11.5px; font-weight: 700; padding: 5px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #60a5fa; display: inline-block;"></span> HTTP POST /v1/stream
+                </span>
+                <span style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; font-size: 11.5px; font-weight: 700; padding: 5px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #34d399; display: inline-block;"></span> FULL JITTER BACKOFF
+                </span>
             </div>
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
     tab_live, tab_acceptance = st.tabs([
@@ -229,38 +387,36 @@ def render_week1_full_studio(set_config: bool = False) -> None:
             for idx, (num, tag, title, desc, stat) in enumerate(steps, 1):
                 if idx < active_step:
                     border = "rgba(16,185,129,0.4)"
-                    bg = "rgba(16,185,129,0.04)"
+                    bg = "rgba(16,185,129,0.06)"
                     stat_color = "#34d399"
                     badge_color = "#34d399"
                 elif idx == active_step:
                     border = "#3b82f6"
-                    bg = "rgba(59,130,246,0.1)"
+                    bg = "rgba(59,130,246,0.12)"
                     stat_color = "#93c5fd"
                     badge_color = "#60a5fa"
                 else:
-                    border = "#232b3b"
-                    bg = "#131720"
+                    border = "#1e293b"
+                    bg = "#0f141f"
                     stat_color = "#64748b"
                     badge_color = "#64748b"
 
-                placeholders[idx - 1].markdown(
-                    f"""
-                    <div style="background:{bg}; border:1px solid {border}; border-radius:8px; padding:10px; min-height:115px; display:flex; flex-direction:column; justify-content:space-between;">
-                        <div>
-                            <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; color:#64748b;">
-                                <span>{num}</span>
-                                <span style="color:{badge_color};">{tag}</span>
-                            </div>
-                            <div style="font-size:12px; font-weight:700; color:#e2e8f0; margin:4px 0 2px;">{title}</div>
-                            <div style="font-size:10.5px; color:#94a3b8; line-height:1.25;">{desc}</div>
-                        </div>
-                        <div style="font-family:monospace; font-size:11px; font-weight:700; color:{stat_color}; background:#0b0d13; border:1px solid #1e2638; border-radius:4px; padding:3px 6px; margin-top:6px;">
-                            {stat}
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
+                card = (
+                    f'<div style="background:{bg}; border:1px solid {border}; border-radius:10px; padding:12px; min-height:120px; display:flex; flex-direction:column; justify-content:space-between;">'
+                    f'<div>'
+                    f'<div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; color:#64748b;">'
+                    f'<span>{num}</span>'
+                    f'<span style="color:{badge_color};">{tag}</span>'
+                    f'</div>'
+                    f'<div style="font-size:12.5px; font-weight:700; color:#e2e8f0; margin:4px 0 2px;">{title}</div>'
+                    f'<div style="font-size:10.5px; color:#94a3b8; line-height:1.3;">{desc}</div>'
+                    f'</div>'
+                    f'<div style="font-family:\'JetBrains Mono\', monospace; font-size:11px; font-weight:700; color:{stat_color}; background:#080b12; border:1px solid #1a2336; border-radius:5px; padding:4px 6px; margin-top:6px; text-align:center;">'
+                    f'{stat}'
+                    f'</div>'
+                    f'</div>'
                 )
+                safe_html(card, target=placeholders[idx - 1])
 
         draw_pipeline_steps(active_step=1)
 
@@ -340,15 +496,14 @@ def render_week1_full_studio(set_config: bool = False) -> None:
                         st.markdown("### ⚡ Speed Insights HUD")
 
                         # Headline Bar
-                        st.markdown(
+                        safe_html(
                             f"""
-                            <div style="background:#000; border-radius:10px; padding:12px 18px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; border:1px solid #232b3b;">
+                            <div style="background:#070a12; border-radius:10px; padding:12px 18px; margin-bottom:18px; display:flex; justify-content:space-between; align-items:center; border:1px solid #1e2638;">
                                 <span>Latency: <b style="color:#e2e8f0; font-size:16px;">{total_ms:.0f} ms</b></span>
                                 <span><span style="color:#f59e0b;">⚡</span> Generation Speed: <b style="color:#38bdf8; font-size:16px;">{decode_tps:.1f} tok/s</b></span>
                                 <span>💵 Est. Cost: <b style="color:#34d399; font-size:16px;">${total_cost:.6f}</b></span>
                             </div>
-                            """,
-                            unsafe_allow_html=True,
+                            """
                         )
 
                         # Row 1: Tokens Grid
@@ -389,7 +544,7 @@ def render_week1_full_studio(set_config: bool = False) -> None:
                         decode_pct = 100.0 - prefill_pct
 
                         # Segmented Progress Bar
-                        st.markdown(
+                        safe_html(
                             f"""
                             <div style="height:26px; background:#0d1117; border-radius:8px; overflow:hidden; display:flex; margin:8px 0 16px; border:1px solid #1e2638;">
                                 <div style="width:{prefill_pct}%; background:linear-gradient(90deg, #2563eb, #3b82f6); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#fff;">
@@ -399,14 +554,13 @@ def render_week1_full_studio(set_config: bool = False) -> None:
                                     Decode: {decode_ms:.0f} ms ({decode_pct:.1f}%)
                                 </div>
                             </div>
-                            """,
-                            unsafe_allow_html=True,
+                            """
                         )
 
                         # Dual Phase Cards
                         card_left, card_right = st.columns(2)
                         with card_left:
-                            st.markdown(
+                            safe_html(
                                 f"""
                                 <div style="background:#131720; border:1px solid #232b3b; border-left:4px solid #3b82f6; border-radius:10px; padding:16px;">
                                     <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -416,19 +570,18 @@ def render_week1_full_studio(set_config: bool = False) -> None:
                                         </div>
                                         <span style="background:rgba(59,130,246,0.15); color:#60a5fa; padding:2px 8px; border-radius:4px; font-weight:700; font-size:12px;">{prefill_pct:.1f}%</span>
                                     </div>
-                                    <div style="font-size:28px; font-weight:800; color:#93c5fd; font-family:monospace; margin:12px 0;">{ttft_ms:.0f} ms</div>
+                                    <div style="font-size:28px; font-weight:800; color:#93c5fd; font-family:\'JetBrains Mono\', monospace; margin:12px 0;">{ttft_ms:.0f} ms</div>
                                     <div style="display:flex; flex-direction:column; gap:6px; font-size:12px; color:#cbd5e1;">
                                         <div style="background:#0b0d13; padding:6px 10px; border-radius:6px;">📥 <b>Prompt Ingestion:</b> {prompt_tokens} tokens</div>
                                         <div style="background:#0b0d13; padding:6px 10px; border-radius:6px;">🌐 <b>Network transit & KV cache initialization</b></div>
                                         <div style="background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.25); color:#93c5fd; padding:6px 10px; border-radius:6px;">💰 <b>Input Cost:</b> ${prompt_cost:.7f} (@ $0.10/1M)</div>
                                     </div>
                                 </div>
-                                """,
-                                unsafe_allow_html=True,
+                                """
                             )
 
                         with card_right:
-                            st.markdown(
+                            safe_html(
                                 f"""
                                 <div style="background:#131720; border:1px solid #232b3b; border-left:4px solid #10b981; border-radius:10px; padding:16px;">
                                     <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -438,21 +591,20 @@ def render_week1_full_studio(set_config: bool = False) -> None:
                                         </div>
                                         <span style="background:rgba(16,185,129,0.15); color:#34d399; padding:2px 8px; border-radius:4px; font-weight:700; font-size:12px;">{decode_pct:.1f}%</span>
                                     </div>
-                                    <div style="font-size:28px; font-weight:800; color:#6ee7b7; font-family:monospace; margin:12px 0;">{decode_ms:.0f} ms</div>
+                                    <div style="font-size:28px; font-weight:800; color:#6ee7b7; font-family:\'JetBrains Mono\', monospace; margin:12px 0;">{decode_ms:.0f} ms</div>
                                     <div style="display:flex; flex-direction:column; gap:6px; font-size:12px; color:#cbd5e1;">
                                         <div style="background:#0b0d13; padding:6px 10px; border-radius:6px;">✍️ <b>Output Generated:</b> {comp_tokens} completion tokens</div>
                                         <div style="background:#0b0d13; padding:6px 10px; border-radius:6px;">🏎️ <b>Throughput:</b> {decode_tps:.1f} tok/s (~{ms_per_tok:.1f} ms/token)</div>
                                         <div style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25); color:#6ee7b7; padding:6px 10px; border-radius:6px;">💰 <b>Output Cost:</b> ${comp_cost:.7f} (@ $0.40/1M)</div>
                                     </div>
                                 </div>
-                                """,
-                                unsafe_allow_html=True,
+                                """
                             )
 
                         # Equation Footnote
-                        st.markdown(
+                        safe_html(
                             f"""
-                            <div style="margin-top:14px; background:#080b10; border:1px solid #1e2638; border-radius:8px; padding:10px 14px; display:flex; justify-content:center; align-items:center; gap:8px; flex-wrap:wrap; font-family:monospace; font-size:13px;">
+                            <div style="margin-top:14px; background:#080b10; border:1px solid #1e2638; border-radius:8px; padding:10px 14px; display:flex; justify-content:center; align-items:center; gap:8px; flex-wrap:wrap; font-family:\'JetBrains Mono\', monospace; font-size:13px;">
                                 <span style="background:rgba(59,130,246,0.15); color:#93c5fd; padding:3px 8px; border-radius:4px;">🚀 Prefill: {ttft_ms:.0f} ms</span>
                                 <span style="color:#64748b; font-weight:700;">+</span>
                                 <span style="background:rgba(16,185,129,0.15); color:#6ee7b7; padding:3px 8px; border-radius:4px;">⚡ Decode: {decode_ms:.0f} ms</span>
@@ -460,8 +612,7 @@ def render_week1_full_studio(set_config: bool = False) -> None:
                                 <span style="background:rgba(245,158,11,0.15); color:#fcd34d; padding:3px 8px; border-radius:4px;">⏱️ Total: {total_ms:.0f} ms</span>
                                 <span style="background:rgba(16,185,129,0.2); color:#34d399; padding:3px 8px; border-radius:4px; margin-left:8px;">💰 Est. Cost: ${total_cost:.6f}</span>
                             </div>
-                            """,
-                            unsafe_allow_html=True,
+                            """
                         )
 
                         # Architecture & Formulations Expander
@@ -498,14 +649,13 @@ def render_week1_full_studio(set_config: bool = False) -> None:
     # TAB 2: ACCEPTANCE TEST & FAULT INJECTION STUDIO
     # ==========================================================================
     with tab_acceptance:
-        st.markdown(
+        safe_html(
             """
             <div style="font-size:13.5px; color:#94a3b8; margin-bottom:12px;">
                 Simulate rate limits, malformed outputs, timeouts, and provider 5xx failures using an in-memory <code>httpx.MockTransport</code>.
                 Demonstrates that the client handles each one predictably without uncontrolled retries.
             </div>
-            """,
-            unsafe_allow_html=True,
+            """
         )
 
         choice = st.selectbox("Select Failure / Acceptance Scenario", list(SCENARIOS.keys()), key="w1_tab2_scenario")
