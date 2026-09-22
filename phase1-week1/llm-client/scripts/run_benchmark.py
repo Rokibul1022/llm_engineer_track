@@ -157,6 +157,25 @@ async def main() -> None:
         help="Use simulated mock streaming transport instead of live API",
     )
     parser.add_argument(
+        "--prompt",
+        type=str,
+        default=None,
+        help="Test a custom prompt live with streaming tokens in stdout and real-time TTFT telemetry",
+    )
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        default=0.7,
+        help="Sampling temperature for --prompt (default: 0.7)",
+    )
+    parser.add_argument(
+        "--top-p",
+        dest="top_p",
+        type=float,
+        default=0.9,
+        help="Top-p nucleus sampling for --prompt (default: 0.9)",
+    )
+    parser.add_argument(
         "--delay",
         type=float,
         default=2.0,
@@ -207,6 +226,50 @@ async def main() -> None:
         transport=transport,
     )
 
+    if args.prompt:
+        from llm_client import ChatMessage, LLMRequest, Usage
+
+        req = LLMRequest(
+            model=args.model,
+            messages=[ChatMessage(role="user", content=args.prompt)],
+            temperature=args.temperature,
+            top_p=args.top_p,
+            stream=True,
+        )
+        print(f"\n[LIVE TEST] Querying model: {args.model}")
+        print(f"            Temperature: {args.temperature} | Top-P: {args.top_p}")
+        print(f"            Prompt: '{args.prompt}'")
+        print("=" * 60)
+        print("Live Output: ", end="", flush=True)
+
+        start_t = time.perf_counter()
+        first_t = None
+        count = 0
+        usage_res = None
+
+        def on_u(u: Usage):
+            nonlocal usage_res
+            usage_res = u
+
+        async for chunk in client.stream(req, on_usage=on_u):
+            if first_t is None:
+                first_t = time.perf_counter()
+            count += 1
+            sys.stdout.write(chunk)
+            sys.stdout.flush()
+
+        end_t = time.perf_counter()
+        dur = end_t - start_t
+        ttft_ms = (first_t - start_t) * 1000 if first_t else dur * 1000
+        comp_tok = usage_res.completion_tokens if usage_res else count
+        prompt_tok = usage_res.prompt_tokens if usage_res else len(args.prompt.split())
+        tps = (comp_tok / dur) if dur > 0 else 0
+
+        print("\n" + "=" * 60)
+        print(f"[METRICS] TTFT: {ttft_ms:.1f} ms | Speed: {tps:.1f} tok/s | Tokens: {prompt_tok} in, {comp_tok} out | Total Time: {dur:.2f} s\n")
+        await client.aclose()
+        return
+
     settings = [dict(s, model=args.model) for s in SETTINGS]
     pace_delay = 0.0 if args.mock else args.delay
 
@@ -215,6 +278,7 @@ async def main() -> None:
     print(f"        Base URL: {base_url}")
     print(f"        Pacing delay: {pace_delay:.1f}s between requests")
     print("        Benchmarking TTFT, Tokens/sec, and Temperature-based nondeterminism...\n")
+
 
     try:
         runs = await run_benchmark_suite(
