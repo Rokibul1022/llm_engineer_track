@@ -28,7 +28,7 @@
 | :--- | :--- | :---: | :--- |
 | **Phase 1: Week 1** | **Resilient Async LLM Client & Latency Insights** | ✅ Completed | Production async client, AWS Full Jitter backoff, circuit-breaker fast-fail policy, TTFT & decode token decomposition, zero-egress fault injection simulation harness. |
 | **Phase 1: Week 2** | **Inference Pipeline & Token Benchmarking** | ✅ Completed | Transformer pipeline architecture mapping, server-side TTFT & throughput benchmarking engine, temperature/top-p nondeterminism analysis, multipage Streamlit interactive studio. |
-| **Phase 1: Week 3** | **Streaming Architectures & SSE Protocol** | 📋 Scheduled | Real-time token delivery pipelines, backpressure handling, bi-directional event transport, connection lifecycle recovery. |
+| **Phase 1: Week 3** | **Streaming Architectures & SSE Protocol** |  ✅ done | Real-time token delivery pipelines, backpressure handling, bi-directional event transport, connection lifecycle recovery. |
 | **Phase 1: Week 4** | **Observability, Distributed Tracing & Token Economics** | 📋 Scheduled | OpenTelemetry integration, distributed trace context propagation, granular per-token cost ledger, latency SLA monitoring. |
 | **Phase 2: Weeks 5–10**| **Production Retrieval-Augmented Generation (RAG)** | 📋 Scheduled | Hybrid search (dense vectors + BM25 sparse), Reciprocal Rank Fusion (RRF), Cross-Encoder dynamic reranking, chunking strategies, contextual compression. |
 | **Phase 3: Weeks 11–18**| **Autonomous Multi-Agent Systems & Tool Calling** | 📋 Scheduled | ReAct / Plan-and-Solve engines, structured function calling, sandbox code execution, human-in-the-loop validation checkpoints, multi-agent orchestration. |
