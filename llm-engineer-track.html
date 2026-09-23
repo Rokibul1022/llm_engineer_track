@@ -1,0 +1,862 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LLM Engineer Track | 24-week curriculum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Literata:opsz,wght@7..72,400..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F4F6; --surface:#FFFFFF; --tint:#E8ECF0; --ink:#16202A; --muted:#52606D; --line:#D3DAE1; --focus:#1B5FD1;
+  --p1:#2B6BDB; --p2:#0B7A63; --p3:#7A48CC; --p4:#A15600; --p5:#BE2F59; --p6:#2F4356;
+  --on-pc:#FFFFFF;
+  --font-head:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --font-body:"Literata","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --side:310px;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1318; --surface:#151C23; --tint:#1D262F; --ink:#E7ECF1; --muted:#9BA8B5; --line:#2A3641; --focus:#8DB2FF;
+    --p1:#7EA6FF; --p2:#41C7A5; --p3:#B694FF; --p4:#F2A73F; --p5:#FF7FA1; --p6:#93AEC8;
+    --on-pc:#0E1318; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1318; --surface:#151C23; --tint:#1D262F; --ink:#E7ECF1; --muted:#9BA8B5; --line:#2A3641; --focus:#8DB2FF;
+  --p1:#7EA6FF; --p2:#41C7A5; --p3:#B694FF; --p4:#F2A73F; --p5:#FF7FA1; --p6:#93AEC8;
+  --on-pc:#0E1318; color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:400 17px/1.65 var(--font-body);-webkit-text-size-adjust:100%}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:4px}
+h1,h2,h3{font-family:var(--font-head);margin:0}
+p{margin:0 0 1em}
+.muted{color:var(--muted)}
+[hidden]{display:none!important}
+
+/* ---------- layout ---------- */
+.app{display:grid;grid-template-columns:var(--side) minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;height:100vh;height:calc(100dvh - env(safe-area-inset-top,0px));overflow-y:auto;padding:24px 18px 48px 22px;border-right:1px solid var(--line);background:var(--surface)}
+.main{padding:44px clamp(20px,5vw,72px) 96px;min-width:0}
+.main:focus{outline:none}
+.page{max-width:780px;margin:0 auto}
+.topbar,.scrim{display:none}
+
+/* ---------- sidebar ---------- */
+.brand{display:block;text-decoration:none;font:800 23px/1.05 var(--font-head);letter-spacing:-.025em}
+.brand small{display:block;margin-top:8px;font:500 14px/1.4 var(--font-body);letter-spacing:0;color:var(--muted)}
+.prog{margin:18px 0 4px;font:500 13px var(--font-head);color:var(--muted)}
+.prog-bar{height:5px;border-radius:3px;background:var(--tint);overflow:hidden;margin-top:6px}
+.prog-bar i{display:block;height:100%;background:var(--ink);width:0;transition:width .3s ease}
+.nav-top{margin:18px 0 0;padding:0;list-style:none}
+.nav-top a,.nav-ref a{display:block;padding:6px 8px;border-radius:6px;text-decoration:none;font:600 15px/1.3 var(--font-head)}
+.nav-top a:hover,.nav-ref a:hover{background:var(--tint)}
+.nav-top a[aria-current="page"],.nav-ref a[aria-current="page"]{background:var(--ink);color:var(--bg)}
+.nav-phase{margin:24px 0 0}
+.nav-phase-h{display:block;font:700 14px/1.25 var(--font-head);text-decoration:none;color:var(--pc);padding:2px 0 9px}
+.nav-phase-h[aria-current="page"]{text-decoration:underline;text-underline-offset:4px}
+.nav-weeks{list-style:none;margin:0 0 0 7px;padding:0;border-left:3px solid var(--pc)}
+.nav-weeks li{position:relative}
+.nav-weeks a{display:flex;gap:8px;align-items:baseline;padding:5px 8px 5px 18px;text-decoration:none;font:500 14px/1.3 var(--font-head);border-radius:0 6px 6px 0}
+.nav-weeks a::before{content:"";position:absolute;left:-7px;top:50%;width:11px;height:11px;margin-top:-5.5px;border-radius:50%;background:var(--surface);border:2.5px solid var(--pc)}
+.nav-weeks a.done::before{background:var(--pc)}
+.nav-weeks a:hover{background:color-mix(in srgb,var(--pc) 8%,transparent)}
+.nav-weeks a[aria-current="page"]{background:color-mix(in srgb,var(--pc) 14%,transparent);font-weight:700}
+.nav-weeks a[aria-current="page"]::before{width:15px;height:15px;left:-9px;margin-top:-7.5px;background:var(--pc)}
+.wn{flex:none;min-width:3.1em;font-variant-numeric:tabular-nums;color:var(--muted)}
+.nav-label{margin:28px 0 6px;font:700 13px var(--font-head);color:var(--muted)}
+.nav-ref{list-style:none;margin:0;padding:0}
+.side-foot{margin-top:28px;font-size:13px;line-height:1.5;color:var(--muted)}
+
+/* ---------- route strip ---------- */
+.strip{display:flex;gap:10px;align-items:flex-end;margin:0 0 34px;min-height:20px}
+.strip-ph{display:flex;gap:3px;align-items:flex-end;flex:var(--n) 1 0}
+.seg{position:relative;display:block;flex:1;min-width:5px;height:8px;border-radius:2px;background:color-mix(in srgb,var(--pc) 26%,transparent)}
+.seg::after{content:"";position:absolute;inset:-12px 0}
+.seg.done{background:color-mix(in srgb,var(--pc) 72%,transparent)}
+.seg.cur{height:20px;background:var(--pc)}
+
+/* ---------- page headers ---------- */
+.crumb{font:600 15px var(--font-head);color:var(--pc);text-decoration:none}
+.crumb:hover{text-decoration:underline;text-underline-offset:3px}
+.wk-line{display:flex;align-items:flex-end;flex-wrap:wrap;gap:6px 22px;margin:10px 0 12px}
+.wk-num{font:800 clamp(72px,14vw,124px)/.78 var(--font-head);letter-spacing:-.055em;color:var(--pc);font-variant-numeric:tabular-nums}
+h1{font:800 clamp(30px,5.2vw,46px)/1.04 var(--font-head);letter-spacing:-.03em;flex:1 1 320px}
+.sub{color:var(--muted);font-size:17px;margin:0}
+.head{margin-bottom:26px}
+.section{border-top:1px solid var(--line);margin-top:42px;padding-top:24px}
+.section:first-of-type{border-top:0;margin-top:0;padding-top:0}
+.hero + .section,.lede + .section{margin-top:40px}
+h2{font:700 23px/1.2 var(--font-head);letter-spacing:-.015em;margin:0 0 14px}
+h3{font:700 18px/1.3 var(--font-head);margin:22px 0 8px}
+.lede{font-size:20px;line-height:1.55;max-width:38em}
+
+/* ---------- content blocks ---------- */
+.prose ul,.prose ol{padding-left:1.25em;margin:0 0 1em}
+.prose li{margin:.3em 0;padding-left:.15em}
+.prose ul li::marker{color:var(--pc,var(--ink))}
+.prose ol li::marker{color:var(--pc,var(--ink));font-family:var(--font-head);font-weight:700}
+.prose a{color:var(--pc,inherit);text-underline-offset:3px}
+.topics{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px}
+.topics li{padding:5px 13px;border:1.5px solid color-mix(in srgb,var(--pc) 45%,var(--line));border-radius:999px;background:var(--surface);font:500 15px var(--font-head)}
+.assign{border-left:5px solid var(--pc);padding:18px 22px;background:color-mix(in srgb,var(--pc) 7%,var(--surface));border-radius:0 12px 12px 0;font-size:20px;line-height:1.5}
+.note{border-left:4px solid var(--pc,var(--ink));padding:12px 18px;background:var(--tint);border-radius:0 10px 10px 0;margin:16px 0}
+.note p:last-child{margin:0}
+.budget{display:flex;height:38px;border-radius:9px;overflow:hidden;border:1px solid var(--line)}
+.budget span{display:grid;place-items:center;font:700 14px var(--font-head);color:var(--ink);min-width:0}
+.budget .b1{background:color-mix(in srgb,var(--pc) 16%,var(--surface))}
+.budget .b2{background:color-mix(in srgb,var(--pc) 30%,var(--surface))}
+.budget .b3{background:color-mix(in srgb,var(--pc) 46%,var(--surface))}
+.budget .b4{background:color-mix(in srgb,var(--pc) 62%,var(--surface))}
+.legend{list-style:none;padding:0;margin:12px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px 18px;font-size:15px}
+.legend b{font:700 15px var(--font-head)}
+details.fold{border:1px solid var(--line);border-radius:10px;background:var(--surface);margin-top:14px}
+details.fold summary{cursor:pointer;padding:13px 18px;font:700 17px var(--font-head)}
+details.fold .fold-body{padding:0 18px 14px}
+.res{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.res-item{display:grid;grid-template-columns:184px minmax(0,1fr);gap:8px 20px;padding:18px 0;border-bottom:1px solid var(--line)}
+.res-item h3{margin:0 0 4px}
+.res-item p{margin:0 0 4px;color:var(--muted);font-size:16px}
+.res-item .res-meta{font:500 14px var(--font-head)}
+.res-links{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:12px}
+.linkbtn{display:inline-flex;align-items:center;gap:8px;padding:8px 13px;border-radius:9px;border:1.5px solid color-mix(in srgb,var(--pc,var(--ink)) 60%,var(--line));text-decoration:none;font:600 15px var(--font-head);background:var(--surface)}
+.linkbtn:hover{background:color-mix(in srgb,var(--pc,var(--ink)) 9%,var(--surface))}
+.linkbtn .host{font:500 13px var(--font-head);color:var(--muted)}
+.ext{flex:none}
+.checked{font:500 13px var(--font-head);color:var(--muted);margin-top:10px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:16px}
+th,td{text-align:left;padding:11px 16px;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font:700 14px var(--font-head);color:var(--muted);background:var(--tint)}
+tr:last-child td{border-bottom:0}
+td:first-child{font:700 16px var(--font-head);white-space:nowrap}
+.btn{display:inline-block;padding:11px 20px;border-radius:10px;border:2px solid var(--btn,var(--ink));background:var(--btn,var(--ink));color:var(--btn-on,var(--bg));font:700 16px var(--font-head);text-decoration:none;cursor:pointer}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{background:var(--tint);filter:none}
+.btn[aria-pressed="true"]{background:transparent;color:var(--btn,var(--ink))}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.pager{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:56px}
+.pager a{display:block;padding:14px 18px;border:1px solid var(--line);border-radius:12px;text-decoration:none;background:var(--surface)}
+.pager a:hover{border-color:var(--pc,var(--ink))}
+.pager small{display:block;color:var(--muted);font:500 13px var(--font-head)}
+.pager b{font:700 17px/1.25 var(--font-head)}
+.pager .next{text-align:right;grid-column:2}
+.checks{list-style:none;padding:0;margin:0}
+.checks li{margin:0;border-bottom:1px solid var(--line)}
+.checks label{display:flex;gap:12px;align-items:flex-start;padding:11px 2px;cursor:pointer}
+.checks input{margin-top:.42em;width:18px;height:18px;flex:none;accent-color:var(--pc)}
+
+/* ---------- overview: the line map ---------- */
+.hero{padding:6px 0 10px}
+.hero h1{font-size:clamp(40px,8vw,72px);line-height:.98;letter-spacing:-.04em;flex:none}
+.hero .lede{margin:20px 0 0}
+.row{--pc:var(--p1);padding:26px 0 24px;border-top:1px solid var(--line)}
+.row-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 16px;align-items:baseline;margin-bottom:20px}
+.row-head a{font:800 22px/1.15 var(--font-head);letter-spacing:-.02em;text-decoration:none}
+.row-head a:hover{text-decoration:underline;text-underline-offset:4px}
+.row-head a i{font-style:normal;color:var(--pc)}
+.row-head span{font:500 15px var(--font-head);color:var(--muted)}
+.stops{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr))}
+.stop{position:relative;display:block;padding:46px 12px 0 0;text-decoration:none;font:500 14px/1.3 var(--font-head)}
+.stop i{position:absolute;top:0;left:0;z-index:1;width:36px;height:36px;border-radius:50%;background:var(--surface);border:3.5px solid var(--pc);display:grid;place-items:center;font:800 14px var(--font-head);font-style:normal;color:var(--ink)}
+.stop::before{content:"";position:absolute;top:16px;left:36px;right:0;height:4px;background:var(--pc)}
+.stop:last-child::before{display:none}
+.stop.done i{background:var(--pc);color:var(--on-pc)}
+.stop.end i{background:var(--pc);color:var(--on-pc);box-shadow:0 0 0 4px var(--bg),0 0 0 7px var(--pc)}
+.stop:hover .cap{text-decoration:underline;text-underline-offset:3px}
+.row-end{margin:18px 0 0;font-size:16px;color:var(--muted)}
+.row-end b{font:700 16px var(--font-head);color:var(--ink)}
+.ref-list{list-style:none;padding:0;margin:0;border-top:1px solid var(--line)}
+.ref-list a{display:block;padding:14px 2px;border-bottom:1px solid var(--line);text-decoration:none}
+.ref-list a:hover b{text-decoration:underline;text-underline-offset:3px}
+.ref-list b{display:block;font:700 18px var(--font-head)}
+.ref-list span{color:var(--muted);font-size:16px}
+
+/* ---------- phase page: week list ---------- */
+.weeklist{list-style:none;padding:0;margin:0;border-top:1px solid var(--line)}
+.weeklist a{display:grid;grid-template-columns:52px 1fr;gap:4px 14px;padding:16px 2px;border-bottom:1px solid var(--line);text-decoration:none}
+.weeklist a:hover b{text-decoration:underline;text-underline-offset:3px}
+.weeklist .n{grid-row:span 2;font:800 34px/1 var(--font-head);letter-spacing:-.04em;color:var(--pc);font-variant-numeric:tabular-nums}
+.weeklist b{font:700 18px/1.3 var(--font-head)}
+.weeklist span{color:var(--muted);font-size:16px;line-height:1.5}
+.weeklist .tick{font:600 13px var(--font-head);color:var(--pc)}
+
+/* ---------- architecture flow ---------- */
+.flow{margin:16px 0}
+.flow-step{border:1.5px solid var(--pc);border-radius:10px;padding:10px 16px;background:var(--surface)}
+.flow-step b{display:block;font:700 16px var(--font-head)}
+.flow-step span{color:var(--muted);font-size:15px}
+.flow-link{width:3px;height:18px;background:var(--pc);margin:0 auto}
+.flow-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ---------- calculator & scorecard ---------- */
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px 16px;margin:14px 0}
+.calc label{display:block;font:600 14px var(--font-head)}
+.calc input{width:100%;margin-top:4px;padding:9px 11px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:500 16px var(--font-head)}
+.calc-out{margin:14px 0 0;border-top:1px solid var(--line)}
+.calc-out div{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid var(--line)}
+.calc-out dt,.calc-out dd{margin:0}
+.calc-out dd{font:800 20px var(--font-head);text-align:right}
+.calc-out .big dd{color:var(--pc);font-size:28px}
+.score-row{display:grid;grid-template-columns:1fr auto;gap:2px 14px;padding:16px 0;border-bottom:1px solid var(--line)}
+.score-row label{font:700 17px var(--font-head)}
+.score-row small{display:block;font:500 14px var(--font-head);color:var(--muted)}
+.score-row output{font:800 24px var(--font-head);font-variant-numeric:tabular-nums;text-align:right}
+.score-row input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--pc);margin:8px 0 0}
+.total{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin:26px 0 8px}
+.total b{font:800 clamp(64px,13vw,104px)/.85 var(--font-head);letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.total span{font:600 20px var(--font-head);color:var(--muted)}
+.verdict{border-left:5px solid var(--muted);padding:12px 18px;background:var(--tint);border-radius:0 10px 10px 0}
+.verdict.ok{border-color:var(--p2)}
+.verdict.no{border-color:var(--p5)}
+
+/* ---------- responsive ---------- */
+@media (max-width:959px){
+  .app{display:block}
+  .topbar{display:flex;position:sticky;top:env(safe-area-inset-top,0px);z-index:20;align-items:center;gap:12px;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--line)}
+  .topbar b{font:800 18px var(--font-head);letter-spacing:-.02em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .topbar button{margin-left:auto;padding:8px 14px;border-radius:9px;border:1.5px solid var(--line);background:transparent;color:var(--ink);font:700 15px var(--font-head);cursor:pointer}
+  .side{position:fixed;z-index:40;top:0;left:0;bottom:0;height:auto;width:min(88vw,344px);padding-top:calc(env(safe-area-inset-top,0px) + 24px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 48px);transform:translateX(-104%);visibility:hidden;transition:transform .22s ease,visibility 0s linear .22s}
+  body.nav-open .side{transform:none;visibility:visible;transition-delay:0s}
+  .scrim{position:fixed;inset:0;z-index:30;background:rgba(10,15,20,.5)}
+  body.nav-open .scrim{display:block}
+  .main{padding-top:28px}
+}
+@media (max-width:600px){
+  body{font-size:16.5px}
+  .stops{grid-template-columns:1fr}
+  .stop{padding:6px 0 22px 52px;min-height:42px}
+  .stop::before{top:36px;bottom:-2px;left:16px;right:auto;width:4px;height:auto}
+  .flow-pair{grid-template-columns:1fr}
+  .pager{grid-template-columns:1fr}
+  .pager .next{grid-column:auto;text-align:left}
+  td:first-child{white-space:normal}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+@media print{.side,.topbar,.strip,.pager,.actions{display:none!important}.app{display:block}}
+
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-9999px;top:8px;z-index:100;padding:10px 16px;background:var(--ink);color:var(--bg);border-radius:8px;font:700 15px var(--font-head)}
+.skip:focus{left:12px}
+
+.thumb{position:relative;display:flex;flex-direction:column;justify-content:space-between;aspect-ratio:16/9;padding:10px 12px;border-radius:10px;overflow:hidden;text-decoration:none;color:var(--pc,var(--ink));background:color-mix(in srgb,var(--pc,var(--ink)) 13%,var(--surface));border:1px solid color-mix(in srgb,var(--pc,var(--ink)) 40%,var(--line))}
+.thumb svg{position:absolute;inset:0;width:100%;height:100%;opacity:.4}
+.thumb .tb{position:relative;font:800 17px/1.1 var(--font-head);letter-spacing:-.01em}
+.thumb .tk{position:relative;font:600 13px var(--font-head);color:var(--ink)}
+@media (max-width:600px){.res-item{grid-template-columns:1fr}.thumb{max-width:280px}}
+
+</style>
+</head>
+<body>
+<a class="skip" id="skip" href="#/">Skip to content</a>
+<div class="topbar"><b id="bar-t">LLM Engineer Track</b><button id="menu" type="button" aria-expanded="false" aria-controls="side">Menu</button></div>
+<div class="app">
+<aside id="side" class="side" aria-label="Curriculum navigation"></aside>
+<main id="main" class="main" tabindex="-1"></main>
+</div>
+<div id="scrim" class="scrim"></div>
+<script>
+(function () {
+'use strict';
+
+/* ------------------------------------------------------------------ data */
+
+var CHECKED = '20 Sep 2026';
+
+var PH = [
+  { n: 1, name: 'LLM foundations', a: 1, b: 3, c: '--p1', d: 'LLM API service',
+    intro: 'Transformers, tokenization, attention, embeddings, APIs, and structured outputs. The phase ends with a reliable LLM API service.' },
+  { n: 2, name: 'RAG engineering', a: 4, b: 7, c: '--p2', d: 'Evaluated document Q&A system',
+    intro: 'Document ingestion, chunking, vector search, hybrid retrieval, reranking, and evaluation. This phase is foundational: the engineer must understand retrieval independently of LangChain abstractions.' },
+  { n: 3, name: 'Production RAG at scale', a: 8, b: 11, c: '--p3', d: 'ADR, benchmark report, deployment scripts, and a working API',
+    intro: 'Million-document architecture, indexing pipelines, distributed processing, access control, and reliability. This is where the engineer moves from prototype developer to systems engineer.' },
+  { n: 4, name: 'LangChain and LangGraph', a: 12, b: 15, c: '--p4', d: 'Stateful enterprise AI workflow',
+    intro: 'Tool calling, stateful workflows, agents, durable execution, and human-in-the-loop review. Training principle: learn the underlying architecture first, then use the framework to implement it.' },
+  { n: 5, name: 'LLM optimization', a: 16, b: 19, c: '--p5', d: 'Performance-tuning report with reproducible results',
+    intro: 'Inference engines, quantization, batching, KV cache, profiling, and GPU performance. The aim is to deploy models efficiently, not merely consume APIs.' },
+  { n: 6, name: 'Production capstone', a: 20, b: 24, c: '--p6', d: 'TDI Enterprise AI Knowledge Platform, defended in a technical review',
+    intro: 'Deploy, load-test, secure, monitor, document, and defend a complete enterprise AI system.' }
+];
+
+var G = {
+  P1: ['How tokens, embeddings, attention, and autoregressive generation work.',
+       'Temperature, top-p, context limits, and why outputs are nondeterministic.',
+       'Difference between prompting, RAG, fine-tuning, and pretraining.',
+       'API cost, latency, rate limits, retries, and idempotency.',
+       'Why valid JSON does not necessarily mean semantically correct output.'],
+  DOC: ['Parsing failures, OCR errors, tables, headers, footnotes, and duplicate content.',
+        'Stable document IDs, versioning, metadata, and incremental reindexing.',
+        'Chunking by structure, token count, semantic boundaries, and parent-child relationships.'],
+  RET: ['Dense vs. sparse retrieval and their failure modes.',
+        'HNSW, IVF, product quantization, recall/latency tradeoffs.',
+        'Hybrid retrieval and reciprocal rank fusion.',
+        'Cross-encoder reranking and candidate selection.',
+        'Metadata filtering and permission-aware retrieval.'],
+  GEN: ['Context-window budgeting.', 'Citation-to-source mapping.', 'Abstention when evidence is insufficient.', 'Handling contradictory or outdated documents.'],
+  EVAL: ['Recall@k, Precision@k, MRR, nDCG.', 'Answer correctness, groundedness, citation correctness.', 'Retrieval failures vs. generation failures.', 'Regression testing using a fixed golden dataset.'],
+  LG: ['State schemas and reducers.', 'Graph execution and conditional routing.', 'Checkpointing and durable state.', 'Interrupts and human-in-the-loop review.',
+       'Subgraphs and parallel execution.', 'Idempotency, retries, timeouts, and recovery.', 'Short-term conversation state vs. long-term application memory.'],
+  MEM: ['Weight quantization: INT8, INT4, and relevant FP8 workflows.', 'KV-cache memory, context length, and concurrency constraints.',
+        'GPU memory allocation, fragmentation, and utilization.', 'Tensor parallelism and when model sharding is justified.',
+        'LoRA/QLoRA fine-tuning as a separate model adaptation technique.'],
+  SERVE: ['Prefill throughput vs. decode throughput.', 'Time to first token (TTFT) and inter-token latency.', 'Continuous batching and request scheduling.',
+          'Prefix caching and KV-cache reuse.', 'Admission control, queueing, backpressure, and overload handling.'],
+  MEAS: ['Tokens/second and requests/second.', 'p50, p95, and p99 latency.', 'GPU memory, utilization, and power consumption.',
+         'Quality degradation after quantization.', 'Cost per 1,000 requests or million generated tokens.']
+};
+
+/* n, title, topics, assignment, label */
+var RAW = [
+  [1, 'Python engineering, async and tokenization', ['Python engineering', 'Async', 'HTTP', 'Pydantic', 'Testing', 'Tokenization'], 'Build a typed, asynchronous LLM client with retries and timeouts.'],
+  [2, 'Transformers, attention and decoding', ['Transformers', 'Attention', 'Embeddings', 'Context windows', 'Decoding'], 'Explain the inference pipeline and benchmark token generation.'],
+  [3, 'Prompts, tool calling and structured outputs', ['Prompt design', 'Tool calling', 'JSON schemas', 'Streaming', 'Model APIs'], 'Build a robust extraction API with schema validation and failure handling.'],
+  [4, 'Document ingestion and chunking', ['PDF/HTML/DOCX parsing', 'OCR', 'Normalization', 'Metadata', 'Chunking'], 'Build a document ingestion pipeline with source tracking.'],
+  [5, 'Embeddings and vector search', ['Embeddings', 'Cosine similarity', 'Vector databases', 'ANN indexes'], 'Compare dense retrieval approaches on a labeled dataset.'],
+  [6, 'Hybrid retrieval and reranking', ['BM25', 'Hybrid search', 'Query rewriting', 'Reranking'], 'Build and benchmark a hybrid retrieval pipeline.'],
+  [7, 'Answer generation and RAG evaluation', ['Context construction', 'Citations', 'Answer generation', 'RAG evaluation'], 'Deliver a RAG service with a repeatable evaluation suite.'],
+  [8, 'Restartable ingestion at 100,000 documents', [], 'Ingest 100,000 synthetic or public documents using a restartable, asynchronous pipeline.'],
+  [9, 'Scaling to 1 million documents', [], 'Scale to 1 million documents; benchmark index size, ingestion throughput, and retrieval latency.'],
+  [10, 'Updates, deletion, ACLs and tenant isolation', [], 'Implement incremental updates, deletion, versioning, ACL filters, and tenant isolation.'],
+  [11, 'Concurrent load and bottleneck diagnosis', [], 'Run concurrent load tests, measure p50/p95/p99 latency, and diagnose bottlenecks.'],
+  [12, 'Refactoring RAG with LangChain', ['LangChain models', 'Retrievers', 'Tools', 'Structured output', 'Middleware'], 'Refactor the RAG service using LangChain components.'],
+  [13, 'LangGraph state and routing', ['LangGraph state', 'Nodes', 'Edges', 'Conditional routing', 'Subgraphs'], 'Build a stateful research workflow.'],
+  [14, 'Persistence, interrupts and approvals', ['Persistence', 'Checkpoints', 'Retries', 'Interrupts', 'Human approval'], 'Implement a resumable approval workflow.'],
+  [15, 'Agents, observability and deployment', ['Multi-step agents', 'Tool errors', 'Observability', 'Deployment'], 'Deploy a workflow with trace inspection and failure recovery.'],
+  [16, 'Inference memory and the KV cache', ['Transformer inference', 'Memory', 'KV cache', 'Prefill vs. decode'], 'Profile a local model and identify its bottleneck.'],
+  [17, 'Quantization and precision trade-offs', ['Quantization', 'AWQ/GPTQ', 'FP16/BF16/FP8', 'GGUF'], 'Compare model quality, memory, and throughput across precisions.'],
+  [18, 'Serving with vLLM under concurrency', ['vLLM', 'Continuous batching', 'Paged attention', 'Concurrency'], 'Deploy an inference server and benchmark concurrent requests.'],
+  [19, 'Speculative decoding and the tuning report', ['Speculative decoding', 'Batching', 'GPU profiling', 'Serving economics'], 'Produce a performance-tuning report with reproducible results.'],
+  [20, 'Architecture, threat model and contracts', [], 'Architecture, threat model, data model, ADRs, and service contracts.', 'Milestone deliverable'],
+  [21, 'Ingestion and retrieval, integrated', [], 'Ingestion pipeline and retrieval service integrated.', 'Milestone deliverable'],
+  [22, 'Agent, permissions and recovery', [], 'LangGraph agent, permissions, persistence, and failure recovery.', 'Milestone deliverable'],
+  [23, 'Tuning, load and security testing', [], 'Performance tuning, load testing, evaluation, and security testing.', 'Milestone deliverable'],
+  [24, 'Production deployment and technical defense', [], 'Production deployment, documentation, demo, and technical defense.', 'Milestone deliverable']
+];
+
+var W = RAW.map(function (r) {
+  var n = r[0];
+  return { n: n, t: r[1], tp: r[2], a: r[3], lbl: r[4] || 'Practical assignment', ph: PH.filter(function (p) { return n >= p.a && n <= p.b; })[0] };
+});
+
+/* per-week "must understand" groups: [title, items] */
+var K = {
+  1: [['Must understand this week', [G.P1[3]]]],
+  2: [['Must understand this week', [G.P1[0], G.P1[1]]]],
+  3: [['Must understand this week', [G.P1[2], G.P1[4]]]],
+  4: [['Document engineering', G.DOC]],
+  5: [['Retrieval', [G.RET[0], G.RET[1]]]],
+  6: [['Retrieval', [G.RET[2], G.RET[3], G.RET[4]]]],
+  7: [['Generation', G.GEN], ['Evaluation', G.EVAL]],
+  13: [['LangGraph concepts to master', [G.LG[0], G.LG[1], G.LG[4]]]],
+  14: [['LangGraph concepts to master', [G.LG[2], G.LG[3], G.LG[5]]]],
+  15: [['LangGraph concepts to master', [G.LG[6]]]],
+  16: [['Model and memory optimization', [G.MEM[1], G.MEM[2]]], ['Inference serving', [G.SERVE[0]]]],
+  17: [['Model and memory optimization', [G.MEM[0], G.MEM[4]]], ['Performance measurement', [G.MEAS[3]]]],
+  18: [['Inference serving', [G.SERVE[1], G.SERVE[2], G.SERVE[3], G.SERVE[4]]], ['Model and memory optimization', [G.MEM[3]]]],
+  19: [['Performance measurement', G.MEAS]]
+};
+
+var R = {
+  llm: { th: ['GitHub','Free course','layers'], t: 'The Large Language Model Course', d: 'A free learning roadmap covering both LLM engineering and model-science concepts.', l: [['Open the course', 'https://github.com/mlabonne/llm-course']] },
+  agents1: { th: ['Hugging Face','Free course','graph'], t: 'Hugging Face Agents Course, Unit 1', d: 'Use the foundational unit for models, messages, tools, and agent fundamentals.', l: [['Open the free course', 'https://huggingface.co/learn/agents-course/unit1/introduction']] },
+  rageval: { th: ['Hugging Face','Cookbook','bars'], t: 'RAG Evaluation (Hugging Face cookbook)', d: 'Hands-on evaluation dataset construction and LLM-as-judge methodology.', l: [['Open the cookbook', 'https://huggingface.co/learn/cookbook/rag_evaluation']] },
+  lc: { th: ['LangChain','Tutorials','docs'], t: 'LangChain learning documentation', d: 'Study semantic search, RAG, and custom RAG implementations.',
+        l: [['Open tutorials', 'https://docs.langchain.com/oss/python/learn'], ['Semantic search', 'https://docs.langchain.com/oss/python/langchain/knowledge-base'], ['RAG agent', 'https://docs.langchain.com/oss/python/langchain/rag']] },
+  lgintro: { th: ['LangChain Academy','Free course \u00b7 55 lessons','graph'], t: 'LangChain Academy: Introduction to LangGraph', d: '55 lessons covering graph construction, state, memory, human review, and deployment.', m: 'Free · video lessons · about 6 hours of video',
+             l: [['Open course', 'https://academy.langchain.com/courses/intro-to-langgraph']] },
+  lgess: { th: ['LangChain Academy','Free course \u00b7 13 lessons','graph'], t: 'LangGraph Essentials (Python)', d: 'A shorter introduction to nodes, edges, memory, and human-in-the-loop applications.', m: 'Free · 13 lessons · about 1 hour of video',
+           l: [['Open course', 'https://academy.langchain.com/courses/langgraph-essentials-python']] },
+  agentslg: { th: ['Hugging Face','Free course','graph'], t: 'Hugging Face AI Agents Course, LangGraph unit', d: 'Additional agent frameworks, agentic RAG, and final-project exercises.',
+              l: [['LangGraph unit', 'https://huggingface.co/learn/agents-course/unit2/langgraph/introduction'], ['Full course', 'https://huggingface.co/learn/agents-course/unit0/introduction']] },
+  roadmap: { th: ['GitHub','Roadmap','layers'], t: 'LLM Engineer learning roadmap', d: 'Use its inference, quantization, model serving, and local toolchain sections as a structured reading path.',
+             m: 'Same repository as the Phase 1 course. Quantization sits in the LLM Scientist track.',
+             l: [['LLM Engineer track', 'https://github.com/mlabonne/llm-course#-the-llm-engineer'], ['Quantization section', 'https://github.com/mlabonne/llm-course#7-quantization']] },
+  lighteval: { th: ['Hugging Face','Docs','bars'], t: 'Lighteval', d: 'Use this for evaluating model behavior across supported inference backends.', l: [['Open documentation', 'https://huggingface.co/docs/lighteval']] },
+  vllm: { th: ['vLLM','Docs','chip'], t: 'vLLM documentation', d: 'Official documentation for the serving engine used in Week 18. The engineer should run and profile a model, not just describe the terminology.',
+          m: 'Links to the latest developer-preview docs; switch to the stable version from the page if you need to match an install.',
+          l: [['Quickstart', 'https://docs.vllm.ai/en/latest/getting_started/quickstart/']] },
+  hfopt: { th: ['Hugging Face','Docs','chip'], t: 'Hugging Face Transformers: optimizing LLM inference', d: 'Official guides on the KV cache, attention optimizations, and lower-precision inference.',
+           l: [['Optimizing inference', 'https://huggingface.co/docs/transformers/main/llm_optims'], ['Speed and memory guide', 'https://huggingface.co/docs/transformers/llm_tutorial_optimization']] }
+};
+
+var PR = { 1: ['llm', 'agents1'], 2: ['rageval', 'lc'], 3: [], 4: ['lgintro', 'lgess', 'agentslg'], 5: ['roadmap', 'lighteval', 'vllm', 'hfopt'], 6: [] };
+
+var REFS = [
+  { k: 'requirements', t: 'Production engineering requirements', d: 'The nine disciplines that separate a demo from a service TDI can maintain.' },
+  { k: 'stack', t: 'Tools and stack', d: 'One standard stack, with LangChain and LangGraph as tools rather than the foundation.' },
+  { k: 'assignments', t: 'Real-world assignments A to D', d: 'Four assignments that mirror actual TDI client requirements.' },
+  { k: 'scorecard', t: 'Qualification scorecard', d: 'A weighted worksheet for judging readiness from evidence.' },
+  { k: 'exam', t: 'Final examination', d: 'The unfamiliar-system exam at the end of Week 24.' },
+  { k: 'review', t: 'Friday review and submission rules', d: 'The 45-minute weekly review and what every assignment must include.' },
+  { k: 'resources', t: 'All learning resources', d: 'Every free course and document, with links checked ' + CHECKED + '.' }
+];
+
+/* ------------------------------------------------------------------ state */
+
+var KEY = 'llm-track-progress-v1', CKEY = 'llm-track-checks-v1', SKEY = 'llm-track-scores-v1';
+function load(k, fallback) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? fallback : v; } catch (e) { return fallback; } }
+function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } }
+var done = new Set(load(KEY, []));
+var checks = new Set(load(CKEY, []));
+
+/* ------------------------------------------------------------------ helpers */
+
+var EXT = '<svg class="ext" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M6 3h7v7M13 3 5 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function ul(a, cls) { return '<ul' + (cls ? ' class="' + cls + '"' : '') + '>' + a.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>'; }
+function ol(a) { return '<ol>' + a.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ol>'; }
+function sec(title, body, attr) { return '<section class="section"' + (attr ? ' ' + attr : '') + '><h2>' + title + '</h2>' + body + '</section>'; }
+function note(t) { return '<div class="note">' + t + '</div>'; }
+function pc(p) { return 'style="--pc:var(' + p.c + ')"'; }
+function weekPh(n) { return W[n - 1].ph; }
+function host(u) { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return ''; } }
+function table(head, rows) {
+  return '<div class="tablewrap"><table><thead><tr>' + head.map(function (h) { return '<th scope="col">' + h + '</th>'; }).join('') +
+    '</tr></thead><tbody>' + rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + c + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
+}
+var MOTIF = {
+  graph: '<circle cx="30" cy="64" r="7"/><circle cx="80" cy="24" r="7"/><circle cx="130" cy="64" r="7"/><path d="M36 59 74 29M86 29 124 59M37 64H123"/>',
+  bars: '<path d="M28 72V52M52 72V36M76 72V46M100 72V26M124 72V40" stroke-width="9"/>',
+  layers: '<rect x="30" y="18" width="100" height="14" rx="4"/><rect x="30" y="38" width="100" height="14" rx="4"/><rect x="30" y="58" width="100" height="14" rx="4"/>',
+  docs: '<path d="M32 22H128M32 38H108M32 54H128M32 70H88"/>',
+  chip: '<rect x="56" y="24" width="48" height="42" rx="6"/><path d="M68 14v10M80 14v10M92 14v10M68 66v10M80 66v10M92 66v10M46 36h10M46 54h10M104 36h10M104 54h10"/>'
+};
+function thumb(r) {
+  var t = r.th, u = r.l[0][1];
+  return '<a class="thumb" href="' + u + '" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">' +
+    '<svg viewBox="0 0 160 90" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" preserveAspectRatio="xMidYMid slice">' + MOTIF[t[2]] + '</svg>' +
+    '<span class="tb">' + t[0] + '</span><span class="tk">' + t[1] + '</span></a>';
+}
+function resList(keys) {
+  return '<ul class="res">' + keys.map(function (k) {
+    var r = R[k];
+    return '<li class="res-item">' + thumb(r) + '<div class="res-body"><h3>' + r.t + '</h3><p>' + r.d + '</p>' + (r.m ? '<p class="res-meta">' + r.m + '</p>' : '') +
+      '<div class="res-links">' + r.l.map(function (l) {
+        return '<a class="linkbtn" href="' + l[1] + '" target="_blank" rel="noopener noreferrer">' + l[0] + '<span class="host">' + host(l[1]) + '</span>' + EXT + '</a>';
+      }).join('') + '</div></div></li>';
+  }).join('') + '</ul><p class="checked">Links checked ' + CHECKED + '. They open in a new tab. Cover tiles are generated for this page, not the sites\u2019 own artwork.</p>';
+}
+function checklist(id, items) {
+  return '<ul class="checks">' + items.map(function (t, i) {
+    var key = id + ':' + i;
+    return '<li><label><input type="checkbox" data-chk="' + key + '"' + (checks.has(key) ? ' checked' : '') + '><span>' + t + '</span></label></li>';
+  }).join('') + '</ul>';
+}
+function strip(cur) {
+  return '<nav class="strip" aria-label="All 24 weeks">' + PH.map(function (p) {
+    return '<div class="strip-ph" style="--pc:var(' + p.c + ');--n:' + (p.b - p.a + 1) + '">' + W.filter(function (w) { return w.ph === p; }).map(function (w) {
+      return '<a class="seg' + (done.has(w.n) ? ' done' : '') + (w.n === cur ? ' cur' : '') + '" href="#/week/' + w.n + '" aria-label="Week ' + w.n + ': ' + w.t + (done.has(w.n) ? ' (done)' : '') + '" title="Week ' + w.n + ': ' + w.t + '"></a>';
+    }).join('') + '</div>';
+  }).join('') + '</nav>';
+}
+function weekRange(p) { return 'Weeks ' + p.a + '\u2013' + p.b; }
+
+/* ------------------------------------------------------------------ shared blocks */
+
+function budgetBlock() {
+  return '<div class="budget" role="img" aria-label="18 hours per week: 4 reading, 6 labs, 6 project, 2 review">' +
+    '<span class="b1" style="flex:4">4 h</span><span class="b2" style="flex:6">6 h</span><span class="b3" style="flex:6">6 h</span><span class="b4" style="flex:2">2 h</span></div>' +
+    '<ul class="legend"><li><b>4 h</b> Free lectures and reading</li><li><b>6 h</b> Coding labs</li><li><b>6 h</b> Real-world engineering project</li><li><b>2 h</b> Code review and technical discussion</li></ul>';
+}
+function fridayBlock() {
+  return '<div class="budget" role="img" aria-label="45 minute review: 10, 15, 10, 10 minutes">' +
+    '<span class="b1" style="flex:10">10 min</span><span class="b2" style="flex:15">15 min</span><span class="b3" style="flex:10">10 min</span><span class="b4" style="flex:10">10 min</span></div>' +
+    '<ul class="legend"><li><b>10 min</b> Explain the week\u2019s concepts without notes</li><li><b>15 min</b> Live code review or debugging</li><li><b>10 min</b> Review benchmarks, test results, and failures</li><li><b>10 min</b> Agree next week\u2019s deliverable and acceptance criteria</li></ul>';
+}
+var SUBMIT = ['A GitHub branch and pull request.', 'Tests and reproducible benchmark scripts.', 'A short README and architecture diagram.', 'A report explaining tradeoffs and known limitations.', 'A live demonstration.'];
+
+function flowBlock() {
+  var s = function (b, t) { return '<div class="flow-step"><b>' + b + '</b><span>' + t + '</span></div>'; };
+  var l = '<div class="flow-link"></div>';
+  return '<div class="flow" role="group" aria-label="Million-document RAG architecture, top to bottom">' +
+    s('Document sources', 'PDF · DOCX · HTML · scanned files · databases') + l +
+    s('Ingestion and orchestration', 'Connectors · queue · parsing · OCR · validation · deduplication') + l +
+    s('Chunking and enrichment', 'Metadata · ACLs · stable IDs · embedding generation') + l +
+    '<div class="flow-pair">' + s('Vector index', 'Dense embeddings and ANN search') + s('Lexical index', 'BM25 and exact-term search') + '</div>' + l +
+    s('Query serving', 'Authentication \u2192 ACL filter \u2192 retrieval \u2192 fusion \u2192 reranking') + l +
+    s('Answer generation and evaluation', 'Context assembly · LLM · citations · traces · feedback') + '</div>';
+}
+function calcBlock() {
+  return '<div class="calc">' +
+    '<label>Documents<input id="c-docs" type="number" min="1" step="1" value="1000000" inputmode="numeric"></label>' +
+    '<label>Avg tokens per document<input id="c-tok" type="number" min="1" step="1" value="2000" inputmode="numeric"></label>' +
+    '<label>Chunk size (tokens)<input id="c-chunk" type="number" min="1" step="1" value="500" inputmode="numeric"></label>' +
+    '<label>Vector dimensions<input id="c-dim" type="number" min="1" step="1" value="1024" inputmode="numeric"></label>' +
+    '<label>Bytes per value<input id="c-bytes" type="number" min="1" step="1" value="4" inputmode="numeric"></label></div>' +
+    '<dl class="calc-out" id="c-out" aria-live="polite"></dl>';
+}
+function bindCalc() {
+  var q = function (id) { return document.getElementById(id); };
+  if (!q('c-out')) return;
+  var fmt = function (n, d) { return n.toLocaleString('en-US', { maximumFractionDigits: d == null ? 0 : d }); };
+  var calc = function () {
+    var docs = +q('c-docs').value, tok = +q('c-tok').value, ch = +q('c-chunk').value, dim = +q('c-dim').value, by = +q('c-bytes').value;
+    if (![docs, tok, ch, dim, by].every(function (v) { return v > 0; })) { q('c-out').innerHTML = '<div><dt>Enter positive numbers in every field.</dt></div>'; return; }
+    var per = Math.ceil(tok / ch), chunks = docs * per, gb = chunks * dim * by / 1e9;
+    q('c-out').innerHTML =
+      '<div><dt>Source tokens</dt><dd>' + fmt(docs * tok) + '</dd></div>' +
+      '<div><dt>Chunks per document (no overlap)</dt><dd>' + fmt(per) + '</dd></div>' +
+      '<div><dt>Chunks = embedding vectors</dt><dd>' + fmt(chunks) + '</dd></div>' +
+      '<div class="big"><dt>Raw vector values</dt><dd>' + fmt(gb, 1) + ' GB</dd></div>';
+  };
+  ['c-docs', 'c-tok', 'c-chunk', 'c-dim', 'c-bytes'].forEach(function (id) { q(id).addEventListener('input', calc); });
+  calc();
+}
+
+/* ------------------------------------------------------------------ week extras */
+
+function extras(n) {
+  var out = '';
+  var p = weekPh(n);
+  if (n === 1) {
+    out += sec('Assignment 01: build a production-style LLM API client',
+      '<div class="prose"><p><strong>Objective.</strong> Build a reusable Python package that can call an LLM provider reliably, validate structured outputs, and expose a clean interface to other TDI services.</p>' +
+      '<h3>Requirements</h3>' + checklist('a01', [
+        'Async API calls with configurable timeouts.',
+        'Retry policy with exponential backoff and jitter.',
+        'Pydantic input/output schemas.',
+        'Streaming support.',
+        'Token usage and latency tracking.',
+        'Unit tests using mocked responses.',
+        'Dockerized FastAPI endpoint.',
+        'README with architecture and failure-handling decisions.']) +
+      '<h3>Acceptance test</h3><p>Simulate rate limits, malformed outputs, timeouts, and provider failures. Demonstrate that the service handles them predictably without uncontrolled retries.</p>' +
+      '<h3>Submission</h3><p>GitHub PR, test report, 5-minute technical demo, and a short architecture explanation.</p></div>');
+  }
+  if (n === 8) {
+    out += sec('Estimate before you provision',
+      '<div class="prose"><p>The engineer should size the system on paper first. A million documents is not automatically a huge problem: the real difficulty depends on total tokens, document sizes, update frequency, concurrency, filtering, quality requirements, and infrastructure.</p>' +
+      '<p>The worked example: 1 million documents averaging 2,000 tokens, chunked into 500-token chunks with no overlap, gives about 2 billion source tokens, 4 million chunks, and 4 million vectors. At 1,024 dimensions stored as float32, the raw vector values alone occupy about 16.4 GB.</p></div>' +
+      calcBlock() +
+      note('<p>This excludes index overhead, metadata, replicas, and other storage. It is why the engineer must distinguish document count from chunk count, and raw vector size from actual deployed index size.</p>'));
+    out += sec('The architecture to design', flowBlock());
+  }
+  if (n === 9) {
+    out += sec('Required scale experiment',
+      '<div class="prose"><p>The engineer should not merely load one million records and declare success. Require a reproducible experiment with:</p>' + ul([
+        '1 million documents, with documented average and total token counts.',
+        'A known corpus and a labeled query set with relevant source IDs.',
+        'At least two retrieval configurations, including dense and hybrid.',
+        'Index-build duration, ingestion throughput, disk/RAM/VRAM consumption.',
+        'Retrieval Recall@k, nDCG@k, p95 latency, and concurrency.',
+        'Incremental ingestion and deletion tests.',
+        'Permission-filtering tests, including attempts to retrieve unauthorized content.']) + '</div>');
+  }
+  if (n === 10) {
+    out += sec('From the required scale experiment',
+      '<div class="prose">' + ul(['Incremental ingestion and deletion tests.', 'Permission-filtering tests, including attempts to retrieve unauthorized content.']) + '</div>');
+  }
+  if (n === 11) {
+    out += sec('From the required scale experiment',
+      '<div class="prose">' + ul(['Retrieval Recall@k, nDCG@k, p95 latency, and concurrency.', 'Index-build duration, ingestion throughput, disk/RAM/VRAM consumption.']) + '</div>');
+    out += sec('Phase deliverable',
+      '<div class="prose"><p>An architecture decision record (ADR), a benchmark report, deployment scripts, and a working API.</p></div>');
+  }
+  if (n === 15) {
+    out += sec('Real-world assignment: enterprise knowledge agent',
+      '<div class="prose"><p>Build an agent that can:</p>' + ol([
+        'Search the million-document knowledge base.',
+        'Decide whether the question needs retrieval, a database query, or a tool.',
+        'Retrieve evidence with permissions enforced.',
+        'Generate a cited answer.',
+        'Ask for human approval before executing a consequential action.',
+        'Resume after interruption without repeating completed side effects.',
+        'Record traces, tool results, errors, and evaluation outcomes.']) + '</div>' +
+      note('<p>Do not reward a complicated multi-agent architecture. Reward the simplest architecture that satisfies the requirements.</p>'));
+  }
+  if (n === 19) {
+    out += sec('Required optimization experiment',
+      '<div class="prose"><p>Give the engineer one open-weight model and one GPU configuration. Ask for a baseline, then improved performance while preserving a specified quality threshold. The engineer must compare:</p>' + ul([
+        'Original precision vs. quantized model.',
+        'Different batch sizes and concurrency levels.',
+        'Different maximum context lengths.',
+        'At least two inference configurations.',
+        'Latency and throughput under sustained load.',
+        'Output quality on a fixed evaluation dataset.']) +
+      '<p>The final report must explain which bottleneck was limiting performance: compute, memory bandwidth, KV cache, scheduling, CPU preprocessing, or another measured constraint.</p></div>');
+  }
+  if (n >= 20 && n <= 24) {
+    if (n === 20) {
+      out += sec('The system being built', '<div class="prose"><p><strong>TDI Enterprise AI Knowledge Platform:</strong> a deployable, multi-user enterprise knowledge system using a large document corpus.</p></div>' + pillars() +
+        note('<p>The capstone should include a realistic document corpus, not just a tiny collection of hand-written sample files.</p>'));
+    } else {
+      out += sec('The system being built', '<div class="prose"><p>Four parts make up the platform: document infrastructure, the RAG retrieval service, agent orchestration, and inference and operations. <a href="#/phase/6">See all four on the phase page</a>.</p></div>');
+    }
+  }
+  if (n === 24) {
+    out += sec('What follows', '<div class="prose"><p>After the defense comes the <a href="#/ref/exam">final examination</a>: an unfamiliar system requirement, a vertical slice, an injected bottleneck, and a technical review.</p></div>');
+  }
+  return out;
+}
+function pillars() {
+  var items = [
+    ['Document infrastructure', 'Ingestion workers, queues, object storage, metadata database, search indexes, and incremental updates.'],
+    ['RAG retrieval service', 'Dense and lexical retrieval, reranking, access control, evidence citations, and evaluation.'],
+    ['Agent orchestration', 'LangGraph workflows, controlled tools, checkpoints, human approvals, and recovery.'],
+    ['Inference and operations', 'Model serving, caching, performance benchmarks, logs, traces, alerts, and deployment automation.']];
+  return '<div class="prose"><ul>' + items.map(function (i) { return '<li><strong>' + i[0] + '.</strong> ' + i[1] + '</li>'; }).join('') + '</ul></div>';
+}
+
+/* ------------------------------------------------------------------ pages */
+
+function pageHome() {
+  var total = done.size;
+  var rows = PH.map(function (p) {
+    var ws = W.filter(function (w) { return w.ph === p; });
+    return '<div class="row" style="--pc:var(' + p.c + ')"><div class="row-head"><a href="#/phase/' + p.n + '"><i>Phase ' + p.n + '</i> ' + p.name + '</a><span>' + weekRange(p) + '</span></div>' +
+      '<div class="stops" style="--n:' + ws.length + '">' + ws.map(function (w, i) {
+        return '<a class="stop' + (done.has(w.n) ? ' done' : '') + (i === ws.length - 1 ? ' end' : '') + '" href="#/week/' + w.n + '"><i>' + w.n + '</i><span class="cap">' + w.t + '</span></a>';
+      }).join('') + '</div><p class="row-end">Ends with <b>' + p.d + '</b>, then a technical review.</p></div>';
+  }).join('');
+  var html =
+    '<header class="hero"><h1>LLM Engineer Track</h1><p class="lede">Twenty-four weeks in six phases, from LLM APIs to a defended production system. Each phase ends with a working deliverable and a technical review.</p>' +
+    '<div class="actions"><a class="btn" href="#/week/1">Start at Week 1</a><a class="btn ghost" href="#/ref/review">How Fridays work</a></div></header>' +
+    sec('The line', '<p class="muted">Every stop is a week. Each line ends at a deliverable. ' + (total ? total + ' of 24 weeks marked done in this browser.' : 'Mark weeks done as you go; progress stays in this browser.') + '</p>' + rows) +
+    sec('How a week is spent', '<p>Eighteen hours a week. Keep the theory-to-practice ratio around 1:3: most of the time goes to implementing and debugging systems, not watching videos.</p>' +
+      '<div style="--pc:var(--p1)">' + budgetBlock() + '</div>') +
+    sec('Reference', '<ul class="ref-list">' + REFS.map(function (r) { return '<li><a href="#/ref/' + r.k + '"><b>' + r.t + '</b><span>' + r.d + '</span></a></li>'; }).join('') + '</ul>');
+  return { html: html, title: 'LLM Engineer Track', nav: '#/' };
+}
+
+function pagePhase(n) {
+  var p = PH[n - 1];
+  if (!p) return page404();
+  var ws = W.filter(function (w) { return w.ph === p; });
+  var html =
+    '<header class="head" ' + pc(p) + '><a class="crumb" href="#/">All phases</a><div class="wk-line"><span class="wk-num">' + p.n + '</span><h1>' + p.name + '</h1></div>' +
+    '<p class="sub">' + weekRange(p) + ' \u00b7 Ends with: ' + p.d + '</p></header>' + strip(0) +
+    '<div ' + pc(p) + '><p class="lede">' + p.intro + '</p>' +
+    sec('Weeks', '<ul class="weeklist">' + ws.map(function (w) {
+      return '<li><a href="#/week/' + w.n + '"><span class="n">' + w.n + '</span><b>' + w.t + '</b><span>' + w.a + (done.has(w.n) ? ' <span class="tick">Done</span>' : '') + '</span></a></li>';
+    }).join('') + '</ul>') + phaseBlocks(n);
+  var rs = PR[n];
+  if (rs.length) html += sec('Free learning resources', resList(rs));
+  html += '</div>' + pager(p.a === 1 ? { h: '#/', l: 'Overview', s: 'Back to the line' } : { h: '#/week/' + (p.a - 1), l: 'Week ' + (p.a - 1), s: W[p.a - 2].t },
+    p.b === 24 ? { h: '#/ref/exam', l: 'Final examination', s: 'After Week 24' } : { h: '#/week/' + (p.b + 1), l: 'Week ' + (p.b + 1), s: W[p.b].t }, p);
+  return { html: html, title: 'Phase ' + n + ': ' + p.name, nav: '#/phase/' + n };
+}
+
+function phaseBlocks(n) {
+  var g = function (t, a) { return '<h3>' + t + '</h3>' + ul(a); };
+  if (n === 1) return sec('Must understand', '<div class="prose">' + ul(G.P1) + '</div>');
+  if (n === 2) return sec('Core topics the engineer must master', '<div class="prose">' + g('Document engineering', G.DOC) + g('Retrieval', G.RET) + g('Generation', G.GEN) + g('Evaluation', G.EVAL) + '</div>');
+  if (n === 3) {
+    return sec('The architecture to design', flowBlock()) +
+      sec('Required scale experiment', '<div class="prose"><p>Not just loading one million records: a reproducible experiment with documented token counts, a labeled query set, at least two retrieval configurations (dense and hybrid), resource measurements, Recall@k, nDCG@k, p95 latency, incremental ingestion, deletion, and permission-filtering tests. The full list is on <a href="#/week/9">Week 9</a>.</p></div>') +
+      sec('Capacity planning', '<div class="prose"><p>Estimate the system before provisioning infrastructure. The calculator is on <a href="#/week/8">Week 8</a>.</p></div>');
+  }
+  if (n === 4) {
+    return sec('LangGraph concepts to master', '<div class="prose">' + ul(G.LG) + '</div>') +
+      sec('Real-world assignment: enterprise knowledge agent', '<div class="prose"><p>An agent that searches the million-document knowledge base, chooses between retrieval, a database query, or a tool, enforces permissions, cites evidence, asks for human approval before consequential actions, resumes without repeating side effects, and records traces. Details are on <a href="#/week/15">Week 15</a>.</p></div>');
+  }
+  if (n === 5) {
+    return sec('Optimization topics', '<div class="prose">' + g('Model and memory optimization', G.MEM) + g('Inference serving', G.SERVE) + g('Performance measurement', G.MEAS) + '</div>') +
+      sec('Required optimization experiment', '<div class="prose"><p>One open-weight model, one GPU configuration, a baseline, and improvements that preserve a specified quality threshold. See <a href="#/week/19">Week 19</a> for the full comparison list.</p></div>');
+  }
+  if (n === 6) {
+    return sec('Project: TDI Enterprise AI Knowledge Platform', '<div class="prose"><p>Build a deployable, multi-user enterprise knowledge system using a large document corpus.</p></div>' + pillars() +
+      note('<p>The capstone should include a realistic document corpus, not just a tiny collection of hand-written sample files.</p>'));
+  }
+  return '';
+}
+
+function pager(prev, next, p) {
+  var a = function (o, cls) { return o ? '<a class="' + cls + '" href="' + o.h + '"><small>' + (cls === 'prev' ? 'Previous' : 'Next') + '</small><b>' + o.l + '</b><small>' + o.s + '</small></a>' : ''; };
+  return '<nav class="pager" aria-label="Page navigation"' + (p ? ' ' + pc(p) : '') + '>' + a(prev, 'prev') + a(next, 'next') + '</nav>';
+}
+
+function pageWeek(n) {
+  var w = W[n - 1];
+  if (!w) return page404();
+  var p = w.ph;
+  var last = n === p.b;
+  var html = '<header class="head" ' + pc(p) + '><a class="crumb" href="#/phase/' + p.n + '">Phase ' + p.n + ': ' + p.name + '</a>' +
+    '<div class="wk-line"><span class="wk-num" aria-hidden="true">' + (n < 10 ? '0' + n : n) + '</span><h1><span class="sr">Week ' + n + ': </span>' + w.t + '</h1></div>' +
+    '<p class="sub">Week ' + n + ' of 24 \u00b7 ' + (last ? 'Phase deliverable due this week: ' : 'Building toward: ') + p.d + '</p></header>' + strip(n) + '<div ' + pc(p) + '>';
+  if (w.tp.length) html += sec('Topics', ul(w.tp, 'topics'));
+  html += sec(w.lbl, '<p class="assign">' + w.a + '</p>');
+  var groups = K[n];
+  if (groups) {
+    html += sec('Knowledge targets', '<div class="prose">' + groups.map(function (g) { return '<h3>' + g[0] + '</h3>' + ul(g[1]); }).join('') + '</div>');
+  }
+  html += extras(n);
+  html += sec('Time this week', budgetBlock());
+  html += '<details class="fold"><summary>Friday review and submission rules</summary><div class="fold-body"><h3>45-minute technical review</h3>' + fridayBlock() +
+    '<h3>Every assignment includes</h3><div class="prose">' + ul(SUBMIT) + '<p>Do not accept only a notebook or a video demonstration for production-focused assignments.</p></div></div></details>';
+  var rs = PR[p.n];
+  if (rs.length) html += sec('Free resources for this phase', resList(rs));
+  var isDone = done.has(n);
+  html += '<div class="actions"><button class="btn" id="mark" type="button" aria-pressed="' + isDone + '" style="--btn:var(' + p.c + ');--btn-on:var(--on-pc)">' + (isDone ? 'Week marked done' : 'Mark week done') + '</button></div>';
+  html += '</div>';
+  html += pager(n === 1 ? { h: '#/', l: 'Overview', s: 'Back to the line' } : { h: '#/week/' + (n - 1), l: 'Week ' + (n - 1), s: W[n - 2].t },
+    n === 24 ? { h: '#/ref/exam', l: 'Final examination', s: 'After the capstone' } : { h: '#/week/' + (n + 1), l: 'Week ' + (n + 1), s: W[n].t }, p);
+  return { html: html, title: 'Week ' + n + ': ' + w.t, nav: '#/week/' + n, after: function () {
+    var b = document.getElementById('mark');
+    if (b) b.addEventListener('click', function () {
+      if (done.has(n)) done.delete(n); else done.add(n);
+      save(KEY, Array.from(done));
+      refreshProgress();
+      var on = done.has(n);
+      b.setAttribute('aria-pressed', on); b.textContent = on ? 'Week marked done' : 'Mark week done';
+      var seg = document.querySelector('.strip .seg.cur'); if (seg) seg.classList.toggle('done', on);
+    });
+    bindCalc();
+  } };
+}
+
+function pageRef(k) {
+  var head = function (t, s) { return '<header class="head"><a class="crumb" href="#/">Overview</a><div class="wk-line"><h1>' + t + '</h1></div>' + (s ? '<p class="sub">' + s + '</p>' : '') + '</header>'; };
+  var idx = REFS.map(function (r) { return r.k; }).indexOf(k);
+  if (idx < 0) return page404();
+  var r = REFS[idx], body = '';
+  if (k === 'requirements') {
+    body = '<p class="lede">The engineer should learn the disciplines that separate a demo from a service TDI can maintain.</p>' + table(['Area', 'Required competency'], [
+      ['Python', 'Async I/O, typing, Pydantic, pytest, profiling'], ['Backend', 'FastAPI, REST APIs, streaming, authentication'],
+      ['Databases', 'PostgreSQL, migrations, transactions, indexing'], ['Infrastructure', 'Docker, Linux, CI/CD, deployment, rollback'],
+      ['Distributed systems', 'Queues, workers, retries, idempotency, backpressure'], ['Observability', 'Structured logs, traces, metrics, alerts'],
+      ['Security', 'Tenant isolation, ACLs, secrets, prompt injection'], ['Reliability', 'Timeouts, circuit breakers, graceful degradation'],
+      ['Evaluation', 'Golden datasets, regression tests, quality monitoring']]) +
+      note('<p>For TDI, build on the team\u2019s existing Python and computer-vision engineering experience, while treating LLM serving and retrieval as their own performance problems.</p>');
+  } else if (k === 'stack') {
+    body = '<p class="lede">Standardize one primary stack. Introduce alternatives only when there is a concrete engineering reason.</p>' + table(['Layer', 'Recommended training stack (Python-first)'], [
+      ['Application', 'Python, FastAPI, Pydantic, pytest'], ['LLM orchestration', 'LangChain, LangGraph'], ['RAG', 'PostgreSQL/pgvector, a lexical search engine, reranking'],
+      ['Model serving', 'Transformers, vLLM, Ollama for lightweight local experiments'], ['Optimization', 'PyTorch, CUDA profiling tools, quantization libraries'],
+      ['Infrastructure', 'Docker, Linux, Redis/queues where justified, CI/CD'], ['Evaluation', 'Custom golden datasets, retrieval metrics, LLM-as-judge, tracing']]) +
+      note('<p><strong>Architecture rule.</strong> LangChain and LangGraph are tools, not the foundation of the engineer\u2019s expertise. The engineer must be able to explain and implement retrieval, state management, concurrency, retries, and evaluation without hiding behind framework abstractions.</p>');
+  } else if (k === 'assignments') {
+    var A = [['A', 'Enterprise document intelligence', 4, 11, 'Build a document Q&A platform that handles mixed document types, citations, permissions, incremental updates, and million-document retrieval benchmarks.'],
+      ['B', 'Enterprise workflow agent', 12, 15, 'Build a workflow that searches knowledge, calls approved tools, requests human authorization, and resumes safely after interruptions.'],
+      ['C', 'LLM inference optimization', 16, 19, 'Optimize an open-weight model for a defined workload. Compare quantization, batching, memory use, latency, throughput, and output quality.'],
+      ['D', 'Full production capstone', 20, 24, 'Integrate ingestion, RAG, agents, model serving, evaluation, observability, security, and deployment into one system.']];
+    body = '<p class="lede">Use problems that resemble actual TDI client requirements.</p><ul class="weeklist">' + A.map(function (a) {
+      return '<li style="--pc:var(' + W[a[2] - 1].ph.c + ')"><a href="#/week/' + a[2] + '"><span class="n">' + a[0] + '</span><b>' + a[1] + ' \u00b7 Weeks ' + a[2] + '\u2013' + a[3] + '</b><span>' + a[4] + '</span></a></li>';
+    }).join('') + '</ul>';
+  } else if (k === 'scorecard') {
+    body = '<p class="lede">Do not use course completion or certificates as the primary measure. Require code, benchmark results, architecture reviews, and live debugging. Score each competency from 0 to 100 after reviewing evidence.</p><div id="score" style="--pc:var(--p1)"></div>';
+  } else if (k === 'exam') {
+    body = '<p class="lede">At the end of Week 24, give the engineer an unfamiliar system requirement and ask them to:</p><div class="prose" style="--pc:var(--p6)">' + ol([
+      'Design the architecture without copying the capstone.', 'Estimate storage, compute, and throughput.', 'Implement a working vertical slice.',
+      'Diagnose a deliberately introduced retrieval or inference bottleneck.', 'Explain security risks and failure recovery.', 'Defend the design choices in a technical review.']) + '</div>' +
+      note('<p>The engineer should be able to explain not only what was built, but why it works, what breaks at scale, and how it would be proven.</p>');
+  } else if (k === 'review') {
+    body = '<p class="lede">Keep the process lightweight and consistent.</p>' + sec('Every Friday: 45-minute technical review', '<div style="--pc:var(--p1)">' + fridayBlock() + '</div>') +
+      sec('Every assignment has', '<div class="prose" style="--pc:var(--p1)">' + ul(SUBMIT) + '</div>' + note('<p>Do not allow the engineer to submit only a notebook or a video demonstration for production-focused assignments.</p>')) +
+      sec('Weekly rhythm', '<div style="--pc:var(--p1)">' + budgetBlock() + '</div>');
+  } else if (k === 'resources') {
+    body = '<p class="lede">Every free resource in the curriculum, grouped by phase. Links were checked on ' + CHECKED + '.</p>' + PH.filter(function (p) { return PR[p.n].length; }).map(function (p) {
+      return sec('Phase ' + p.n + ': ' + p.name, resList(PR[p.n]), pc(p));
+    }).join('');
+  }
+  var prev = idx ? { h: '#/ref/' + REFS[idx - 1].k, l: REFS[idx - 1].t, s: 'Reference' } : { h: '#/', l: 'Overview', s: 'Back to the line' };
+  var next = idx < REFS.length - 1 ? { h: '#/ref/' + REFS[idx + 1].k, l: REFS[idx + 1].t, s: 'Reference' } : null;
+  return { html: head(r.t, r.d) + body + pager(prev, next), title: r.t, nav: '#/ref/' + k, after: k === 'scorecard' ? bindScore : null };
+}
+
+function page404() { return { html: '<header class="head"><h1>Page not found</h1></header><p class="lede">That page is not part of this curriculum. <a href="#/">Return to the overview</a>.</p>', title: 'Not found', nav: '' }; }
+
+/* ------------------------------------------------------------------ scorecard */
+
+var SC = [['LLM fundamentals and APIs', 10], ['RAG retrieval and evaluation', 20], ['Million-document architecture and scaling', 20],
+  ['LangChain and LangGraph', 15], ['Inference and GPU optimization', 20], ['Production engineering and security', 15]];
+function bindScore() {
+  var root = document.getElementById('score'); if (!root) return;
+  var vals = load(SKEY, null); if (!Array.isArray(vals) || vals.length !== SC.length) vals = SC.map(function () { return 0; });
+  root.innerHTML = '<div class="total"><b id="tot">0</b><span>out of 100, weighted</span></div><div id="ver" class="verdict" aria-live="polite"></div>' +
+    SC.map(function (s, i) {
+      return '<div class="score-row"><label for="s' + i + '">' + s[0] + '<small>' + s[1] + '% weight</small></label><output id="o' + i + '" for="s' + i + '">0</output>' +
+        '<input id="s' + i + '" type="range" min="0" max="100" step="1" value="' + (vals[i] | 0) + '"></div>';
+    }).join('') + '<div class="actions"><button type="button" class="btn ghost" id="reset">Reset assessment</button></div>' +
+    '<div class="note"><p>Suggested internal target: 80/100 overall, with no score below 70% in scaling, optimization, or production engineering. This is a proposed TDI training standard, not an industry certification.</p></div>';
+  var calc = function () {
+    var tot = 0, cur = [];
+    SC.forEach(function (s, i) { var v = +document.getElementById('s' + i).value; cur.push(v); document.getElementById('o' + i).textContent = v; tot += v * s[1] / 100; });
+    save(SKEY, cur);
+    var t = Math.round(tot * 10) / 10;
+    document.getElementById('tot').textContent = t % 1 ? t.toFixed(1) : t;
+    var low = [[2, 'scaling'], [4, 'optimization'], [5, 'production engineering']].filter(function (x) { return cur[x[0]] < 70; }).map(function (x) { return x[1]; });
+    var v = document.getElementById('ver');
+    if (tot >= 80 && !low.length) { v.className = 'verdict ok'; v.textContent = 'Meets the proposed TDI standard.'; }
+    else if (!cur.some(function (x) { return x > 0; })) { v.className = 'verdict'; v.textContent = 'Move the sliders as you review evidence.'; }
+    else { v.className = 'verdict no'; v.textContent = 'Below the proposed standard.' + (tot < 80 ? ' Overall score needs to reach 80.' : '') + (low.length ? ' Needs 70 or more in: ' + low.join(', ') + '.' : ''); }
+  };
+  root.querySelectorAll('input[type=range]').forEach(function (r) { r.addEventListener('input', calc); });
+  document.getElementById('reset').addEventListener('click', function () { root.querySelectorAll('input[type=range]').forEach(function (r) { r.value = 0; }); calc(); });
+  calc();
+}
+
+/* ------------------------------------------------------------------ nav + router */
+
+function buildNav() {
+  var h = '<a class="brand" href="#/">LLM Engineer Track<small>24 weeks \u00b7 6 phases \u00b7 18 hours a week</small></a>' +
+    '<div class="prog"><span id="prog-t"></span><div class="prog-bar"><i id="prog-b"></i></div></div>' +
+    '<ul class="nav-top"><li><a href="#/">Overview</a></li></ul>';
+  h += PH.map(function (p) {
+    return '<section class="nav-phase" ' + pc(p) + '><a class="nav-phase-h" href="#/phase/' + p.n + '">Phase ' + p.n + ': ' + p.name + '</a><ol class="nav-weeks">' +
+      W.filter(function (w) { return w.ph === p; }).map(function (w) { return '<li><a href="#/week/' + w.n + '" data-w="' + w.n + '"><span class="wn">Week ' + w.n + '</span><span>' + w.t + '</span></a></li>'; }).join('') + '</ol></section>';
+  }).join('');
+  h += '<p class="nav-label">Reference</p><ul class="nav-ref">' + REFS.map(function (r) { return '<li><a href="#/ref/' + r.k + '">' + r.t + '</a></li>'; }).join('') + '</ul>' +
+    '<p class="side-foot">Progress and checklists are saved in this browser only.</p>';
+  document.getElementById('side').innerHTML = h;
+  refreshProgress();
+}
+function refreshProgress() {
+  document.querySelectorAll('.nav-weeks a').forEach(function (a) { a.classList.toggle('done', done.has(+a.getAttribute('data-w'))); });
+  var t = document.getElementById('prog-t'), b = document.getElementById('prog-b');
+  if (t) t.textContent = done.size + ' of 24 weeks done';
+  if (b) b.style.width = (done.size / 24 * 100) + '%';
+}
+function setNav(href) {
+  document.querySelectorAll('#side a[aria-current]').forEach(function (a) { a.removeAttribute('aria-current'); });
+  if (!href) return;
+  var a = document.querySelector('#side a[href="' + href + '"]:not(.brand)');
+  if (a) a.setAttribute('aria-current', 'page');
+}
+
+function route() {
+  var raw = (location.hash || '').replace(/^#\/?/, '');
+  var parts = raw.split('/');
+  var res;
+  if (!parts[0]) res = pageHome();
+  else if (parts[0] === 'phase') res = pagePhase(+parts[1]);
+  else if (parts[0] === 'week') res = pageWeek(+parts[1]);
+  else if (parts[0] === 'ref') res = pageRef(parts[1]);
+  else res = page404();
+  var main = document.getElementById('main');
+  main.innerHTML = '<div class="page">' + res.html + '</div>';
+  document.title = res.title + ' | LLM Engineer Track';
+  document.getElementById('bar-t').textContent = res.title;
+  setNav(res.nav);
+  document.body.classList.remove('nav-open');
+  window.scrollTo(0, 0);
+  main.focus({ preventScroll: true });
+  main.querySelectorAll('input[data-chk]').forEach(function (i) {
+    i.addEventListener('change', function () { if (i.checked) checks.add(i.getAttribute('data-chk')); else checks.delete(i.getAttribute('data-chk')); save(CKEY, Array.from(checks)); });
+  });
+  if (res.after) res.after();
+}
+
+document.getElementById('menu').addEventListener('click', function () {
+  var open = document.body.classList.toggle('nav-open');
+  this.setAttribute('aria-expanded', open);
+});
+document.getElementById('scrim').addEventListener('click', function () { document.body.classList.remove('nav-open'); document.getElementById('menu').setAttribute('aria-expanded', 'false'); });
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { document.body.classList.remove('nav-open'); document.getElementById('menu').setAttribute('aria-expanded', 'false'); } });
+document.getElementById('skip').addEventListener('click', function (e) { e.preventDefault(); document.getElementById('main').focus(); });
+window.addEventListener('hashchange', route);
+buildNav();
+route();
+
+})();
+
+</script>
+</body>
+</html>
