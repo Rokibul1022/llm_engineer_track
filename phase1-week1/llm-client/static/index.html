@@ -1,0 +1,1859 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LLM Client — Live Service & Acceptance Test Demo</title>
+<style>
+  :root{
+    --bg:#0b0d13; --surface:#131720; --surface2:#1a202c; --line:#232b3b; --ink:#e2e8f0; --muted:#8492a6;
+    --accent:#3b82f6; --accent-glow:rgba(59,130,246,0.25);
+    --ok:#10b981; --ok-bg:rgba(16,185,129,0.12);
+    --err:#ef4444; --err-bg:rgba(239,68,68,0.12);
+    --warn:#f59e0b; --warn-bg:rgba(245,158,11,0.12);
+    --purple:#8b5cf6; --purple-bg:rgba(139,92,246,0.12);
+    --bolt:#f59e0b;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);min-height:100vh}
+  .wrap{max-width:880px;margin:0 auto;padding:28px 20px 80px}
+  
+  /* Header & Navigation Tabs */
+  .header{margin-bottom:20px}
+  h1{font-size:22px;margin:0 0 6px;font-weight:700;letter-spacing:-0.3px}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 20px;line-height:1.45}
+  
+  .tabs{display:flex;gap:6px;background:var(--surface);padding:4px;border-radius:10px;border:1px solid var(--line);margin-bottom:24px}
+  .tab-btn{
+    flex:1;padding:11px 14px;border-radius:8px;border:none;background:transparent;
+    color:var(--muted);font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;transition:all 0.2s;
+  }
+  .tab-btn.active{background:var(--surface2);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,0.4)}
+  .tab-pane{display:none}
+  .tab-pane.active{display:block}
+
+  /* Form Elements */
+  label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px;font-weight:500}
+  input,textarea,select{
+    width:100%;background:var(--surface);border:1px solid var(--line);color:var(--ink);
+    border-radius:8px;padding:10px 12px;font:inherit;font-size:14px;resize:vertical;transition:border-color 0.15s;
+  }
+  input:focus,textarea:focus,select:focus{border-color:var(--accent);outline:none}
+  textarea{min-height:80px}
+  .row{display:flex;gap:12px}
+  .row > div{flex:1}
+  .actions{display:flex;gap:10px;margin-top:18px}
+  button{
+    flex:1;padding:11px 16px;border-radius:8px;border:1px solid var(--line);
+    background:var(--surface);color:var(--ink);font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;
+  }
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.primary:hover{background:#2563eb}
+  button:hover{background:var(--surface2)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+
+  /* Live Client Response Area */
+  .out{
+    margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:10px;
+    padding:16px;min-height:120px;white-space:pre-wrap;font-size:15px;line-height:1.55;
+  }
+  .out.empty{color:var(--muted);font-style:italic}
+  .meta{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--ink)}
+  .error{color:var(--err)}
+  .cursor{display:inline-block;width:8px;height:1em;background:var(--accent);vertical-align:text-bottom;animation:blink 1s step-start infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* Speed Insights Panel */
+  .insights{
+    margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    padding:20px 22px 16px;display:none;
+  }
+  .insights.show{display:block}
+  .insights h2{display:flex;align-items:center;gap:8px;font-size:16px;margin:0 0 18px;font-weight:700}
+  .bolt{color:var(--bolt)}
+  .insights h3{font-size:13px;color:var(--muted);font-weight:600;margin:0 0 10px}
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+  .stat{text-align:center}
+  .stat .big{display:block;font-size:26px;font-weight:700;line-height:1.15}
+  .stat.emph .big{font-size:32px;color:var(--accent)}
+  .stat .lbl{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+  .insights .foot{
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 16px;
+    font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;margin-top:4px;
+  }
+  .headline{
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 16px;
+    background:#000;border-radius:10px;padding:10px 16px;margin-top:14px;font-size:13px;color:var(--muted);
+  }
+  .headline b{color:var(--ink);font-size:14px}
+
+  /* ---- VISUAL LATENCY DECOMPOSITION CARDS ---- */
+  .latency-decomp-card{
+    margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:18px;box-shadow:0 4px 20px rgba(0,0,0,0.3);animation:slideDown 0.3s ease-out;
+  }
+  .decomp-hdr{
+    display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;
+  }
+  .decomp-title{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700}
+  .decomp-badge{
+    font-size:11px;padding:3px 8px;border-radius:6px;background:rgba(59,130,246,0.15);
+    color:var(--accent);border:1px solid rgba(59,130,246,0.3);font-weight:700;letter-spacing:0.5px;
+  }
+  .decomp-total{
+    font-size:20px;font-weight:800;color:var(--ink);font-family:monospace;
+  }
+  
+  .decomp-bar-wrap{
+    height:22px;background:#0d1117;border-radius:6px;overflow:hidden;display:flex;margin:10px 0 16px;
+    border:1px solid #1e2638;
+  }
+  .decomp-bar-fill{
+    height:100%;display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.6);
+    transition:width 0.4s ease;overflow:hidden;white-space:nowrap;padding:0 6px;
+  }
+  .decomp-bar-fill.prefill{background:linear-gradient(90deg, #2563eb, #3b82f6)}
+  .decomp-bar-fill.decode{background:linear-gradient(90deg, #059669, #10b981)}
+  
+  .phase-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;
+  }
+  @media(max-width:600px){.phase-grid{grid-template-columns:1fr}}
+  
+  .phase-card{
+    background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .phase-card.prefill{border-left:4px solid var(--accent);background:rgba(59,130,246,0.03)}
+  .phase-card.decode{border-left:4px solid var(--ok);background:rgba(16,185,129,0.03)}
+  
+  .phase-hdr{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .phase-info{display:flex;flex-direction:column}
+  .phase-tag{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:0.5px}
+  .phase-name{font-size:13px;font-weight:600;color:var(--ink)}
+  .phase-pct{
+    font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:5px;
+  }
+  .phase-card.prefill .phase-pct{background:rgba(59,130,246,0.15);color:#60a5fa}
+  .phase-card.decode .phase-pct{background:rgba(16,185,129,0.15);color:#34d399}
+  
+  .phase-metric{
+    font-size:26px;font-weight:800;margin:10px 0;font-family:monospace;
+  }
+  .phase-card.prefill .phase-metric{color:#93c5fd}
+  .phase-card.decode .phase-metric{color:#6ee7b7}
+  
+  .phase-details{display:flex;flex-direction:column;gap:6px}
+  .detail-pill{
+    display:flex;align-items:center;gap:6px;font-size:12px;color:#cbd5e1;
+    background:#131924;padding:6px 10px;border-radius:6px;border:1px solid #1d2536;
+  }
+  .detail-pill .pill-icon{font-size:13px}
+  
+  .decomp-equation{
+    display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;
+    background:#080b10;border:1px solid #19202e;border-radius:8px;padding:12px 14px;
+    font-size:13px;font-weight:600;margin-top:6px;
+  }
+  .eq-node{padding:5px 12px;border-radius:6px;font-family:monospace}
+  .eq-node.prefill{background:rgba(59,130,246,0.12);color:#93c5fd;border:1px solid rgba(59,130,246,0.25)}
+  .eq-node.decode{background:rgba(16,185,129,0.12);color:#6ee7b7;border:1px solid rgba(16,185,129,0.25)}
+  .eq-node.total{background:rgba(245,158,11,0.12);color:#fcd34d;border:1px solid rgba(245,158,11,0.25)}
+  .eq-op{color:var(--muted);font-weight:700;font-size:14px}
+
+  /* ---- BACKEND EXECUTION PIPELINE ARTIFACT ---- */
+  .pipeline-card{
+    margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:18px;box-shadow:0 4px 20px rgba(0,0,0,0.25);
+  }
+  .pipeline-hdr{
+    display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;
+  }
+  .pipeline-title{
+    display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:700;color:var(--ink);
+  }
+  .pipeline-status-badge{
+    font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:6px;
+    background:rgba(255,255,255,0.06);border:1px solid var(--line);color:var(--muted);font-family:monospace;
+    transition:all 0.25s;
+  }
+  .pipeline-status-badge.running{
+    background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.35);color:#60a5fa;
+    animation:pulseBadge 1.5s infinite;
+  }
+  .pipeline-status-badge.completed{
+    background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.35);color:#34d399;
+  }
+  .pipeline-status-badge.error{
+    background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.35);color:#f87171;
+  }
+  .pipeline-status-badge.fastfail{
+    background:rgba(239,68,68,0.2);border-color:rgba(239,68,68,0.5);color:#fca5a5;
+  }
+  .pipeline-status-badge.exhausted{
+    background:rgba(245,158,11,0.2);border-color:rgba(245,158,11,0.5);color:#fcd34d;
+  }
+  @keyframes pulseBadge{0%,100%{opacity:1} 50%{opacity:0.6}}
+
+  .pipeline-flow{
+    display:grid;grid-template-columns:repeat(5, 1fr);gap:10px;margin-bottom:12px;
+  }
+  @media(max-width:980px){.pipeline-flow{grid-template-columns:1fr}}
+
+  .pipe-step{
+    background:var(--bg);border:1px solid #1a2233;border-radius:10px;padding:12px 14px;
+    display:flex;flex-direction:column;justify-content:space-between;position:relative;
+    transition:all 0.25s ease;min-height:120px;
+  }
+  .pipe-step.active{
+    border-color:var(--accent);box-shadow:0 0 14px var(--accent-glow);background:rgba(59,130,246,0.06);
+  }
+  .pipe-step.active-amber{
+    border-color:#f59e0b;box-shadow:0 0 14px rgba(245,158,11,0.25);background:rgba(245,158,11,0.06);
+  }
+  .pipe-step.done{
+    border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.03);
+  }
+  .pipe-step.pipe-error{
+    border-color:rgba(239,68,68,0.4);background:rgba(239,68,68,0.04);
+  }
+
+  .pipe-step-num{
+    font-size:10px;font-weight:700;color:var(--muted);letter-spacing:0.5px;
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;
+  }
+  .pipe-step-tag{
+    font-size:9.5px;padding:2px 6px;border-radius:4px;background:#111722;border:1px solid #1a2335;
+    font-weight:700;color:#94a3b8;
+  }
+  .pipe-step-title{
+    font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px;display:flex;align-items:center;gap:6px;
+  }
+  .pipe-step-desc{
+    font-size:11.5px;color:var(--muted);line-height:1.35;margin-bottom:8px;
+  }
+  .pipe-step-stat{
+    font-size:11px;font-weight:700;font-family:monospace;padding:4px 7px;border-radius:5px;
+    background:#0b0f17;border:1px solid #1a2335;color:#94a3b8;display:flex;align-items:center;
+    justify-content:space-between;gap:4px;margin-top:auto;
+  }
+  .pipe-step.active .pipe-step-stat{color:#93c5fd;border-color:rgba(59,130,246,0.3);background:rgba(59,130,246,0.1)}
+  .pipe-step.active-amber .pipe-step-stat{color:#fcd34d;border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.1)}
+  .pipe-step.done .pipe-step-stat{color:#6ee7b7;border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.08)}
+  .pipe-step.pipe-error .pipe-step-stat{color:#f87171;border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.08)}
+
+  .pipe-details-btn{
+    background:rgba(255,255,255,0.06);border:1px solid var(--line);color:var(--ink);
+    border-radius:6px;font-size:11.5px;padding:4px 10px;cursor:pointer;transition:all 0.2s;font-weight:600;
+  }
+  .pipe-details-btn:hover{background:rgba(59,130,246,0.15);border-color:var(--accent);color:#93c5fd}
+
+  .arch-drawer{
+    margin-top:12px;border-top:1px solid #1a2335;padding-top:12px;
+  }
+  .arch-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:12px}
+  @media(max-width:768px){.arch-grid{grid-template-columns:1fr}}
+  .arch-box{background:#090d14;border:1px solid #192233;border-radius:8px;padding:12px 14px}
+  .arch-hdr{font-size:11.5px;font-weight:700;color:#94a3b8;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px}
+  .arch-code{font-family:monospace;font-size:12px;color:#cbd5e1;display:flex;flex-direction:column;gap:5px;line-height:1.4}
+  .arch-k{color:#60a5fa;font-weight:600}
+  .arch-formula{font-size:12px;display:flex;flex-direction:column;gap:6px}
+  .formula-row{display:flex;align-items:center;gap:8px}
+  .formula-row code{background:#131a26;border:1px solid #23304a;padding:3px 7px;border-radius:4px;color:#34d399;font-size:11.5px}
+  .f-lbl{color:var(--muted);font-weight:600;min-width:115px}
+
+  /* ---- ACCEPTANCE TEST & FAULT INJECTION STYLES ---- */
+  .scenario-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:8px;margin-top:8px;margin-bottom:14px;
+  }
+  .scenario-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+    cursor:pointer;transition:all 0.2s;text-align:left;
+  }
+  .scenario-card:hover{border-color:var(--accent);background:var(--surface2)}
+  .scenario-card.active{border-color:var(--accent);background:rgba(59,130,246,0.1);box-shadow:0 0 0 1px var(--accent)}
+  .scenario-card .sc-title{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
+  .scenario-card .sc-desc{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.35}
+
+  /* Two Column Interactive Artifact Area */
+  .artifact-container{
+    display:grid;grid-template-columns:1.35fr 1fr;gap:16px;margin-top:22px;
+  }
+  @media(max-width:768px){.artifact-container{grid-template-columns:1fr}}
+
+  .panel-box{
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+  }
+  .panel-box h3{
+    margin:0 0 14px;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;color:var(--ink);
+  }
+
+  /* Current Policy Decision HUD */
+  .decision-hud{display:flex;flex-direction:column;gap:10px}
+  .hud-item{
+    display:flex;justify-content:space-between;align-items:center;font-size:13px;
+    padding:8px 10px;background:var(--bg);border-radius:6px;border:1px solid #1a2230;
+  }
+  .hud-item .lbl{color:var(--muted);font-weight:500}
+  .hud-item .val{font-weight:600;font-family:monospace;font-size:13px}
+  .hud-rationale{
+    margin-top:6px;padding:10px 12px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.2);
+    border-radius:8px;font-size:12.5px;color:#cbd5e1;line-height:1.45;
+  }
+
+  /* Visual Flow Diagram / Execution Graph */
+  .flow-canvas{
+    position:relative;display:flex;flex-direction:column;align-items:center;padding:12px 6px;
+    min-height:220px;
+  }
+  .flow-empty{
+    color:var(--muted);font-style:italic;font-size:13px;margin:auto 0;text-align:center;padding:40px 10px;
+  }
+  
+  .flow-node{
+    width:100%;max-width:340px;background:var(--bg);border:1px solid var(--line);border-radius:8px;
+    padding:10px 14px;display:flex;align-items:center;justify-content:space-between;
+    font-size:13px;font-weight:600;animation:nodeEnter 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    position:relative;z-index:2;box-shadow:0 2px 6px rgba(0,0,0,0.25);
+  }
+  @keyframes nodeEnter{from{opacity:0;transform:translateY(-8px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)}}
+
+  .flow-node.active{
+    border-color:var(--accent);box-shadow:0 0 12px var(--accent-glow);animation:nodePulse 1.5s infinite;
+  }
+  @keyframes nodePulse{0%,100%{border-color:var(--accent)} 50%{border-color:#60a5fa}}
+
+  .flow-node.node-request{border-color:var(--accent);background:rgba(59,130,246,0.08)}
+  .flow-node.node-retryable{border-color:var(--warn);background:var(--warn-bg)}
+  .flow-node.node-backoff{border-color:var(--warn);background:rgba(245,158,11,0.05);max-width:280px;font-size:12.5px}
+  .flow-node.node-retry{border-color:var(--accent);background:rgba(59,130,246,0.07);max-width:300px}
+  .flow-node.node-failfast{border-color:var(--err);background:var(--err-bg)}
+  .flow-node.node-exhausted{border-color:var(--err);background:rgba(239,68,68,0.15)}
+  .flow-node.node-recovered{border-color:var(--ok);background:var(--ok-bg)}
+
+  .flow-arrow{
+    width:2px;height:24px;background:var(--line);position:relative;margin:1px 0;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .flow-arrow::after{
+    content:"";position:absolute;bottom:0;left:-3px;width:0;height:0;
+    border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--muted);
+  }
+  .flow-arrow.active{
+    background:var(--accent);
+  }
+  .flow-arrow.active::after{border-top-color:var(--accent)}
+
+  .backoff-bar-wrap{
+    width:100%;height:4px;background:#1a2230;border-radius:2px;margin-top:6px;overflow:hidden;
+  }
+  .backoff-bar-fill{
+    height:100%;background:var(--warn);width:0%;transition:width linear;
+  }
+
+  /* Final Result Banners */
+  .result-banner{
+    margin-top:20px;padding:16px 20px;border-radius:10px;border:1px solid var(--line);
+    background:var(--surface);display:none;animation:slideDown 0.3s ease-out;
+  }
+  .result-banner.recovered{border-color:rgba(16,185,129,0.5);background:rgba(16,185,129,0.07)}
+  .result-banner.exhausted{border-color:rgba(239,68,68,0.5);background:rgba(239,68,68,0.07)}
+  .result-banner.fastfail{border-color:rgba(239,68,68,0.6);background:rgba(239,68,68,0.09)}
+  .result-banner.validation{border-color:rgba(239,68,68,0.6);background:rgba(239,68,68,0.09)}
+  .result-banner h4{margin:0 0 6px;font-size:16px;display:flex;align-items:center;gap:8px}
+  .result-banner .banner-desc{font-size:13.5px;color:#cbd5e1;line-height:1.45;margin-bottom:8px}
+  .result-banner .banner-meta{font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:14px}
+  .result-banner .banner-meta b{color:var(--ink)}
+
+  /* Live Technical Attempt Log (Preserved) */
+  .log-section{margin-top:26px}
+  .attempt-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;
+    padding:14px 16px;margin-bottom:10px;animation:slideDown 0.25s ease-out;
+  }
+  @keyframes slideDown{from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)}}
+  
+  .attempt-hdr{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:600}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:0.5px}
+  .badge-success{background:rgba(16,185,129,0.2);color:var(--ok);border:1px solid rgba(16,185,129,0.4)}
+  .badge-retry{background:rgba(245,158,11,0.18);color:var(--warn);border:1px solid rgba(245,158,11,0.35)}
+  .badge-fail{background:rgba(239,68,68,0.18);color:var(--err);border:1px solid rgba(239,68,68,0.35)}
+  
+  .attempt-sub{font-size:13px;color:var(--muted);margin-top:6px}
+  .attempt-delay{font-size:13px;color:var(--accent);margin-top:4px}
+  .attempt-detail{
+    margin-top:8px;background:#090c10;padding:8px 10px;border-radius:6px;
+    font-family:monospace;font-size:12px;color:var(--muted);white-space:pre-wrap;border:1px solid #1c222e;
+  }
+  .sim-empty{color:var(--muted);font-style:italic;background:var(--surface);border:1px dashed var(--line);border-radius:10px;padding:22px;text-align:center;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>LLM Client Service</h1>
+    <p class="sub">Production-style typed async LLM client with retries, exponential backoff, jitter, streaming, and failure fault-injection.</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tabLiveBtn" onclick="switchTab('live')">⚡ Live Client & Speed Insights</button>
+    <button class="tab-btn" id="tabSimBtn" onclick="switchTab('sim')">🧪 Acceptance Test & Fault Injection</button>
+  </div>
+
+  <!-- TAB 1: LIVE LLM CLIENT -->
+  <div class="tab-pane active" id="tabLive">
+    <label for="base">Server base URL</label>
+    <input id="base" value="http://localhost:8000">
+
+    <div class="row">
+      <div>
+        <label for="model">Model</label>
+        <input id="model" value="openai/gpt-oss-120b">
+      </div>
+      <div>
+        <label for="mode">Mode</label>
+        <select id="mode">
+          <option value="stream">Stream (live tokens)</option>
+          <option value="complete">Complete (single response)</option>
+        </select>
+      </div>
+    </div>
+
+    <label for="prompt">Message</label>
+    <textarea id="prompt">Explain retries with exponential backoff and jitter in two sentences.</textarea>
+
+    <div class="actions">
+      <button class="primary" id="send">Send Message</button>
+      <button id="clear">Clear</button>
+    </div>
+
+    <div id="out" class="out empty">Response will appear here.</div>
+    <div id="meta" class="meta"></div>
+
+    <!-- Interactive Visual Artifact: Backend Execution Pipeline -->
+    <div id="backendPipeline" class="pipeline-card">
+      <div class="pipeline-hdr">
+        <div class="pipeline-title">
+          <span style="font-size:18px;">⚙️</span>
+          <div>
+            <span style="font-size:14.5px;font-weight:700;color:var(--ink);">Backend Execution Pipeline</span>
+            <div style="font-size:11.5px;color:var(--muted);font-weight:400;margin-top:1px;">Scratch to Generation Lifecycle · Real-Time Execution Trace</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="pipeline-status-badge" id="pipeStatusBadge">● READY</span>
+          <button class="pipe-details-btn" id="toggleArchBtn" onclick="toggleArchDetails()">📐 Trace Spec</button>
+        </div>
+      </div>
+
+      <!-- 5-Stage Visual Stepper Grid -->
+      <div class="pipeline-flow">
+        <!-- Step 1 -->
+        <div class="pipe-step" id="pipeStep1">
+          <div class="pipe-step-num">
+            <span>STEP 01</span>
+            <span class="pipe-step-tag">FASTAPI</span>
+          </div>
+          <div class="pipe-step-title">
+            <span>📝</span> Request Ingestion
+          </div>
+          <div class="pipe-step-desc">
+            Captures prompt & validates schema with typed <code>LLMRequest</code> (messages, model, params).
+          </div>
+          <div class="pipe-step-stat" id="pipeStat1">
+            <span>LLMRequest ready</span>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="pipe-step" id="pipeStep2">
+          <div class="pipe-step-num">
+            <span>STEP 02</span>
+            <span class="pipe-step-tag">CLIENT</span>
+          </div>
+          <div class="pipe-step-title">
+            <span>🛡️</span> Async Dispatch
+          </div>
+          <div class="pipe-step-desc">
+            <code>AsyncLLMClient</code> arms non-blocking HTTPX transport, 30s timeout, & starts high-res timer.
+          </div>
+          <div class="pipe-step-stat" id="pipeStat2">
+            <span>Async transport</span>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="pipe-step" id="pipeStep3">
+          <div class="pipe-step-num">
+            <span>STEP 03</span>
+            <span class="pipe-step-tag" style="color:#93c5fd;">PHASE 1</span>
+          </div>
+          <div class="pipe-step-title">
+            <span>🚀</span> Prefill & TTFT
+          </div>
+          <div class="pipe-step-desc">
+            Provider tokenizes prompt, initialises KV cache, computes attention, & emits chunk #1 (TTFT).
+          </div>
+          <div class="pipe-step-stat" id="pipeStat3">
+            <span>Prefill: -- ms</span><span style="color:#93c5fd;font-size:10px">$0.10/1M</span>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="pipe-step" id="pipeStep4">
+          <div class="pipe-step-num">
+            <span>STEP 04</span>
+            <span class="pipe-step-tag" style="color:#34d399;">PHASE 2</span>
+          </div>
+          <div class="pipe-step-title">
+            <span>⚡</span> Autoregressive Decode
+          </div>
+          <div class="pipe-step-desc">
+            Iterative next-token generation loop streaming SSE chunks <code>data: {"token": "..."}</code> to browser.
+          </div>
+          <div class="pipe-step-stat" id="pipeStat4">
+            <span>Decode: -- tok</span><span style="color:#34d399;font-size:10px">$0.40/1M</span>
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="pipe-step" id="pipeStep5">
+          <div class="pipe-step-num">
+            <span>STEP 05</span>
+            <span class="pipe-step-tag" style="color:#fcd34d;">CONTRACT</span>
+          </div>
+          <div class="pipe-step-title">
+            <span>📦</span> Response & Billing
+          </div>
+          <div class="pipe-step-desc">
+            Terminal usage chunk parsed into typed <code>LLMResponse</code>; decomposes latency & token billing (In: $0.10/M, Out: $0.40/M).
+          </div>
+          <div class="pipe-step-stat" id="pipeStat5">
+            <span>Total: -- ms</span><span style="color:#fcd34d;font-size:10px">Est. Cost</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expandable Architecture & Decomposition Drawer -->
+      <div id="archDrawer" class="arch-drawer" style="display:none;">
+        <div class="arch-grid">
+          <div class="arch-box">
+            <div class="arch-hdr">🔍 Python Call Stack & Contract Architecture</div>
+            <div class="arch-code">
+              <div><span class="arch-k">1. Browser Client</span> ➔ <code>POST /v1/stream</code> with JSON prompt</div>
+              <div><span class="arch-k">2. FastAPI Layer</span> ➔ validates <code>request: LLMRequest</code> via Pydantic</div>
+              <div><span class="arch-k">3. AsyncLLMClient</span> ➔ <code>client.stream(request)</code> / <code>httpx.AsyncClient</code></div>
+              <div><span class="arch-k">4. Provider Inference</span> ➔ Prefill KV cache ➔ SSE streaming chunks</div>
+              <div><span class="arch-k">5. Terminal Contract</span> ➔ <code>Usage(**chunk['usage'])</code> ➔ <code>LLMResponse</code></div>
+            </div>
+          </div>
+          <div class="arch-box">
+            <div class="arch-hdr">📐 Latency & Cost Decomposition Formulation</div>
+            <div class="arch-formula">
+              <div class="formula-row">
+                <span class="f-lbl">⏱️ Total Latency:</span>
+                <code>T_total = TTFT_prefill + (N_completion ÷ Throughput_tps)</code>
+              </div>
+              <div class="formula-row">
+                <span class="f-lbl">💰 Cost Billing:</span>
+                <code>Cost = (Tokens_in × ($0.10 ÷ 1M)) + (Tokens_out × ($0.40 ÷ 1M))</code>
+              </div>
+              <div class="formula-row" style="margin-top:6px;font-size:11.5px;color:var(--muted);">
+                Deterministic model billing at $0.10 / 1M input tokens and $0.40 / 1M output tokens.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="insights" class="insights">
+      <h2><span class="bolt">⚡</span> Speed Insights</h2>
+      <h3>Tokens</h3>
+      <div class="stat-row" id="tokRow"></div>
+      <h3>Inference Time</h3>
+      <div class="stat-row" id="timeRow"></div>
+      <h3>Tokens / second</h3>
+      <div class="stat-row" id="tpsRow"></div>
+      <h3>Estimated API Cost (Input: $0.10 / 1M · Output: $0.40 / 1M tokens)</h3>
+      <div class="stat-row" id="costRow"></div>
+      <div class="foot">
+        <span id="roundTrip"></span>
+        <span id="modelLabel"></span>
+      </div>
+      <div class="headline">
+        <span>Latency: <b id="hLatency"></b></span>
+        <span><span class="bolt">⚡</span> Tokens/s: <b id="hTps"></b></span>
+        <span>💵 Est. Cost: <b id="hCost" style="color:#34d399;">$0.0000</b></span>
+      </div>
+
+      <!-- Detailed Visual Latency Decomposition Artifact -->
+      <div id="latencyDetails" class="latency-decomp-card">
+        <div class="decomp-hdr">
+          <div class="decomp-title">
+            <span>⏱️ Latency & Cost Decomposition</span>
+            <span class="decomp-badge" id="detModeBadge">STREAMING (TTFT + DECODE)</span>
+          </div>
+          <div class="decomp-total" id="detTotalMs">0 ms</div>
+        </div>
+
+        <!-- Segmented Distribution Bar with internal labels -->
+        <div class="decomp-bar-wrap">
+          <div id="barPrefill" class="decomp-bar-fill prefill" style="width:50%;">
+            <span id="barPrefillTxt">Prefill (TTFT): 0 ms</span>
+          </div>
+          <div id="barDecode" class="decomp-bar-fill decode" style="width:50%;">
+            <span id="barDecodeTxt">Decode: 0 ms</span>
+          </div>
+        </div>
+
+        <!-- 2 Visual Phase Cards (Grid) -->
+        <div class="phase-grid">
+          <!-- Phase 1 Card -->
+          <div class="phase-card prefill">
+            <div class="phase-hdr">
+              <span style="font-size:18px;">🚀</span>
+              <div class="phase-info">
+                <span class="phase-tag">PHASE 1</span>
+                <span class="phase-name" id="phase1Title">Prefill & Time to First Token (TTFT)</span>
+              </div>
+              <span class="phase-pct" id="phase1Pct">0%</span>
+            </div>
+            <div class="phase-metric" id="phase1Metric">0 ms</div>
+            <div class="phase-details">
+              <div class="detail-pill">
+                <span class="pill-icon">📥</span> <span id="phase1SubA">Prompt Ingestion (0 tokens)</span>
+              </div>
+              <div class="detail-pill">
+                <span class="pill-icon">🌐</span> <span id="phase1SubB">Network transit & KV cache init</span>
+              </div>
+              <div class="detail-pill" style="border-color:rgba(59,130,246,0.3);background:rgba(59,130,246,0.06);">
+                <span class="pill-icon">💰</span> <span id="phase1Cost" style="color:#93c5fd;font-weight:600;">Input Cost: $0.0000 (@ $0.10/1M)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phase 2 Card -->
+          <div class="phase-card decode">
+            <div class="phase-hdr">
+              <span style="font-size:18px;">⚡</span>
+              <div class="phase-info">
+                <span class="phase-tag">PHASE 2</span>
+                <span class="phase-name" id="phase2Title">Autoregressive Generation (Decode)</span>
+              </div>
+              <span class="phase-pct" id="phase2Pct">0%</span>
+            </div>
+            <div class="phase-metric" id="phase2Metric">0 ms</div>
+            <div class="phase-details">
+              <div class="detail-pill">
+                <span class="pill-icon">✍️</span> <span id="phase2SubA">0 completion tokens</span>
+              </div>
+              <div class="detail-pill">
+                <span class="pill-icon">🏎️</span> <span id="phase2SubB">0 tokens/s (~0 ms/token)</span>
+              </div>
+              <div class="detail-pill" style="border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.06);">
+                <span class="pill-icon">💰</span> <span id="phase2Cost" style="color:#34d399;font-weight:600;">Output Cost: $0.0000 (@ $0.40/1M)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual Flow Equation Footnote -->
+        <div class="decomp-equation">
+          <span class="eq-node prefill" id="eqNode1">🚀 Prefill: 0 ms</span>
+          <span class="eq-op">+</span>
+          <span class="eq-node decode" id="eqNode2">⚡ Decode: 0 ms</span>
+          <span class="eq-op">=</span>
+          <span class="eq-node total" id="eqNodeTotal">⏱️ Total: 0 ms</span>
+          <span class="eq-node" id="eqNodeCost" style="background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);margin-left:6px;">💰 Est. Cost: $0.0000</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: ACCEPTANCE TEST & FAULT INJECTION VISUALIZATION -->
+  <div class="tab-pane" id="tabSim">
+    <div style="font-size:13.5px;color:var(--muted);margin-bottom:12px;">
+      Select a failure scenario to simulate against the client's retry engine:
+    </div>
+
+    <!-- Scenario Selector Grid -->
+    <div class="scenario-grid">
+      <div class="scenario-card active" id="sc_provider_500" onclick="selectScenario('provider_500')">
+        <div class="sc-title">🔁 500 Provider Error</div>
+        <div class="sc-desc">Transient server failure; retries with jitter and recovers on attempt 3.</div>
+      </div>
+      <div class="scenario-card" id="sc_rate_limit_429" onclick="selectScenario('rate_limit_429')">
+        <div class="sc-title">⏳ 429 Rate Limit</div>
+        <div class="sc-desc">Persistent rate limiting; backs off exponentially until max retries.</div>
+      </div>
+      <div class="scenario-card" id="sc_timeout" onclick="selectScenario('timeout')">
+        <div class="sc-title">⏱️ Timeout</div>
+        <div class="sc-desc">Connection dropped; retries after timeout before safe exhaustion.</div>
+      </div>
+      <div class="scenario-card" id="sc_bad_request_400" onclick="selectScenario('bad_request_400')">
+        <div class="sc-title">🚫 400 Bad Request</div>
+        <div class="sc-desc"><strong>Fast Fail:</strong> Permanent client error. Fails on Attempt 1, NO retry.</div>
+      </div>
+      <div class="scenario-card" id="sc_malformed_200" onclick="selectScenario('malformed_200')">
+        <div class="sc-title">🧩 Malformed Output</div>
+        <div class="sc-desc">HTTP 200 with invalid schema; fails Pydantic validation, NO retry.</div>
+      </div>
+      <div class="scenario-card" id="sc_success" onclick="selectScenario('success')">
+        <div class="sc-title">✅ Baseline Success</div>
+        <div class="sc-desc">Healthy provider call completing on the first attempt.</div>
+      </div>
+    </div>
+
+    <!-- Parameter Sliders -->
+    <div class="row" style="margin-top:6px;">
+      <div>
+        <label for="simMaxRetries">max_retries: <b id="lblMaxRetries">3</b></label>
+        <input type="range" id="simMaxRetries" min="1" max="5" value="3" oninput="$('lblMaxRetries').textContent=this.value">
+      </div>
+      <div>
+        <label for="simBaseDelay">base_delay_s: <b id="lblBaseDelay">0.20s</b></label>
+        <input type="range" id="simBaseDelay" min="0.05" max="1.0" step="0.05" value="0.20" oninput="$('lblBaseDelay').textContent=parseFloat(this.value).toFixed(2)+'s'">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="simRunBtn" onclick="runSimulation()">Run Fault Injection Simulation</button>
+      <button id="simClearBtn" onclick="clearSimulation()">Clear Logs</button>
+    </div>
+
+    <!-- Interactive Visual Artifact: Fault Injection & Policy Decision Pipeline -->
+    <div id="simPipeline" class="pipeline-card" style="margin-top:14px;margin-bottom:14px;">
+      <div class="pipeline-hdr">
+        <div class="pipeline-title">
+          <span style="font-size:18px;">🛠️</span>
+          <div>
+            <span style="font-size:14.5px;font-weight:700;color:var(--ink);">Fault Injection Architecture & Policy Pipeline</span>
+            <div style="font-size:11.5px;color:var(--muted);font-weight:400;margin-top:1px;">In-Memory Mock Transport ➔ Circuit Breaker ➔ Policy Decision Pipeline</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="pipeline-status-badge" id="simPipeStatusBadge">● READY</span>
+          <button class="pipe-details-btn" id="toggleSimArchBtn" onclick="toggleSimArchDetails()">📐 Simulation Spec</button>
+        </div>
+      </div>
+
+      <!-- 5-Stage Visual Stepper Grid -->
+      <div class="pipeline-flow">
+        <!-- Stage 1 -->
+        <div class="pipe-step" id="simPipeStep1">
+          <div class="pipe-step-num">
+            <span>STAGE 01</span>
+            <span class="pipe-step-tag">REST API</span>
+          </div>
+          <div class="pipe-step-title">
+            <span>🎯</span> Scenario Ingestion
+          </div>
+          <div class="pipe-step-desc">
+            Client calls <code>POST /v1/simulate</code> with target scenario, max retries, & base delay.
+          </div>
+          <div class="pipe-step-stat" id="simPipeStat1">
+            <span id="simPipeStat1Text">Scenario: provider_500</span>
+          </div>
+        </div>
+
+        <!-- Stage 2 -->
+        <div class="pipe-step" id="simPipeStep2">
+          <div class="pipe-step-num">
+            <span>STAGE 02</span>
+            <span class="pipe-step-tag">TRANSPORT</span>
+          </div>
+          <div class="pipe-step-title">
+            <span>🧪</span> Mock Transport
+          </div>
+          <div class="pipe-step-desc">
+            Injects in-memory <code>httpx.MockTransport</code> interceptor (100% mocked, zero network).
+          </div>
+          <div class="pipe-step-stat" id="simPipeStat2">
+            <span id="simPipeStat2Text">Script: [500, 500, 200]</span>
+          </div>
+        </div>
+
+        <!-- Stage 3 -->
+        <div class="pipe-step" id="simPipeStep3">
+          <div class="pipe-step-num">
+            <span>STAGE 03</span>
+            <span class="pipe-step-tag" style="color:#93c5fd;">CLIENT</span>
+          </div>
+          <div class="pipe-step-title">
+            <span>🛡️</span> AsyncLLMClient Loop
+          </div>
+          <div class="pipe-step-desc">
+            Dispatches <code>client.complete()</code> with monotonic timer & SSE event stream queue.
+          </div>
+          <div class="pipe-step-stat" id="simPipeStat3">
+            <span id="simPipeStat3Text">Ready to fire</span>
+          </div>
+        </div>
+
+        <!-- Stage 4 -->
+        <div class="pipe-step" id="simPipeStep4">
+          <div class="pipe-step-num">
+            <span>STAGE 04</span>
+            <span class="pipe-step-tag" style="color:#fcd34d;">POLICY</span>
+          </div>
+          <div class="pipe-step-title">
+            <span>⚖️</span> Decision Engine
+          </div>
+          <div class="pipe-step-desc">
+            Evaluates HTTP code: applies Full Jitter exponential delay on 429/5xx; fast-fails on 4xx/schema.
+          </div>
+          <div class="pipe-step-stat" id="simPipeStat4">
+            <span id="simPipeStat4Text">Policy: Retry w/ Jitter</span>
+          </div>
+        </div>
+
+        <!-- Stage 5 -->
+        <div class="pipe-step" id="simPipeStep5">
+          <div class="pipe-step-num">
+            <span>STAGE 05</span>
+            <span class="pipe-step-tag" style="color:#34d399;">SSE STREAM</span>
+          </div>
+          <div class="pipe-step-title">
+            <span>🏁</span> Terminal Verdict
+          </div>
+          <div class="pipe-step-desc">
+            Streams live <code>AttemptLog</code> events. Yields terminal success response or typed exception.
+          </div>
+          <div class="pipe-step-stat" id="simPipeStat5">
+            <span id="simPipeStat5Text">Awaiting execution</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expandable Simulation Architecture Specification Drawer -->
+      <div id="simArchDrawer" class="arch-drawer" style="display:none;">
+        <div class="arch-grid">
+          <div class="arch-box">
+            <div class="arch-hdr">🔍 Fault Injection Mock Transport Call Stack</div>
+            <div class="arch-code">
+              <div><span class="arch-k">1. Browser Request</span> ➔ <code>POST /v1/simulate</code> ({scenario, retries, delay})</div>
+              <div><span class="arch-k">2. Mock Transport</span> ➔ <code>_make_mock_transport(script)</code> intercepts HTTP requests</div>
+              <div><span class="arch-k">3. Client Execution</span> ➔ <code>AsyncLLMClient(transport=mock).complete()</code></div>
+              <div><span class="arch-k">4. Retry Evaluation</span> ➔ <code>RETRYABLE_STATUS = {429, 5xx}</code> vs 4xx fast-fail</div>
+              <div><span class="arch-k">5. SSE Broadcast</span> ➔ Real-time <code>AttemptLog</code> streamed chunk-by-chunk</div>
+            </div>
+          </div>
+          <div class="arch-box">
+            <div class="arch-hdr">📐 Acceptance Criteria & Guarantees</div>
+            <div class="arch-formula">
+              <div class="formula-row">
+                <span class="f-lbl">🛡️ Zero-Quota Waste:</span>
+                <code>4xx Bad Request & Malformed 200 Fast-Fail on Attempt 1</code>
+              </div>
+              <div class="formula-row">
+                <span class="f-lbl">⚡ Jitter Equation:</span>
+                <code>Delay = Uniform(0, min(2.0, base_delay × 2^attempt))</code>
+              </div>
+              <div class="formula-row" style="margin-top:6px;font-size:11.5px;color:var(--muted);">
+                Proves the service handles rate limits, malformed outputs, timeouts, and server failures predictably without uncontrolled retries.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Artifact: Visual Flow & Policy Decision HUD -->
+    <div class="artifact-container">
+      <!-- Flow Diagram Column -->
+      <div class="panel-box">
+        <h3>📊 Failure Execution Flow</h3>
+        <div id="flowCanvas" class="flow-canvas">
+          <div class="flow-empty">Click <strong>Run Fault Injection Simulation</strong> above to watch the dynamic execution diagram.</div>
+        </div>
+      </div>
+
+      <!-- Policy Decision HUD Column -->
+      <div class="panel-box">
+        <h3>⚙️ Policy Decision Panel</h3>
+        <div class="decision-hud">
+          <div class="hud-item">
+            <span class="lbl">Current Status</span>
+            <span class="val" id="hudStatus" style="color:var(--muted)">IDLE</span>
+          </div>
+          <div class="hud-item">
+            <span class="lbl">Provider Response</span>
+            <span class="val" id="hudError">—</span>
+          </div>
+          <div class="hud-item">
+            <span class="lbl">Retryable?</span>
+            <span class="val" id="hudRetryable">—</span>
+          </div>
+          <div class="hud-item">
+            <span class="lbl">Attempt Progress</span>
+            <span class="val" id="hudAttempt">—</span>
+          </div>
+          <div class="hud-item">
+            <span class="lbl">Backoff Duration</span>
+            <span class="val" id="hudBackoff">—</span>
+          </div>
+          <div class="hud-item">
+            <span class="lbl">Active Strategy</span>
+            <span class="val" id="hudStrategy" style="font-size:12px;">—</span>
+          </div>
+        </div>
+        <div class="hud-rationale" id="hudRationale">
+          The decision engine inspects HTTP status codes. 429 and 5xx trigger exponential backoff with full jitter. 4xx and malformed responses fail fast on Attempt 1.
+        </div>
+      </div>
+    </div>
+
+    <!-- Final Result Banner -->
+    <div id="resultBanner" class="result-banner"></div>
+
+    <!-- Preserved Technical Logs -->
+    <div class="log-section">
+      <div style="font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+        📋 Live Technical Attempt Log
+      </div>
+      <div id="simLogList">
+        <div class="sim-empty">Raw request logs, timestamps, backoff calculations, and payloads will appear here.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const outEl = $('out'), metaEl = $('meta'), sendBtn = $('send'), insightsEl = $('insights');
+let selectedScenario = 'provider_500';
+
+function switchTab(tab) {
+  $('tabLiveBtn').classList.toggle('active', tab === 'live');
+  $('tabSimBtn').classList.toggle('active', tab === 'sim');
+  $('tabLive').classList.toggle('active', tab === 'live');
+  $('tabSim').classList.toggle('active', tab === 'sim');
+}
+
+const SCENARIO_SCRIPTS = {
+  provider_500: { script: '[500, 500, 200]', policy: 'Retry w/ Jitter', tag: '🔁 Transient 500' },
+  rate_limit_429: { script: '[429, 429, 429...]', policy: 'Retry w/ Jitter', tag: '⏳ Rate Limited' },
+  timeout: { script: '[Timeout, Timeout...]', policy: 'Retry w/ Jitter', tag: '⏱️ Timeout' },
+  bad_request_400: { script: '[400]', policy: 'Fast-Fail (0 retries)', tag: '🚫 Bad Request' },
+  malformed_200: { script: '[200 (Malformed)]', policy: 'Fast-Fail (0 retries)', tag: '🧩 Malformed 200' },
+  success: { script: '[200 OK]', policy: 'Direct Success (0 retries)', tag: '✅ 200 Baseline' },
+};
+
+function toggleSimArchDetails() {
+  const d = $('simArchDrawer');
+  const btn = $('toggleSimArchBtn');
+  if (d.style.display === 'none' || !d.style.display) {
+    d.style.display = 'block';
+    btn.textContent = '▲ Hide Spec';
+  } else {
+    d.style.display = 'none';
+    btn.textContent = '📐 Simulation Spec';
+  }
+}
+
+function resetSimPipeline(sc) {
+  const info = SCENARIO_SCRIPTS[sc] || SCENARIO_SCRIPTS.provider_500;
+  $('simPipeStatusBadge').textContent = '● READY';
+  $('simPipeStatusBadge').className = 'pipeline-status-badge';
+
+  for (let i = 1; i <= 5; i++) {
+    const s = $(`simPipeStep${i}`);
+    if (s) s.className = 'pipe-step';
+  }
+
+  $('simPipeStat1Text').textContent = `Scenario: ${sc}`;
+  $('simPipeStat2Text').textContent = `Script: ${info.script}`;
+  $('simPipeStat3Text').textContent = 'Ready to fire';
+  $('simPipeStat4Text').textContent = `Policy: ${info.policy}`;
+  $('simPipeStat5Text').textContent = 'Awaiting execution';
+}
+
+function selectScenario(sc) {
+  selectedScenario = sc;
+  document.querySelectorAll('.scenario-card').forEach(c => c.classList.remove('active'));
+  const card = $(`sc_${sc}`);
+  if (card) card.classList.add('active');
+  updateScenarioRationale(sc);
+  resetSimPipeline(sc);
+}
+
+const SCENARIO_RATIONALES = {
+  provider_500: "HTTP 500/5xx represents a transient server failure. Safe to retry with exponential backoff + full jitter. Client will retry and recover on attempt 3.",
+  rate_limit_429: "HTTP 429 indicates rate limiting. Safe to retry with randomized backoff. If limit remains exceeded after max retries, client stops predictably without infinite loops.",
+  timeout: "Connection or read timeout occurred. Network faults are transient; retried with exponential backoff until retry budget is exhausted.",
+  bad_request_400: "⭐ Core Acceptance Requirement: HTTP 400 is an invalid client request. Retrying will never succeed and would burn rate-limit quota. Fast-failed on Attempt 1 with NO retry.",
+  malformed_200: "HTTP 200 OK was received, but response failed Pydantic schema validation. Malformed outputs repeat and are not retried. Fast-failed as LLMMalformedResponseError.",
+  success: "Normal execution: HTTP 200 OK with valid schema on Attempt 1. Zero retries required."
+};
+
+function updateScenarioRationale(sc) {
+  $('hudRationale').textContent = SCENARIO_RATIONALES[sc] || "";
+}
+
+// Prefill default model from /config
+(async () => {
+  try {
+    const res = await fetch(`${$('base').value}/config`);
+    if (res.ok) {
+      const cfg = await res.json();
+      if (cfg.default_model) $('model').value = cfg.default_model;
+    }
+  } catch {}
+  updateScenarioRationale(selectedScenario);
+  resetPipelineReady();
+  resetSimPipeline(selectedScenario);
+})();
+
+// Clear Live Tab
+$('clear').addEventListener('click', () => {
+  outEl.textContent = 'Response will appear here.';
+  outEl.classList.add('empty');
+  metaEl.textContent = '';
+  insightsEl.classList.remove('show');
+  resetPipelineReady();
+});
+
+// ---- API PRICING MODEL: Input $0.10 / 1M tokens, Output $0.40 / 1M tokens ----
+const INPUT_RATE_PER_M = 0.10;   // $0.10 per 1M prompt tokens
+const OUTPUT_RATE_PER_M = 0.40;  // $0.40 per 1M completion tokens
+
+function calcCost(promptToks, completionToks) {
+  const p = promptToks || 0;
+  const c = completionToks || 0;
+  const inCost = (p / 1000000) * INPUT_RATE_PER_M;
+  const outCost = (c / 1000000) * OUTPUT_RATE_PER_M;
+  return { inCost, outCost, totalCost: inCost + outCost };
+}
+
+function fmtCost(val) {
+  if (!val || val === 0) return '$0.0000';
+  if (val < 0.0001) return '$' + val.toFixed(6);
+  return '$' + val.toFixed(4);
+}
+
+// ---- BACKEND EXECUTION PIPELINE CONTROLLER ----
+function toggleArchDetails() {
+  const d = $('archDrawer');
+  const btn = $('toggleArchBtn');
+  if (d.style.display === 'none' || !d.style.display) {
+    d.style.display = 'block';
+    btn.textContent = '▲ Hide Spec';
+  } else {
+    d.style.display = 'none';
+    btn.textContent = '📐 Trace Spec';
+  }
+}
+
+let prefillTimer = null;
+
+function resetPipelineReady() {
+  if (prefillTimer) { clearInterval(prefillTimer); prefillTimer = null; }
+  $('pipeStatusBadge').textContent = '● READY';
+  $('pipeStatusBadge').className = 'pipeline-status-badge';
+  
+  for (let i = 1; i <= 5; i++) {
+    const step = $(`pipeStep${i}`);
+    if (step) step.className = 'pipe-step';
+  }
+  $('pipeStat1').innerHTML = '<span>LLMRequest ready</span>';
+  $('pipeStat2').innerHTML = '<span>Async transport</span>';
+  $('pipeStat3').innerHTML = '<span>Prefill: -- ms</span><span style="color:#93c5fd;font-size:10px">$0.10/1M</span>';
+  $('pipeStat4').innerHTML = '<span>Decode: -- tok</span><span style="color:#34d399;font-size:10px">$0.40/1M</span>';
+  $('pipeStat5').innerHTML = '<span>Total: -- ms</span><span style="color:#fcd34d;font-size:10px">Est. Cost</span>';
+}
+
+function startPipelineRunning(promptLen) {
+  if (prefillTimer) { clearInterval(prefillTimer); prefillTimer = null; }
+  $('pipeStatusBadge').textContent = '⚡ EXECUTING PIPELINE';
+  $('pipeStatusBadge').className = 'pipeline-status-badge running';
+
+  // Step 1 active
+  $('pipeStep1').className = 'pipe-step active';
+  $('pipeStat1').innerHTML = `<span>Validating ${promptLen || 0} chars...</span>`;
+
+  // Step 2 preparing
+  $('pipeStep2').className = 'pipe-step';
+  $('pipeStat2').innerHTML = '<span>Arming deadline...</span>';
+
+  // Steps 3, 4, 5 reset
+  $('pipeStep3').className = 'pipe-step';
+  $('pipeStat3').innerHTML = '<span>Awaiting TTFT...</span>';
+  $('pipeStep4').className = 'pipe-step';
+  $('pipeStat4').innerHTML = '<span>Awaiting stream...</span>';
+  $('pipeStep5').className = 'pipe-step';
+  $('pipeStat5').innerHTML = '<span>Pending completion</span>';
+
+  setTimeout(() => {
+    $('pipeStep1').className = 'pipe-step done';
+    $('pipeStat1').innerHTML = '<span>✓ Valid schema</span>';
+    $('pipeStep2').className = 'pipe-step done';
+    $('pipeStat2').innerHTML = '<span>✓ Transport armed</span>';
+    $('pipeStep3').className = 'pipe-step active-amber';
+    
+    const prefillStart = performance.now();
+    prefillTimer = setInterval(() => {
+      const ms = Math.round(performance.now() - prefillStart);
+      $('pipeStat3').innerHTML = `<span>⏳ Ingesting: ${ms} ms</span>`;
+    }, 40);
+  }, 75);
+}
+
+function updatePipelineFirstToken(ttftMs, promptTokens) {
+  if (prefillTimer) { clearInterval(prefillTimer); prefillTimer = null; }
+  const { inCost } = calcCost(promptTokens, 0);
+  $('pipeStep3').className = 'pipe-step done';
+  $('pipeStat3').innerHTML = `<span>✓ TTFT: ${Math.round(ttftMs)} ms</span><span style="color:#93c5fd;font-size:10px">${fmtCost(inCost)}</span>`;
+  
+  $('pipeStep4').className = 'pipe-step active';
+  $('pipeStat4').innerHTML = `<span>⚡ Streaming: 1 tok</span>`;
+}
+
+function updatePipelineStreamProgress(tokenCount, currentTps) {
+  $('pipeStat4').innerHTML = `<span>⚡ ${tokenCount} toks (~${currentTps} tok/s)</span>`;
+}
+
+function completePipelineSuccess({ totalMs, prefillMs, decodeMs, promptTokens, completionTokens, tps, cost }) {
+  if (prefillTimer) { clearInterval(prefillTimer); prefillTimer = null; }
+  $('pipeStatusBadge').textContent = '✅ GENERATION COMPLETE';
+  $('pipeStatusBadge').className = 'pipeline-status-badge completed';
+
+  $('pipeStep1').className = 'pipe-step done';
+  $('pipeStat1').innerHTML = `<span>✓ Valid schema</span>`;
+
+  $('pipeStep2').className = 'pipe-step done';
+  $('pipeStat2').innerHTML = `<span>✓ Dispatched</span>`;
+
+  const { inCost, outCost, totalCost } = calcCost(promptTokens, completionTokens);
+  $('pipeStep3').className = 'pipe-step done';
+  $('pipeStat3').innerHTML = `<span>✓ TTFT: ${Math.round(prefillMs)} ms</span><span style="color:#93c5fd;font-size:10px">${fmtCost(inCost)}</span>`;
+
+  $('pipeStep4').className = 'pipe-step done';
+  $('pipeStat4').innerHTML = `<span>✓ ${completionTokens} tok (${tps} tok/s)</span><span style="color:#34d399;font-size:10px">${fmtCost(outCost)}</span>`;
+
+  $('pipeStep5').className = 'pipe-step done';
+  $('pipeStat5').innerHTML = `<span>✓ Total: ${totalMs} ms</span><span style="color:#34d399;font-size:10px;font-weight:700">${fmtCost(totalCost)}</span>`;
+}
+
+function errorPipeline(errMsg) {
+  if (prefillTimer) { clearInterval(prefillTimer); prefillTimer = null; }
+  $('pipeStatusBadge').textContent = '❌ PIPELINE FAILED';
+  $('pipeStatusBadge').className = 'pipeline-status-badge error';
+  
+  for (let i = 1; i <= 5; i++) {
+    const s = $(`pipeStep${i}`);
+    if (s && (s.classList.contains('active') || s.classList.contains('active-amber'))) {
+      s.className = 'pipe-step pipe-error';
+      const stat = $(`pipeStat${i}`);
+      if (stat) stat.innerHTML = `<span style="color:#f87171">Failed: ${errMsg.slice(0, 26)}</span>`;
+      break;
+    }
+  }
+}
+
+function setMeta(parts) {
+  metaEl.innerHTML = parts.map(([k, v]) => `<span><b>${k}:</b> ${v}</span>`).join('');
+}
+
+function stat(container, value, label, emph) {
+  const d = document.createElement('div');
+  d.className = 'stat' + (emph ? ' emph' : '');
+  d.innerHTML = `<span class="big">${value}</span><span class="lbl">${label}</span>`;
+  container.appendChild(d);
+}
+
+function showInsights({ model, usage, inputSeconds, outputSeconds, roundTripSeconds, serverLatencyMs }) {
+  const totalTokens = usage.prompt_tokens + usage.completion_tokens;
+  const hasSplit = inputSeconds !== null && outputSeconds !== null;
+  const totalSeconds = hasSplit ? inputSeconds + outputSeconds : roundTripSeconds;
+  const tps = (tokens, seconds) => (seconds && seconds > 0.0005) ? Math.round(tokens / seconds) : '—';
+  const fmtS = (s) => s === null ? '—' : s.toFixed(2);
+
+  const tokRow = $('tokRow'); tokRow.innerHTML = '';
+  stat(tokRow, usage.prompt_tokens.toLocaleString(), 'Input tokens');
+  stat(tokRow, usage.completion_tokens.toLocaleString(), 'Output tokens');
+  stat(tokRow, totalTokens.toLocaleString(), 'Tokens', true);
+
+  const timeRow = $('timeRow'); timeRow.innerHTML = '';
+  stat(timeRow, fmtS(inputSeconds), 'Input seconds');
+  stat(timeRow, fmtS(outputSeconds), 'Output seconds');
+  stat(timeRow, fmtS(totalSeconds), 'Seconds', true);
+
+  const outputTps = tps(usage.completion_tokens, outputSeconds);
+  const tpsRow = $('tpsRow'); tpsRow.innerHTML = '';
+  stat(tpsRow, hasSplit ? tps(usage.prompt_tokens, inputSeconds).toLocaleString() : '—', 'Input');
+  stat(tpsRow, hasSplit ? outputTps.toLocaleString() : '—', 'Output');
+  stat(tpsRow, tps(totalTokens, totalSeconds).toLocaleString(), 'Total', true);
+
+  // API Cost Calculation (Input $0.10 / 1M, Output $0.40 / 1M tokens)
+  const { inCost, outCost, totalCost } = calcCost(usage.prompt_tokens, usage.completion_tokens);
+
+  const costRow = $('costRow'); costRow.innerHTML = '';
+  stat(costRow, fmtCost(inCost), 'Input Cost (@ $0.10/1M)');
+  stat(costRow, fmtCost(outCost), 'Output Cost (@ $0.40/1M)');
+  stat(costRow, fmtCost(totalCost), 'Total Cost', true);
+
+  $('roundTrip').textContent = `Round trip: ${roundTripSeconds.toFixed(2)} s`;
+  $('modelLabel').textContent = `Model: ${model}`;
+
+  const totalMs = Math.round(roundTripSeconds * 1000);
+  $('hLatency').textContent = `${totalMs} ms`;
+  $('hTps').textContent = hasSplit && outputTps !== '—' ? outputTps.toLocaleString() : tps(totalTokens, totalSeconds).toLocaleString();
+  $('hCost').textContent = fmtCost(totalCost);
+
+  // Populate Detailed Visual Latency & Cost Decomposition
+  $('detTotalMs').textContent = `${totalMs} ms`;
+  $('phase1Cost').textContent = `Input Cost: ${fmtCost(inCost)} (@ $0.10/1M)`;
+  $('phase2Cost').textContent = `Output Cost: ${fmtCost(outCost)} (@ $0.40/1M)`;
+  $('eqNodeCost').textContent = `💰 Est. Cost: ${fmtCost(totalCost)}`;
+
+  if (hasSplit) {
+    // STREAMING MODE: Prefill vs Decode breakdown
+    const prefillMs = Math.round(inputSeconds * 1000);
+    const decodeMs = Math.max(totalMs - prefillMs, 1);
+    const prefillPct = Math.min(Math.max(Math.round((prefillMs / totalMs) * 100), 5), 95);
+    const decodePct = 100 - prefillPct;
+    const msPerToken = (decodeMs / Math.max(usage.completion_tokens, 1)).toFixed(1);
+
+    $('detModeBadge').textContent = 'STREAMING (TTFT + DECODE)';
+    $('barPrefill').style.width = `${prefillPct}%`;
+    $('barDecode').style.width = `${decodePct}%`;
+    $('barPrefillTxt').textContent = `Prefill ${prefillMs} ms (${prefillPct}%)`;
+    $('barDecodeTxt').textContent = `Decode ${decodeMs} ms (${decodePct}%)`;
+
+    // Phase 1 Card
+    $('phase1Title').textContent = 'Prefill & Time to First Token (TTFT)';
+    $('phase1Pct').textContent = `${prefillPct}%`;
+    $('phase1Metric').textContent = `${prefillMs} ms`;
+    $('phase1SubA').textContent = `Prompt Ingestion (${usage.prompt_tokens} tokens)`;
+    $('phase1SubB').textContent = `Network transit & KV cache setup`;
+
+    // Phase 2 Card
+    $('phase2Title').textContent = 'Autoregressive Generation (Decode)';
+    $('phase2Pct').textContent = `${decodePct}%`;
+    $('phase2Metric').textContent = `${decodeMs} ms`;
+    $('phase2SubA').textContent = `${usage.completion_tokens} completion tokens`;
+    $('phase2SubB').textContent = `${outputTps} tokens/s (~${msPerToken} ms/token)`;
+
+    // Visual Equation Chips
+    $('eqNode1').textContent = `🚀 Prefill: ${prefillMs} ms`;
+    $('eqNode2').textContent = `⚡ Decode: ${decodeMs} ms`;
+    $('eqNodeTotal').textContent = `⏱️ Total: ${totalMs} ms`;
+  } else {
+    // COMPLETE MODE: Server execution vs Network overhead
+    const srvMs = Math.round(serverLatencyMs || totalMs * 0.85);
+    const netMs = Math.max(totalMs - srvMs, 0);
+    const srvPct = Math.min(Math.max(Math.round((srvMs / totalMs) * 100), 10), 95);
+    const netPct = 100 - srvPct;
+
+    $('detModeBadge').textContent = 'NON-STREAMING (SERVER + NETWORK)';
+    $('barPrefill').style.width = `${srvPct}%`;
+    $('barDecode').style.width = `${netPct}%`;
+    $('barPrefillTxt').textContent = `Server ${srvMs} ms (${srvPct}%)`;
+    $('barDecodeTxt').textContent = `Network ${netMs} ms (${netPct}%)`;
+
+    // Phase 1 Card
+    $('phase1Title').textContent = 'Server & Provider Execution';
+    $('phase1Pct').textContent = `${srvPct}%`;
+    $('phase1Metric').textContent = `${srvMs} ms`;
+    $('phase1SubA').textContent = `Python time.perf_counter() measurement`;
+    $('phase1SubB').textContent = `Full inference on ${model}`;
+
+    // Phase 2 Card
+    $('phase2Title').textContent = 'Network & Wire Overhead';
+    $('phase2Pct').textContent = `${netPct}%`;
+    $('phase2Metric').textContent = `${netMs} ms`;
+    $('phase2SubA').textContent = `Browser-to-service HTTP RTT`;
+    $('phase2SubB').textContent = `TLS handshake & JSON serialization`;
+
+    // Visual Equation Chips
+    $('eqNode1').textContent = `🖥️ Server: ${srvMs} ms`;
+    $('eqNode2').textContent = `🌐 Network: ${netMs} ms`;
+    $('eqNodeTotal').textContent = `⏱️ Total: ${totalMs} ms`;
+  }
+
+  // Complete Pipeline Visual Artifact
+  const prefillVal = hasSplit ? Math.round(inputSeconds * 1000) : Math.round(serverLatencyMs || totalMs * 0.85);
+  const decodeVal = hasSplit ? Math.max(totalMs - prefillVal, 1) : Math.max(totalMs - prefillVal, 0);
+  completePipelineSuccess({
+    totalMs,
+    prefillMs: prefillVal,
+    decodeMs: decodeVal,
+    promptTokens: usage.prompt_tokens,
+    completionTokens: usage.completion_tokens,
+    tps: hasSplit && outputTps !== '—' ? outputTps : tps(totalTokens, totalSeconds),
+    cost: totalCost
+  });
+
+  insightsEl.classList.add('show');
+}
+
+async function runComplete(base, body) {
+  const start = performance.now();
+  const res = await fetch(`${base}/v1/complete`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.detail || `HTTP ${res.status}`);
+  outEl.textContent = data.content;
+  outEl.classList.remove('empty');
+  const roundTripSeconds = (performance.now() - start) / 1000;
+  const { inCost, outCost, totalCost } = calcCost(data.usage.prompt_tokens, data.usage.completion_tokens);
+  setMeta([
+    ['attempts', data.attempts],
+    ['server latency', `${Math.round(data.latency_ms)} ms`],
+    ['round trip', `${Math.round(roundTripSeconds * 1000)} ms`],
+    ['tokens', `${data.usage.prompt_tokens} in / ${data.usage.completion_tokens} out`],
+    ['est. cost (in $0.10/M, out $0.40/M)', fmtCost(totalCost)],
+  ]);
+  showInsights({
+    model: data.model, usage: data.usage,
+    inputSeconds: null, outputSeconds: null, roundTripSeconds,
+    serverLatencyMs: data.latency_ms
+  });
+}
+
+async function runStream(base, body) {
+  outEl.textContent = '';
+  outEl.classList.remove('empty');
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor';
+  outEl.appendChild(cursor);
+
+  const start = performance.now();
+  const res = await fetch(`${base}/v1/stream`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok || !res.body) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.detail || `HTTP ${res.status}`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '', firstTokenMs = null, tokenCount = 0, usagePayload = null, modelName = body.model;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n\n');
+    buffer = lines.pop();
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const raw = line.slice(6);
+      if (raw === '[DONE]') {
+        cursor.remove();
+        const roundTripSeconds = (performance.now() - start) / 1000;
+        if (usagePayload) {
+          const inputSeconds = (firstTokenMs ?? 0) / 1000;
+          const outputSeconds = Math.max(roundTripSeconds - inputSeconds, 0.001);
+          const { inCost, outCost, totalCost } = calcCost(usagePayload.prompt_tokens, usagePayload.completion_tokens);
+          setMeta([
+            ['time to first token', `${Math.round(firstTokenMs)} ms`],
+            ['tokens received', tokenCount],
+            ['elapsed', `${Math.round(performance.now() - start)} ms`],
+            ['tokens', `${usagePayload.prompt_tokens} in / ${usagePayload.completion_tokens} out`],
+            ['est. cost (in $0.10/M, out $0.40/M)', fmtCost(totalCost)],
+          ]);
+          showInsights({
+            model: modelName, usage: usagePayload,
+            inputSeconds, outputSeconds, roundTripSeconds,
+          });
+        }
+        return;
+      }
+      const parsed = JSON.parse(raw);
+      if (parsed.error) throw new Error(parsed.error);
+      if (parsed.usage) { usagePayload = parsed.usage; if (parsed.model) modelName = parsed.model; continue; }
+      if (firstTokenMs === null) {
+        firstTokenMs = performance.now() - start;
+        updatePipelineFirstToken(firstTokenMs, usagePayload ? usagePayload.prompt_tokens : Math.max(Math.round(body.messages[0].content.length / 4), 1));
+      }
+      tokenCount++;
+      const currentElapsed = (performance.now() - start - firstTokenMs) / 1000;
+      const curTps = currentElapsed > 0.05 ? Math.round(tokenCount / currentElapsed) : '--';
+      updatePipelineStreamProgress(tokenCount, curTps);
+
+      cursor.insertAdjacentText('beforebegin', parsed.token);
+      setMeta([
+        ['time to first token', `${Math.round(firstTokenMs)} ms`],
+        ['tokens received', tokenCount],
+        ['elapsed', `${Math.round(performance.now() - start)} ms`],
+      ]);
+    }
+  }
+  cursor.remove();
+}
+
+sendBtn.addEventListener('click', async () => {
+  const base = $('base').value.replace(/\/$/, '');
+  const promptVal = $('prompt').value;
+  const body = {
+    model: $('model').value,
+    messages: [{ role: 'user', content: promptVal }],
+  };
+  sendBtn.disabled = true;
+  metaEl.textContent = '';
+  insightsEl.classList.remove('show');
+  startPipelineRunning(promptVal.length);
+  try {
+    if ($('mode').value === 'stream') await runStream(base, body);
+    else await runComplete(base, body);
+    outEl.classList.remove('error');
+  } catch (err) {
+    outEl.textContent = `Error: ${err.message}`;
+    outEl.classList.remove('empty');
+    outEl.classList.add('error');
+    errorPipeline(err.message);
+  } finally {
+    sendBtn.disabled = false;
+  }
+});
+
+// ---- FAULT INJECTION SIMULATION & VISUALIZATION ENGINE ----
+const OUTCOME_LABELS = {
+  success: { badge: 'badge-success', label: 'Success (200 OK)' },
+  rate_limited: { badge: 'badge-retry', label: 'Rate Limited (429)' },
+  provider_error: { badge: 'badge-retry', label: 'Provider Error (500)' },
+  timeout: { badge: 'badge-retry', label: 'Timeout (Dropped)' },
+  bad_request: { badge: 'badge-fail', label: 'Bad Request (400)' },
+  malformed_response: { badge: 'badge-fail', label: 'Malformed Schema' },
+};
+
+function clearSimulation() {
+  $('flowCanvas').innerHTML = '<div class="flow-empty">Click <strong>Run Fault Injection Simulation</strong> above to watch the dynamic execution diagram.</div>';
+  $('simLogList').innerHTML = '<div class="sim-empty">Raw request logs, timestamps, backoff calculations, and payloads will appear here.</div>';
+  $('resultBanner').style.display = 'none';
+  $('resultBanner').className = 'result-banner';
+  $('hudStatus').textContent = 'IDLE';
+  $('hudStatus').style.color = 'var(--muted)';
+  $('hudError').textContent = '—';
+  $('hudRetryable').textContent = '—';
+  $('hudAttempt').textContent = '—';
+  $('hudBackoff').textContent = '—';
+  $('hudStrategy').textContent = '—';
+  updateScenarioRationale(selectedScenario);
+  resetSimPipeline(selectedScenario);
+}
+
+function addFlowArrow(canvas, text) {
+  const arrow = document.createElement('div');
+  arrow.className = 'flow-arrow active';
+  if (text) {
+    arrow.style.height = '28px';
+  }
+  canvas.appendChild(arrow);
+  return arrow;
+}
+
+function addFlowNode(canvas, { cls, html, active }) {
+  const node = document.createElement('div');
+  node.className = `flow-node ${cls} ${active ? 'active' : ''}`;
+  node.innerHTML = html;
+  canvas.appendChild(node);
+  return node;
+}
+
+async function runSimulation() {
+  const btn = $('simRunBtn');
+  btn.disabled = true;
+  btn.textContent = 'Simulating Execution...';
+
+  const canvas = $('flowCanvas');
+  canvas.innerHTML = '';
+  const logList = $('simLogList');
+  logList.innerHTML = '';
+  const resultBanner = $('resultBanner');
+  resultBanner.style.display = 'none';
+
+  const maxRetries = parseInt($('simMaxRetries').value, 10);
+  const baseDelay = parseFloat($('simBaseDelay').value);
+
+  // Initialize Simulation Pipeline Artifact
+  $('simPipeStatusBadge').textContent = '⚡ SIMULATION IN PROGRESS';
+  $('simPipeStatusBadge').className = 'pipeline-status-badge running';
+  $('simPipeStep1').className = 'pipe-step done';
+  $('simPipeStat1Text').textContent = '✓ Ingested: ' + selectedScenario;
+  $('simPipeStep2').className = 'pipe-step done';
+  $('simPipeStat2Text').textContent = '✓ Armed: ' + (SCENARIO_SCRIPTS[selectedScenario]?.script || '');
+  $('simPipeStep3').className = 'pipe-step active';
+  $('simPipeStat3Text').textContent = 'Dispatching att. 1...';
+  $('simPipeStep4').className = 'pipe-step';
+  $('simPipeStat4Text').textContent = 'Evaluating policy...';
+  $('simPipeStep5').className = 'pipe-step';
+  $('simPipeStat5Text').textContent = 'Awaiting verdict...';
+
+  // Initialize UI HUD
+  $('hudStatus').textContent = 'EXECUTING';
+  $('hudStatus').style.color = 'var(--accent)';
+  $('hudStrategy').textContent = selectedScenario === 'bad_request_400' || selectedScenario === 'malformed_200' 
+    ? 'Fast Fail (Immediate Abort)' 
+    : 'Exponential + Full Jitter';
+
+  // Step 1: Initial Request Node
+  let currentReqNode = addFlowNode(canvas, {
+    cls: 'node-request',
+    html: `<span>🟢 REQUEST (Attempt 1)</span><span style="font-size:11px;color:var(--muted)">In Flight...</span>`,
+    active: true
+  });
+
+  const base = $('base').value.replace(/\/$/, '');
+  const reqBody = {
+    scenario: selectedScenario,
+    max_retries: maxRetries,
+    base_delay_s: baseDelay,
+  };
+
+  try {
+    const res = await fetch(`${base}/v1/simulate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(reqBody),
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n\n');
+      buffer = lines.pop();
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const raw = line.slice(6).trim();
+        if (raw === '[DONE]') break;
+
+        const payload = JSON.parse(raw);
+
+        if (payload.attempt) {
+          await handleAttemptEvent(payload.attempt, canvas, logList, maxRetries);
+        } else if (payload.final_success) {
+          handleFinalSuccess(payload.data, canvas, resultBanner);
+        } else if (payload.final_error) {
+          handleFinalError(payload, canvas, resultBanner, maxRetries);
+        }
+      }
+    }
+  } catch (err) {
+    resultBanner.className = 'result-banner fastfail';
+    resultBanner.innerHTML = `<h4>🛑 Simulation Error</h4><div class="banner-desc">${err.message}</div>`;
+    resultBanner.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Run Fault Injection Simulation';
+    // Remove active pulse from nodes
+    document.querySelectorAll('.flow-node.active').forEach(n => n.classList.remove('active'));
+  }
+}
+
+async function handleAttemptEvent(att, canvas, logList, maxRetries) {
+  // Update Live Technical Log Card
+  renderAttemptLogCard(att, logList);
+
+  // Update Decision HUD
+  $('hudAttempt').textContent = `${att.attempt} / ${maxRetries}`;
+  
+  // Update Acceptance Pipeline Stepper
+  $('simPipeStep3').className = 'pipe-step done';
+  $('simPipeStat3Text').textContent = `✓ Attempt ${att.attempt} of ${maxRetries}`;
+
+  // Update existing request node to show received state
+  const prevReqNode = canvas.querySelector(`.node-request:last-of-type`);
+  if (prevReqNode) {
+    prevReqNode.classList.remove('active');
+    prevReqNode.innerHTML = `<span>🟢 REQUEST (Attempt ${att.attempt})</span><span style="font-size:11px;color:var(--muted)">Sent (${Math.round(att.elapsed_ms)}ms)</span>`;
+  }
+
+  addFlowArrow(canvas);
+
+  // Failure / Response Node mapping
+  if (att.outcome === 'rate_limited') {
+    $('hudError').textContent = 'HTTP 429 (Rate Limit)';
+    $('hudRetryable').innerHTML = '<span style="color:var(--ok)">YES (Transient)</span>';
+    addFlowNode(canvas, {
+      cls: 'node-retryable',
+      html: `<span>🔴 429 RATE LIMIT</span><span style="font-size:11px;color:var(--warn)">Too Many Requests</span>`
+    });
+  } else if (att.outcome === 'provider_error') {
+    $('hudError').textContent = 'HTTP 500 (Provider 5xx)';
+    $('hudRetryable').innerHTML = '<span style="color:var(--ok)">YES (Transient)</span>';
+    addFlowNode(canvas, {
+      cls: 'node-retryable',
+      html: `<span>🔴 HTTP 500 ERROR</span><span style="font-size:11px;color:var(--warn)">Internal Server Error</span>`
+    });
+  } else if (att.outcome === 'timeout') {
+    $('hudError').textContent = 'TIMEOUT (No Response)';
+    $('hudRetryable').innerHTML = '<span style="color:var(--ok)">YES (Transient)</span>';
+    addFlowNode(canvas, {
+      cls: 'node-retryable',
+      html: `<span>⏱️ TIMEOUT (Dropped)</span><span style="font-size:11px;color:var(--warn)">Connection timed out</span>`
+    });
+  } else if (att.outcome === 'bad_request') {
+    $('hudError').textContent = 'HTTP 400 (Bad Request)';
+    $('hudRetryable').innerHTML = '<span style="color:var(--err)">NO (Permanent)</span>';
+    $('hudBackoff').textContent = '—';
+    $('hudStatus').textContent = 'FAST FAILED';
+    $('hudStatus').style.color = 'var(--err)';
+
+    // Update pipeline status
+    $('simPipeStep4').className = 'pipe-step pipe-error';
+    $('simPipeStat4Text').textContent = 'Fast-Fail: No Retry';
+
+    addFlowNode(canvas, {
+      cls: 'node-failfast',
+      html: `<span>🔴 HTTP 400 BAD REQUEST</span><span style="font-size:11px;color:var(--err)">Client Error</span>`
+    });
+    addFlowArrow(canvas);
+    addFlowNode(canvas, {
+      cls: 'node-failfast',
+      html: `<span>🛑 NO RETRY (FAST FAIL)</span><span style="font-size:11px;color:var(--err)">Never burns quota</span>`
+    });
+    return;
+  } else if (att.outcome === 'malformed_response') {
+    $('hudError').textContent = 'HTTP 200 (Schema Error)';
+    $('hudRetryable').innerHTML = '<span style="color:var(--err)">NO (Contract Error)</span>';
+    $('hudBackoff').textContent = '—';
+    $('hudStatus').textContent = 'VALIDATION FAILED';
+    $('hudStatus').style.color = 'var(--err)';
+
+    // Update pipeline status
+    $('simPipeStep4').className = 'pipe-step pipe-error';
+    $('simPipeStat4Text').textContent = 'Schema Reject: No Retry';
+
+    addFlowNode(canvas, {
+      cls: 'node-retryable',
+      html: `<span>🟡 HTTP 200 RECEIVED</span><span style="font-size:11px;color:var(--muted)">Raw JSON Body</span>`
+    });
+    addFlowArrow(canvas);
+    addFlowNode(canvas, {
+      cls: 'node-failfast',
+      html: `<span>❌ SCHEMA VALIDATION FAILED</span><span style="font-size:11px;color:var(--err)">Pydantic rejected</span>`
+    });
+    addFlowArrow(canvas);
+    addFlowNode(canvas, {
+      cls: 'node-failfast',
+      html: `<span>🛑 NO RETRY</span><span style="font-size:11px;color:var(--err)">Non-transient</span>`
+    });
+    return;
+  } else if (att.outcome === 'success') {
+    $('hudError').textContent = 'HTTP 200 (OK)';
+    $('hudRetryable').textContent = 'None needed';
+    $('hudBackoff').textContent = '—';
+    $('hudStatus').textContent = 'SUCCESS';
+    $('hudStatus').style.color = 'var(--ok)';
+    return;
+  }
+
+  // If retrying, show Backoff node with visual progress countdown
+  if (att.will_retry && att.delay_before_retry_s) {
+    const delay = att.delay_before_retry_s;
+    $('hudBackoff').textContent = `${delay.toFixed(2)}s (Full Jitter)`;
+    $('hudStatus').textContent = `BACKOFF (${delay.toFixed(2)}s)`;
+    $('hudStatus').style.color = 'var(--warn)';
+
+    // Pipeline update for backoff & next step queue
+    $('simPipeStep4').className = 'pipe-step active-amber';
+    $('simPipeStat4Text').textContent = `Backoff: ${delay.toFixed(2)}s (Jitter)`;
+    $('simPipeStep5').className = 'pipe-step active';
+    $('simPipeStat5Text').textContent = `Queueing retry #${att.attempt + 1}...`;
+
+    addFlowArrow(canvas);
+
+    const backoffNode = addFlowNode(canvas, {
+      cls: 'node-backoff',
+      html: `
+        <div style="width:100%">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span>🟡 BACKOFF ${delay.toFixed(2)}s</span>
+            <span style="font-size:11px;color:var(--warn)">Jitter: 0 to cap</span>
+          </div>
+          <div class="backoff-bar-wrap"><div class="backoff-bar-fill" id="bar_${att.attempt}"></div></div>
+        </div>
+      `,
+      active: true
+    });
+
+    // Animate the backoff countdown bar
+    const bar = $(`bar_${att.attempt}`);
+    if (bar) {
+      setTimeout(() => { bar.style.transition = `width ${delay}s linear`; bar.style.width = '100%'; }, 20);
+    }
+
+    // Wait for the actual backoff duration before showing next attempt node
+    await new Promise(r => setTimeout(r, Math.min(delay * 1000, 2000)));
+    backoffNode.classList.remove('active');
+
+    // Add next attempt request node
+    if (att.attempt < maxRetries) {
+      addFlowArrow(canvas);
+      addFlowNode(canvas, {
+        cls: 'node-retry',
+        html: `<span>🔵 RETRY #${att.attempt + 1}</span><span style="font-size:11px;color:var(--accent)">Attempt ${att.attempt + 1}</span>`,
+        active: true
+      });
+    }
+  } else if (!att.will_retry && att.outcome !== 'success') {
+    $('hudBackoff').textContent = 'Exhausted';
+    $('hudStatus').textContent = 'EXHAUSTED';
+    $('hudStatus').style.color = 'var(--err)';
+
+    // Pipeline update for retry exhaustion
+    $('simPipeStep4').className = 'pipe-step pipe-error';
+    $('simPipeStat4Text').textContent = 'Max Retries Reached';
+
+    addFlowArrow(canvas);
+    addFlowNode(canvas, {
+      cls: 'node-exhausted',
+      html: `<span>🛑 MAX RETRIES REACHED</span><span style="font-size:11px;color:var(--err)">Limit: ${maxRetries} attempts</span>`
+    });
+  }
+}
+
+function handleFinalSuccess(data, canvas, banner) {
+  $('hudStatus').textContent = 'RECOVERED';
+  $('hudStatus').style.color = 'var(--ok)';
+
+  // Complete Simulation Pipeline
+  $('simPipeStep3').className = 'pipe-step done';
+  $('simPipeStat3Text').textContent = `✓ Recovered on att. ${data.attempts}`;
+  $('simPipeStep4').className = 'pipe-step done';
+  $('simPipeStat4Text').textContent = '✓ Policy Satisfied';
+  $('simPipeStep5').className = 'pipe-step done';
+  $('simPipeStat5Text').textContent = `✓ 200 OK (${data.attempts} att.)`;
+  $('simPipeStatusBadge').textContent = '✅ RECOVERED & VERIFIED';
+  $('simPipeStatusBadge').className = 'pipeline-status-badge completed';
+
+  addFlowArrow(canvas);
+  addFlowNode(canvas, {
+    cls: 'node-recovered',
+    html: `<span>🟢 HTTP 200 (RECOVERED)</span><span style="font-size:11px;color:var(--ok)">Request Succeeded</span>`
+  });
+
+  // Final Result Banner (Section 9 - Successful Recovery)
+  const { inCost, outCost, totalCost } = calcCost(data.usage.prompt_tokens, data.usage.completion_tokens);
+  banner.className = 'result-banner recovered';
+  banner.innerHTML = `
+    <h4 style="color:var(--ok)">✓ RECOVERED</h4>
+    <div class="banner-desc">
+      Provider failure occurred, retry policy was applied with exponential backoff & jitter, and the request eventually succeeded.
+    </div>
+    <div class="banner-meta">
+      <span>Total Attempts: <b>${data.attempts}</b></span>
+      <span>Final Status: <b>200 OK</b></span>
+      <span>Latency: <b>${Math.round(data.latency_ms)} ms</b></span>
+      <span>Tokens: <b>${data.usage.total_tokens}</b> (${data.usage.prompt_tokens} in / ${data.usage.completion_tokens} out)</span>
+      <span>Est. Cost: <b style="color:var(--ok)">${fmtCost(totalCost)}</b> ($0.10/M in, $0.40/M out)</span>
+    </div>
+  `;
+  banner.style.display = 'block';
+}
+
+function handleFinalError(payload, canvas, banner, maxRetries) {
+  const errType = payload.error_type;
+
+  // Mark Stage 5 error in pipeline
+  $('simPipeStep5').className = 'pipe-step pipe-error';
+
+  if (errType === 'LLMBadRequestError') {
+    // Pipeline update
+    $('simPipeStatusBadge').textContent = '🚫 FAST-FAIL VERIFIED';
+    $('simPipeStatusBadge').className = 'pipeline-status-badge fastfail';
+    $('simPipeStat5Text').textContent = `🛑 ${errType} (Att. 1)`;
+
+    // Section 9 - Fast Failure
+    banner.className = 'result-banner fastfail';
+    banner.innerHTML = `
+      <h4 style="color:var(--err)">🛑 FAST FAIL</h4>
+      <div class="banner-desc">
+        This error is not retryable (4xx client error). Retrying an invalid request would burn rate-limit budget on a call that will never succeed.
+      </div>
+      <div class="banner-meta">
+        <span>Total Attempts: <b>1 (Failed Fast)</b></span>
+        <span>Retry Decision: <b>NO RETRY</b></span>
+        <span>Exception Raised: <b>${errType}</b></span>
+      </div>
+    `;
+  } else if (errType === 'LLMMalformedResponseError') {
+    // Pipeline update
+    $('simPipeStatusBadge').textContent = '🚫 FAST-FAIL VERIFIED';
+    $('simPipeStatusBadge').className = 'pipeline-status-badge fastfail';
+    $('simPipeStat5Text').textContent = `🛑 ${errType} (Schema Reject)`;
+
+    // Section 9 - Validation Failure
+    banner.className = 'result-banner validation';
+    banner.innerHTML = `
+      <h4 style="color:var(--err)">❌ OUTPUT VALIDATION FAILED</h4>
+      <div class="banner-desc">
+        Provider returned HTTP 200, but the response body did not satisfy the expected Pydantic schema contract. Not retried because malformed payloads repeat.
+      </div>
+      <div class="banner-meta">
+        <span>HTTP Status: <b>200 OK</b></span>
+        <span>Schema Validation: <b>FAILED</b></span>
+        <span>Retry Decision: <b>NO RETRY</b></span>
+        <span>Exception Raised: <b>${errType}</b></span>
+      </div>
+    `;
+  } else {
+    // Pipeline update
+    $('simPipeStatusBadge').textContent = '🛑 BOUNDED EXHAUSTION';
+    $('simPipeStatusBadge').className = 'pipeline-status-badge exhausted';
+    $('simPipeStat5Text').textContent = `🛑 ${errType} (Exhausted)`;
+
+    // Section 9 - Retry Exhaustion
+    banner.className = 'result-banner exhausted';
+    banner.innerHTML = `
+      <h4 style="color:var(--err)">🛑 RETRY LIMIT REACHED</h4>
+      <div class="banner-desc">
+        The client stopped after the configured maximum number of attempts (${maxRetries}). Prevents runaway retry storms.
+      </div>
+      <div class="banner-meta">
+        <span>Total Attempts: <b>${maxRetries}</b></span>
+        <span>Policy Status: <b>Retries Exhausted</b></span>
+        <span>Exception Raised: <b>${errType}</b></span>
+      </div>
+    `;
+  }
+  banner.style.display = 'block';
+}
+
+function renderAttemptLogCard(att, container) {
+  if (container.querySelector('.sim-empty')) container.innerHTML = '';
+  const cfg = OUTCOME_LABELS[att.outcome] || { badge: 'badge-retry', label: att.outcome };
+  const card = document.createElement('div');
+  card.className = 'attempt-card';
+
+  let delayHtml = '';
+  if (att.will_retry) {
+    delayHtml = `<div class="attempt-delay">↳ Backing off for <b>${att.delay_before_retry_s.toFixed(2)}s</b> (exponential backoff + full jitter)</div>`;
+  } else if (att.outcome !== 'success') {
+    delayHtml = `<div class="attempt-delay" style="color:var(--err)">↳ 🛑 <b>Terminated without retry</b> (Fast-fail policy enforced)</div>`;
+  }
+
+  card.innerHTML = `
+    <div class="attempt-hdr">
+      <span>Attempt ${att.attempt}</span>
+      <span class="badge ${cfg.badge}">${cfg.label}</span>
+    </div>
+    <div class="attempt-sub">${Math.round(att.elapsed_ms)} ms elapsed</div>
+    ${delayHtml}
+    ${att.detail && att.outcome !== 'success' ? `<div class="attempt-detail">${att.detail}</div>` : ''}
+  `;
+  container.appendChild(card);
+}
+</script>
+</body>
+</html>

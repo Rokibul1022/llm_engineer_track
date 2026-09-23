@@ -1,0 +1,156 @@
+{
+  "report_metadata": {
+    "project": "LLM Engineer Track - Phase 1 Week 2",
+    "component": "AsyncLLMClient, Inference Pipeline & Token Generation Benchmark Suite",
+    "generated_at": "2026-09-22T21:58:12+0600",
+    "version": "0.2.0",
+    "author": "Rokibul",
+    "overall_status": "PASSED",
+    "verdict": "APPROVED_FOR_PRODUCTION"
+  },
+  "environment": {
+    "os": "Windows 11 Pro (win32)",
+    "python_version": "3.10.11",
+    "pytest_version": "8.3.3",
+    "dependencies": {
+      "httpx": "0.27.2",
+      "pydantic": "2.9.2",
+      "pytest-asyncio": "0.24.0",
+      "respx": "0.21.1",
+      "fastapi": "0.115.0",
+      "streamlit": "1.39.0"
+    }
+  },
+  "summary": {
+    "total_tests": 11,
+    "passed": 11,
+    "failed": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "pass_rate_percent": 100.0,
+    "total_duration_seconds": 0.46
+  },
+  "unit_tests": [
+    {
+      "id": "tests/test_benchmark.py::test_run_single_benchmark_computes_ttft_and_tps",
+      "name": "test_run_single_benchmark_computes_ttft_and_tps",
+      "category": "benchmarking",
+      "description": "Validates single stream benchmark computes TTFT, total duration, and tokens per second accurately",
+      "status": "PASSED",
+      "duration_seconds": 0.004,
+      "verdict": "PASSED"
+    },
+    {
+      "id": "tests/test_benchmark.py::test_summarize_flags_nondeterminism",
+      "name": "test_summarize_flags_nondeterminism",
+      "category": "benchmarking_nondeterminism",
+      "description": "Validates summarize() flags identical output at temp=0.0 and distinct variations at temp=1.2",
+      "status": "PASSED",
+      "duration_seconds": 0.004,
+      "verdict": "PASSED"
+    },
+    {
+      "id": "tests/test_benchmark.py::test_run_benchmark_suite_cartesian_product",
+      "name": "test_run_benchmark_suite_cartesian_product",
+      "category": "benchmarking_suite",
+      "description": "Validates Cartesian product of prompts x settings x repeats executes all scheduled runs",
+      "status": "PASSED",
+      "duration_seconds": 0.004,
+      "verdict": "PASSED"
+    },
+    {
+      "id": "tests/test_client.py::test_success_on_first_try",
+      "name": "test_success_on_first_try",
+      "category": "core_execution",
+      "description": "Standard 200 OK invocation without retries",
+      "status": "PASSED",
+      "duration_seconds": 0.004,
+      "verdict": "PASSED"
+    },
+    {
+      "id": "tests/test_client.py::test_retries_then_succeeds_after_500",
+      "name": "test_retries_then_succeeds_after_500",
+      "category": "fault_tolerance",
+      "description": "Transient HTTP 500 error recovers cleanly on retry attempt 2",
+      "status": "PASSED",
+      "duration_seconds": 0.004,
+      "verdict": "PASSED"
+    },
+    {
+      "id": "tests/test_client.py::test_rate_limit_exhausts_retries_and_raises",
+      "name": "test_rate_limit_exhausts_retries_and_raises",
+      "category": "rate_limiting",
+      "description": "Persistent HTTP 429 retried up to max_retries then raises LLMRateLimitError",
+      "status": "PASSED",
+      "duration_seconds": 0.004,
+      "verdict": "PASSED"
+    },
+    {
+      "id": "tests/test_client.py::test_bad_request_fails_immediately_no_retry",
+      "name": "test_bad_request_fails_immediately_no_retry",
+      "category": "circuit_breaker",
+      "description": "HTTP 400 Bad Request fast-fails on first attempt with 0 retries",
+      "status": "PASSED",
+      "duration_seconds": 0.004,
+      "verdict": "PASSED"
+    },
+    {
+      "id": "tests/test_client.py::test_timeout_is_retried_then_raises",
+      "name": "test_timeout_is_retried_then_raises",
+      "category": "resilience",
+      "description": "Socket timeout is retried with backoff until max_retries exhausted",
+      "status": "PASSED",
+      "duration_seconds": 0.004,
+      "verdict": "PASSED"
+    },
+    {
+      "id": "tests/test_client.py::test_malformed_200_raises_without_retry",
+      "name": "test_malformed_200_raises_without_retry",
+      "category": "data_integrity",
+      "description": "HTTP 200 with invalid schema raises LLMMalformedResponseError immediately",
+      "status": "PASSED",
+      "duration_seconds": 0.004,
+      "verdict": "PASSED"
+    },
+    {
+      "id": "tests/test_client.py::test_stream_success",
+      "name": "test_stream_success",
+      "category": "streaming",
+      "description": "SSE streaming receives delta chunks and terminal usage accurately",
+      "status": "PASSED",
+      "duration_seconds": 0.004,
+      "verdict": "PASSED"
+    },
+    {
+      "id": "tests/test_client.py::test_stream_rate_limit_retries_and_raises",
+      "name": "test_stream_rate_limit_retries_and_raises",
+      "category": "streaming_resilience",
+      "description": "SSE stream connection encountering 429 retries and terminates safely",
+      "status": "PASSED",
+      "duration_seconds": 0.004,
+      "verdict": "PASSED"
+    }
+  ],
+  "live_model_benchmark_results": {
+    "target_model": "openai/gpt-oss-120b",
+    "provider": "Groq Cloud (api.groq.com)",
+    "summary_metrics": [
+      {
+        "prompt_category": "Medium (73 chars)",
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "avg_ttft_ms": 602.3,
+        "avg_tokens_per_second": 136.2,
+        "identical_across_repeats": true
+      }
+    ]
+  },
+  "policy_verification": {
+    "full_jitter_formula": "Uniform(0, min(max_delay, base_delay * 2^attempt))",
+    "base_delay_seconds": 0.5,
+    "max_delay_cap_seconds": 2.0,
+    "max_retries_default": 3,
+    "thundering_herd_protection": "VERIFIED",
+    "zero_network_egress_in_testing": "VERIFIED"
+  }
+}
