@@ -1,214 +1,254 @@
-# 🛡️ Phase 1 Week 3: Schema-Validated Structured Extraction API Service
+# 🚀 LLM Engineer Track: From Async Python to Production Agents & RAG
 
-> **Production Extraction Pipeline:** Tool-Calling on `openai/gpt-oss-120b`, Bounded Self-Correcting Retries, Semantic Sanity Guards, SSE Streaming, and Multi-Interface Pipeline Auditor Studio.
+> **An end-to-end, production-grade LLM engineering repository comprising 24 progressive technical milestones.**  
+> Advancing from resilient asynchronous Python networking and robust streaming clients to deep Transformer inference benchmarking, schema-validated structured extraction pipelines, autonomous multi-agent systems, and enterprise retrieval-augmented generation (RAG) architectures.
 
 ---
 
 ## 📑 Table of Contents
-1. [Overview & Engineering Goals](#-overview--engineering-goals)
-2. [End-to-End System Architecture](#-end-to-end-system-architecture)
-3. [Core Technical Pillars](#-core-technical-pillars)
-   - [1. Typed Pydantic Schema Contracts](#1-typed-pydantic-schema-contracts)
-   - [2. Bounded Self-Correction Retry Engine](#2-bounded-self-correction-retry-engine)
-   - [3. Groq Proxy 400 Fault Interception](#3-groq-proxy-400-fault-interception)
-   - [4. Non-LLM Semantic Sanity Guard](#4-non-llm-semantic-sanity-guard)
-   - [5. FastAPI Service & SSE Streaming](#5-fastapi-service--sse-streaming)
-4. [User Interface Interfaces](#-user-interface-interfaces)
-   - [Interactive Streamlit Studio (Week 1 + Week 3 Unified)](#1-interactive-streamlit-studio)
-   - [Standalone Pipeline Auditor Web UI](#2-standalone-pipeline-auditor-web-ui)
-5. [Adversarial Benchmark & Error-Recovery Test Cases](#-adversarial-benchmark--error-recovery-test-cases)
-6. [Empirical Test Report Summary](#-empirical-test-report-summary)
-7. [Quickstart & Running Locally](#-quickstart--running-locally)
+1. [Curriculum Roadmap (24 Technical Milestones)](#-curriculum-roadmap-24-technical-milestones)
+2. [Milestone Deep Dives](#-milestone-deep-dives)
+   - [Phase 1 Week 1: Resilient Async LLM Client & Distributed Fault Tolerance](#phase-1-week-1-resilient-async-llm-client--distributed-fault-tolerance)
+   - [Phase 1 Week 2: Inference Pipeline, Token Benchmarking & Decoding Dynamics](#phase-1-week-2-inference-pipeline-token-benchmarking--decoding-dynamics)
+   - [Phase 1 Week 3: Schema-Validated Extraction API Service & Pipeline Auditor Studio](#phase-1-week-3-schema-validated-extraction-api-service--pipeline-auditor-studio)
+3. [System Architecture](#-system-architecture)
+4. [Inference Pipeline: Theory to Codebase Mapping](#-inference-pipeline-theory-to-codebase-mapping)
+5. [Empirical Benchmark Results (`openai/gpt-oss-120b`)](#-empirical-benchmark-results-openaigpt-oss-120b)
+6. [Quickstart & Running Locally](#-quickstart--running-locally)
+   - [Running the Unit Test Suite (Week 1)](#1-running-the-automated-unit-test-suite)
+   - [Running the Standalone Benchmark CLI (Week 2)](#2-running-the-benchmark-cli-runner)
+   - [Running the FastAPI Extraction Backend & HTML Auditor (Week 3)](#3-running-the-fastapi-extraction-service--auditor-web-ui)
+   - [Running the Interactive Unified Streamlit Studio](#4-launching-the-interactive-streamlit-studio)
+7. [Repository Structure](#-repository-structure)
+8. [Tradeoffs & Known Limitations](#-tradeoffs--known-limitations)
 
 ---
 
-## 🎯 Overview & Engineering Goals
+## 🗺️ Curriculum Roadmap (24 Technical Milestones)
 
-In real-world LLM engineering, unconstrained natural language output is a liability. Downstream microservices, databases, and payment processors require strict, deterministically validated data structures. 
-
-Phase 1 Week 3 builds a production-grade **Structured Extraction API Service** that:
-- Binds natural language queries to strictly typed Pydantic v2 schemas (`TicketExtraction` and `InvoiceExtraction`) using Groq's high-speed function calling API (`openai/gpt-oss-120b`).
-- Eliminates brittle regular expressions or json-mode parsing by generating dynamic JSON Schemas directly from Pydantic model definitions.
-- Enforces an automated **self-correction retry loop** that intercepts schema violations and feeds the exact validation error back to the model for inline correction.
-- Implements a deterministic **semantic sanity guard** to catch the failure class that JSON Schema validators cannot see: outputs that are schema-valid but factually or logically wrong (e.g. sarcasm, negation inversion, negative balances).
+| Phase | Milestone / Focus | Status | Core Deliverables & Capabilities |
+| :--- | :--- | :---: | :--- |
+| **Phase 1: Week 1** | **Resilient Async LLM Client & Latency Insights** | ✅ Completed | Production async client, AWS Full Jitter backoff, circuit-breaker fast-fail policy, TTFT & decode token decomposition, zero-egress fault injection simulation harness. |
+| **Phase 1: Week 2** | **Inference Pipeline & Token Benchmarking** | ✅ Completed | Transformer pipeline architecture mapping, server-side TTFT & throughput benchmarking engine, temperature/top-p nondeterminism analysis, multipage Streamlit interactive studio. |
+| **Phase 1: Week 3** | **Schema-Validated Extraction API & Pipeline Auditor** | ✅ Completed | Pydantic v2 data models, Groq function calling on `openai/gpt-oss-120b`, bounded self-correction retry loop, non-LLM semantic sanity checks, FastAPI `/extract` and SSE `/extract/stream`, unified Streamlit studio integration. |
+| **Phase 1: Week 4** | **Observability, Distributed Tracing & Token Economics** | 📋 Scheduled | OpenTelemetry integration, distributed trace context propagation, granular per-token cost ledger, latency SLA monitoring. |
+| **Phase 2: Weeks 5–10**| **Production Retrieval-Augmented Generation (RAG)** | 📋 Scheduled | Hybrid search (dense vectors + BM25 sparse), Reciprocal Rank Fusion (RRF), Cross-Encoder dynamic reranking, chunking strategies, contextual compression. |
+| **Phase 3: Weeks 11–18**| **Autonomous Multi-Agent Systems & Tool Calling** | 📋 Scheduled | ReAct / Plan-and-Solve engines, structured function calling, sandbox code execution, human-in-the-loop validation checkpoints, multi-agent orchestration. |
+| **Phase 4: Weeks 19–24**| **Enterprise Evaluation, Guardrails & Cloud Deployment** | 📋 Scheduled | Automated red teaming, LLM-as-a-judge evaluation frameworks, NeMo / Llama Guard safety guardrails, Kubernetes deployment, circuit breakers at enterprise scale. |
 
 ---
 
-## 🏛️ End-to-End System Architecture
+## 🔬 Milestone Deep Dives
+
+### Phase 1 Week 1: Resilient Async LLM Client & Distributed Fault Tolerance
+
+The foundation of any production LLM platform is an asynchronous client that handles the harsh reality of distributed LLM serving: persistent rate limits, transient provider crashes, socket timeouts, and malformed outputs.
+
+- **Non-Blocking Asynchronous Core**: Built on `httpx.AsyncClient` with typed contracts (`LLMRequest`, `LLMResponse`, `Usage`) enforced via Pydantic v2.
+- **AWS Full Jitter Backoff Algorithm**: Prevents thundering herd retry storms when distributed nodes hit rate limits simultaneously:
+  $$\text{Sleep Delay} = \text{Uniform}\left(0, \, \min\left(\text{MaxDelay}, \, \text{BaseDelay} \times 2^{\text{attempt}}\right)\right)$$
+- **Circuit-Breaker Fast-Fail Policy**:
+  - `429 Rate Limit` & `5xx Server Error`: **Retryable** with exponential backoff and jitter.
+  - `4xx Client Error` & `200 Malformed JSON`: **Non-Retryable**; fast-fails immediately on Attempt 1 with zero retry quota waste.
+- **Streaming Handshake Safety**: Retries only apply while establishing the initial HTTP connection. Once tokens begin flowing, mid-stream disconnects are surfaced immediately to prevent token duplication to users.
+
+---
+
+### Phase 1 Week 2: Inference Pipeline, Token Benchmarking & Decoding Dynamics
+
+Week 2 connects theoretical Transformer mechanics to empirical measurements, dissecting the physical latency profile of Large Language Model generation.
+
+- **The Two Computational Regimes**:
+  1. **Prefill Phase (Prompt Ingestion)**: Ingests all prompt tokens concurrently via matrix multiplications ($QK^T / \sqrt{d_k}$) to populate the Key-Value (KV) cache. Measured client-side as **Time to First Token (TTFT)**. Scales quadratically ($O(N^2)$) with prompt length.
+  2. **Decode Phase (Autoregressive Token Generation)**: Iteratively produces one token per forward pass by reading cached KV states from High Bandwidth Memory (HBM). Measured as **Decode Throughput (Tokens/sec)**.
+- **Decoding Controls & Output Nondeterminism**:
+  - **Temperature ($T$)**: Reshapes the softmax probability distribution over vocabulary logits ($P(x_i) = \frac{\exp(z_i/T)}{\sum \exp(z_j/T)}$). Low temperature ($T \to 0$) collapses toward greedy argmax selection; higher values ($T \ge 0.7$) broaden lexical variation.
+  - **Top-P (Nucleus Sampling)**: Truncates candidates to the minimal probability subset whose cumulative sum crosses threshold $p$, allowing the candidate pool to dynamically expand or contract based on model confidence.
+  - **Hardware Floating-Point Nondeterminism**: Demonstrates empirically why modern multi-GPU tensor-parallel inference engines can produce slight output variations even at $T=0.0$ due to non-associative IEEE 754 floating-point reduction across distributed kernels.
+
+---
+
+### Phase 1 Week 3: Schema-Validated Extraction API Service & Pipeline Auditor Studio
+
+Week 3 shifts from raw text generation to production-grade, schema-validated structured data extraction using Groq's high-speed function calling API (`openai/gpt-oss-120b`).
+
+- **Typed Pydantic Contracts (`schemas.py`)**:
+  - `TicketExtraction`: Enforces typed `intent`, `urgency`, typed `entities` list, `summary` ($\le 200$ chars), and numeric `confidence`.
+  - `InvoiceExtraction`: Enforces strict float amount parsing, ISO `due_date`, currency enums, and vendor metadata.
+- **Bounded Self-Correction Retry Loop (`extractor.py`)**:
+  - Intercepts Pydantic `ValidationError` and JSON decoding failures.
+  - Feeds the exact validation error back to the assistant in a `tool` role message (budget of 2 retries), allowing the LLM to self-correct inline.
+- **Groq Proxy 400 Interception (`groq_client.py`)**:
+  - Transparently intercepts Groq's `tool_use_failed` 400 proxy responses, unpacks `failed_generation`, and feeds it into the validator/retry pipeline.
+- **Semantic Sanity Checks (Non-LLM Heuristic Guard)**:
+  - Catches the failure class schema validation cannot see: outputs that are schema-valid but factually or logically wrong (e.g. sarcasm detection, negation inversion, ungrounded summaries, negative balances, missing due dates).
+- **FastAPI Endpoints & SSE Streaming (`main.py`)**:
+  - `POST /extract`: Synchronous extraction returning structured JSON, attempt counts, and sanity warning flags.
+  - `POST /extract/stream`: Server-Sent Events (SSE) streaming partial argument deltas with single-pass final buffer validation.
+- **Pipeline Auditor Studio**:
+  - Integrated into the Streamlit studio as **Tab 1: API Extraction** with a 5-stage backend stepper, metric HUD, and attempt-by-attempt self-correction recovery cards.
+  - Standalone web auditor served at `http://localhost:8000/`.
+
+*(For the complete dedicated Week 3 documentation, see [`phase1-week3/README.md`](phase1-week3/README.md)).*
+
+---
+
+## 🏛️ System Architecture
 
 ```
-                       ┌─────────────────────────────────────────────────┐
-                       │          Client / Frontends                     │
-                       │  • Streamlit Studio UI (http://localhost:8501)  │
-                       │  • Pipeline Auditor UI (http://localhost:8000)  │
-                       └────────────────────────┬────────────────────────┘
-                                                │
-                                                │ HTTP POST /extract  or  SSE /extract/stream
-                                                ▼
-                       ┌─────────────────────────────────────────────────┐
-                       │              FastAPI Gateway (main.py)          │
-                       │  • Request ingestion & schema validation        │
-                       │  • Serves static/index.html                     │
-                       └────────────────────────┬────────────────────────┘
-                                                │
-                                                ▼
-                       ┌─────────────────────────────────────────────────┐
-                       │        ExtractionService (extractor.py)         │
-                       │  - Resolves target model in SCHEMA_REGISTRY     │
-                       │  - Compiles prompt & dynamic tool spec          │
-                       └──────────────┬──────────────────┬───────────────┘
-                                      │                  │
-                Outbound Tool-Call    │                  │  Attempt 2 Feedback Loop
-                {"type": "function"}  │                  │  ("Validation error: ...")
-                                      ▼                  │
-                       ┌────────────────────────┐        │
-                       │ Groq API Client Wrapper│        │
-                       │    (groq_client.py)    │        │
-                       │  • gpt-oss-120b        │        │
-                       │  • 400 Proxy Intercept │        │
-                       └──────────────┬─────────┘        │
-                                      │                  │
-                                      ▼                  │
-                       ┌────────────────────────┐        │
-                       │ Pydantic v2 Validation ├────────┘
-                       │  model_validate(json)  │  (On ValidationError,
-                       └──────────────┬─────────┘   retries with feedback)
-                                      │
-                                      │ Validated Payload
-                                      ▼
-                       ┌─────────────────────────────────────────────────┐
-                       │       Semantic Sanity Guard (semantic_checks)   │
-                       │  • Negation inversion detection                 │
-                       │  • Sarcasm & sentiment anomaly warnings         │
-                       │  • Ungrounded summary detection                 │
-                       │  • Invoice zero/negative balance flag           │
-                       │  • Missing payment terms / due dates            │
-                       └────────────────────────┬────────────────────────┘
-                                                │
-                                                ▼
-                                    200 OK Validated Response
-                                 {"status": "success", ...}
+                                      +------------------------------------+
+                                      |          Browser / Client          |
+                                      +-----------------+------------------+
+                                                        |
+                                                        | HTTP JSON / SSE Stream
+                                                        v
++--------------------------------------------------------------------------------------------------+
+| FastAPI Gateway (app.py & main.py) & Streamlit Demo Studio (streamlit_demo.py)                   |
+|  - Validates request payload against Pydantic LLMRequest & Extraction schemas                    |
+|  - Enforces domain exceptions (LLMRateLimitError, ExtractionFailure)                             |
+|  - Streams Server-Sent Events (SSE) token-by-token with monotonic telemetry                      |
+|  - Interactive 5-stage backend execution pipeline stepper & self-correction audit cards          |
++-------------------------------------------------------+------------------------------------------+
+                                                        |
+                                                        | Calls client.complete() / extract()
+                                                        v
++--------------------------------------------------------------------------------------------------+
+| Core Execution Engine (llm_client/client.py & phase1-week3/extractor.py)                         |
+|  - Decorrelated Full-Jitter Exponential Backoff                                                  |
+|  - Bounded Self-Correction Retry Loop (feeds ValidationError back to LLM)                        |
+|  - Non-LLM Semantic Sanity Guard (negation, sarcasm, balance checks)                             |
+|  - High-resolution wall-clock monotonic timing via time.perf_counter()                           |
++-------------------------------------------------------+------------------------------------------+
+                                                        |
+                                                        | Outbound HTTPS / TLS Handshake
+                                                        v
++--------------------------------------------------------------------------------------------------+
+| Upstream LLM Serving Infrastructure (openai/gpt-oss-120b on Groq Cloud)                          |
+|  - Function calling / Tool choice enforcement                                                    |
+|  - Prefill Phase: Subword Tokenization -> Embeddings -> Transformer Attention -> KV Cache Init   |
+|  - Decode Phase: Logits -> Softmax Temperature / Top-P Sampling -> Autoregressive Streaming     |
++--------------------------------------------------------------------------------------------------+
 ```
 
 ---
 
-## 🔬 Core Technical Pillars
+## 🔄 Inference Pipeline: Theory to Codebase Mapping
 
-### 1. Typed Pydantic Schema Contracts
-Located in [`schemas.py`](file:///c:/Users/hrrok/Desktop/llm_engineer_track/phase1-week3/schemas.py), extraction structures are modeled as strict Pydantic v2 models:
-- **`TicketExtraction`**:
-  - `intent`: `Literal["bug_report", "feature_request", "billing", "other"]`
-  - `urgency`: `Literal["low", "medium", "high"]`
-  - `entities`: `list[Entity]` (typed as person, org, product, location, other)
-  - `summary`: String constrained by `Field(..., max_length=200)`
-  - `confidence`: `Field(..., ge=0.0, le=1.0)`
-- **`InvoiceExtraction`**:
-  - `vendor`: String name
-  - `invoice_number`: String identifier
-  - `amount`: Strict float (parsed from currency strings like `$1,240.50` or `1.890,00 EUR`)
-  - `currency`: `Literal["USD", "EUR", "GBP", "BDT", "other"]`
-  - `due_date`: ISO format date string, or `"not specified"`
-  - `confidence`: `Field(..., ge=0.0, le=1.0)`
-
-### 2. Bounded Self-Correction Retry Engine
-In [`extractor.py`](file:///c:/Users/hrrok/Desktop/llm_engineer_track/phase1-week3/extractor.py), when the LLM outputs arguments that fail Pydantic validation (e.g. invalid literal enum or summary >200 chars):
-1. The error is intercepted: `(json.JSONDecodeError, ValidationError)`.
-2. The retry budget is checked (`max_retries=2`).
-3. The conversation history is appended with the model's failed tool call, followed by a `tool` role message containing the exact Pydantic error details:
-   ```text
-   Validation error: 1 validation error for TicketExtraction
-   summary: String should have at most 200 characters [type=string_too_long]
-   Correct the arguments and call the tool again.
-   ```
-4. The model corrects its arguments on Attempt 2, resolving the extraction and clearing the error.
-
-### 3. Groq Proxy 400 Fault Interception
-In [`groq_client.py`](file:///c:/Users/hrrok/Desktop/llm_engineer_track/phase1-week3/groq_client.py), Groq validates tool calls against the JSON Schema at the network gateway and returns an HTTP 400 with `tool_use_failed` if the initial generation fails schema validation. Instead of crashing, the client intercepts the `failed_generation` JSON string, reconstructs a `ToolCall`, and routes it into the Pydantic retry pipeline for automatic self-correction.
-
-### 4. Non-LLM Semantic Sanity Guard
-Schema validation only validates structure, not truth. `semantic_checks()` in [`extractor.py`](file:///c:/Users/hrrok/Desktop/llm_engineer_track/phase1-week3/extractor.py) scans the output against deterministic heuristics:
-- **Negation Inversion**: Catches cases where a user said *"This is NOT a billing issue"* but the LLM classified `intent="billing"`.
-- **Sarcasm Detection**: Flags sarcastic tone (e.g. *"Oh great, ANOTHER billing surprise. Love it."*) for manual supervisor review.
-- **Short Input Overconfidence**: Flags models claiming `confidence > 0.90` on minimal inputs (`len < 20`).
-- **Invoice Logic Flaws**: Flags negative or zero invoice amounts and missing payment due dates.
-
-### 5. FastAPI Service & SSE Streaming
-In [`main.py`](file:///c:/Users/hrrok/Desktop/llm_engineer_track/phase1-week3/main.py):
-- `POST /extract`: Synchronous extraction returning clean data, attempts used, and sanity warnings.
-- `POST /extract/stream`: Streams arguments delta chunks as Server-Sent Events (`data: {"partial": "..."}`) and validates the completed buffer once at stream termination (`data: {"final": ...}`).
+| Pipeline Stage | Theoretical Mechanism | Concrete Codebase Mapping |
+| :--- | :--- | :--- |
+| **1. Tokenization** | Subword BPE discretization mapping strings to vocabulary IDs ($V \approx 128\text{k}$). | In [`schemas.py`](phase1-week1/llm-client/llm_client/schemas.py), `Usage` schema records `prompt_tokens` emitted by provider SSE frames. |
+| **2. Embeddings** | Continuous vector projection ($W_E \in \mathbb{R}^{|V| \times d_{\text{model}}}$) + RoPE positional rotations. | Model selection via `LLMRequest.model` (defaulting to `openai/gpt-oss-120b`). |
+| **3. Attention (Prefill)** | Multi-head self-attention ($QK^T / \sqrt{d_k}$) across prompt tokens. Attention cost scales with $O(N^2)$. | Benchmarked in [`benchmark.py`](phase1-week1/llm-client/llm_client/benchmark.py); TTFT scaling measured across short, medium, and long prompts. |
+| **4. Logits & Sampling** | Softmax projection temperature scaling and Top-P nucleus probability cutoff. | Configured via `LLMRequest.temperature` and `LLMRequest.top_p`; evaluated in `summarize()` across repeated runs. |
+| **5. Autoregressive Decode** | One forward pass per token; past key/value states preserved in high-speed GPU KV Cache. | Directly driven by `async for chunk in client.stream()` in [`client.py`](phase1-week1/llm-client/llm_client/client.py) and SSE loops in [`app.py`](phase1-week1/llm-client/app.py). |
+| **6. Detokenization** | Integer token IDs decoded back into UTF-8 characters and emitted to client. | Read from SSE `delta.content` chunks and rendered live in the CLI and Streamlit interfaces. |
 
 ---
 
-## 🖥️ User Interface Interfaces
+## 📊 Empirical Benchmark Results (`openai/gpt-oss-120b`)
 
-### 1. Interactive Streamlit Studio
-Accessible at `http://localhost:8501`, fully integrated into the existing LLM Engineer Track workspace:
-- **Unified Navigation**: Features Tab 1 (API Extraction), Tab 2 (Live Client & Pipeline), and Tab 3 (Fault Injection).
-- **Visual 5-Stage Stepper**: Step 01 Contract ➔ Step 02 Inference ➔ Step 03 Validator ➔ Step 04 Repair ➔ Step 05 Sanity.
-- **Metric HUD**: Wall-clock latency, attempts counter, schema compliance badge, and semantic sanity flag count.
-- **Attempt History & Self-Correction Audit Box**: Renders the exact Attempt 1 error, the feedback prompt sent to the LLM, and the Attempt 2 recovery confirmation.
+Real empirical telemetry collected by running the automated benchmark suite against `openai/gpt-oss-120b` (persisted in [`benchmark_results.json`](phase1-week1/llm-client/benchmark_results.json)):
 
-### 2. Standalone Pipeline Auditor Web UI
-Served directly by FastAPI at `http://localhost:8000/`:
-- Live execution pipeline animation matching server response states.
-- Real-time Server-Sent Events streaming parameter viewer.
-- Audit history ledger with millisecond latency decomposition.
-
----
-
-## 🧪 Adversarial Benchmark & Error-Recovery Test Cases
-
-All 13 test cases are documented in [`prompt.md`](file:///c:/Users/hrrok/Desktop/llm_engineer_track/prompt.md) and available via the preset dropdown in the UI:
-
-| Preset Name | Target Schema | Behavior / Verification |
-|---|---|---|
-| **Sample 1: Standard Bug Report** | `ticket` | Direct pass on Attempt 1, entity detection (`iOS mobile app`). |
-| **Sample 2: Adversarial Negation** | `ticket` | Verifies intent is `bug_report`, respecting explicit negation (*not billing*). |
-| **Sample 3: Sarcastic Feedback** | `ticket` | Flags `Potential sarcasm detected; verify urgency and intent manually.` |
-| **Sample 4: Short Ambiguous Input** | `ticket` | Catches high confidence on minimal input (<20 characters). |
-| **Sample 5: Multi-Entity Request** | `ticket` | Extracts multiple product and organization entities without hallucination. |
-| **Sample 6: Standard Commercial Invoice** | `invoice` | Extracts float amount `$1,240.50` and ISO due date. |
-| **Sample 7: Missing Due Date** | `invoice` | Enforces fallback rule `due_date="not specified"`. |
-| **Sample 8: European VAT Invoice** | `invoice` | Correctly extracts EUR currency and European date formatting. |
-| **Sample 9: Missing / Ambiguous Amount** | `invoice` | Enforces zero amount fallback (`amount=0.0`, low confidence). |
-| **Sample 10: British Pounds Invoice** | `invoice` | Extracts GBP currency symbol (`£3,750.25`). |
-| **🔥 Error & Cleared: Overlong Summary** | `ticket` | **Causes Attempt 1 ValidationError (>200 chars), self-corrects and clears on Attempt 2.** |
-| **⚠️ Error Flagged: Negative Refund Memo** | `invoice` | Valid schema but flags negative balance and missing due date. |
-| **🚫 Terminal Error: Unsupported Schema** | `unsupported` | Triggers typed `ExtractionFailure` and displays circuit breaker alert. |
-
----
-
-## 📊 Empirical Test Report Summary
-
-From [`week3-test-report.md`](file:///c:/Users/hrrok/Desktop/llm_engineer_track/phase1-week3/week3-test-report.md):
-
-| Category | Conditions Evaluated | Pass Rate | Status |
-|---|---|:---:|:---:|
-| **1. Structural Validation** | Well-formed, Missing fields, Forced malformed enum, Retry exhaustion, Non-tool plain text | **5 / 5** | **100% PASS** |
-| **2. Semantic Sanity** | Negation, Sarcasm, Ungrounded summary, Short text overconfidence, Entity hallucination | **5 / 5** | **100% PASS** |
-| **3. SSE Streaming** | Partial deltas, Single-pass buffer validation, Mid-stream schema error, Client disconnect | **4 / 4** | **100% PASS** |
-| **4. Determinism** | 5x identical runs at $T=0.0$ on `openai/gpt-oss-120b` | **5 / 5** | **100% STABLE** |
-
----
-
-## 🚀 Quickstart & Running Locally
-
-### 1. Set Up Environment Variables
-Create or verify `.env` in `phase1-week3/` or `phase1-week1/llm-client/`:
-```bash
-GROQ_API_KEY=gsk_your_groq_api_key_here
-GROQ_MODEL=openai/gpt-oss-120b
+```text
+================================================================================================================
+ [BENCHMARK] INFERENCE BENCHMARK SUMMARY TABLE
+================================================================================================================
+Prompt Size    | Temp   | Top-P   | Runs   | Prompt Tok   | Comp Tok   | TTFT (ms)   | Tokens/s   | Identical?  
+---------------+--------+---------+--------+--------------+------------+-------------+------------+-------------
+Short (36c)    | 0.0    | 1.0     | 3      | 81           | 120        | 605.2       | 199.2      | YES (det)   
+Short (36c)    | 0.7    | 0.9     | 3      | 81           | 115        | 592.4       | 187.5      | NO (3 var)  
+Short (36c)    | 1.2    | 1.0     | 3      | 81           | 123        | 695.5       | 172.3      | NO (3 var)  
+Medium (162c)  | 0.0    | 1.0     | 3      | 99           | 128        | 546.0       | 179.3      | YES (det)   
+Medium (162c)  | 0.7    | 0.9     | 3      | 99           | 128        | 627.6       | 169.3      | NO (3 var)  
+Medium (162c)  | 1.2    | 1.0     | 3      | 99           | 128        | 622.8       | 189.3      | NO (3 var)  
+Long (758c)    | 0.0    | 1.0     | 3      | 214          | 128        | 698.7       | 158.7      | NO (2 var)* 
+Long (758c)    | 0.7    | 0.9     | 3      | 214          | 128        | 661.1       | 164.4      | NO (3 var)  
+Long (758c)    | 1.2    | 1.0     | 3      | 214          | 128        | 651.4       | 170.3      | NO (3 var)  
+---------------+--------+---------+--------+--------------+------------+-------------+------------+-------------
 ```
 
-### 2. Run the FastAPI Backend & Auditor Web UI
+---
+
+## ⚡ Quickstart & Running Locally
+
+### Prerequisites
+- Python 3.10+
+- Groq Cloud API Key configured in `.env`:
+  ```ini
+  GROQ_API_KEY=gsk_your_groq_api_key_here
+  LLM_DEFAULT_MODEL=openai/gpt-oss-120b
+  ```
+
+---
+
+### 1. Running the Automated Unit Test Suite
+```powershell
+& ".\phase1-week1\llm-client\.venv\Scripts\pytest.exe" .\phase1-week1\llm-client\tests\ -v
+```
+
+---
+
+### 2. Running the Benchmark CLI Runner
+```powershell
+python phase1-week1/llm-client/scripts/run_benchmark.py --prompt "Explain attention mechanisms in 2 sentences."
+```
+
+---
+
+### 3. Running the FastAPI Extraction Service & Auditor Web UI (Week 3)
 ```powershell
 cd phase1-week3
 & "..\phase1-week1\llm-client\.venv\Scripts\uvicorn.exe" main:app --reload --port 8000
 ```
-Open **`http://localhost:8000/`** to view the Pipeline Auditor interface.
+Open **`http://localhost:8000`** in your browser to inspect live pipeline execution and Server-Sent Events parameter deltas.
 
-### 3. Launch the Unified Streamlit Studio
+---
+
+### 4. Launching the Interactive Streamlit Studio
 ```powershell
 & ".\phase1-week1\llm-client\.venv\Scripts\streamlit.exe" run ".\phase1-week1\llm-client\streamlit_demo.py"
 ```
-Open **`http://localhost:8501/`** and select **Tab 1: API Extraction** to test structured extraction and watch self-correcting retries live!
+Open **`http://localhost:8501`** in your browser to access:
+- **🛡️ Tab 1: API Extraction — Pipeline Auditor View (Week 3)**: Test structured extraction, adversarial samples, and watch self-correcting retry recovery live.
+- **⚡ Tab 2: Live Client, Speed Insights & Execution Pipeline (Week 1 & 2)**: Live token streaming with TTFT vs. decode throughput decomposition.
+- **🧪 Tab 3: Acceptance Test & Fault Injection Studio (Week 1)**: Interactive simulations of 429 rate limits, 5xx server crashes, malformed outputs, and fast-fail circuit breakers.
+
+---
+
+## 📁 Repository Structure
+
+```text
+llm_engineer_track/
+├── README.md                                  # Unified master roadmap & curriculum guide
+├── prompt.md                                  # Curated test prompts & adversarial error cases
+├── phase1-week1/
+│   └── llm-client/
+│       ├── streamlit_demo.py                  # Main unified Streamlit studio entrypoint
+│       ├── llm_client/
+│       │   ├── client.py                      # AsyncLLMClient with Full Jitter backoff
+│       │   ├── schemas.py                     # Pydantic v2 data models
+│       │   ├── exceptions.py                  # Domain exception hierarchy
+│       │   └── benchmark.py                   # Benchmark & nondeterminism engine
+│       ├── pages/
+│       │   ├── 1_Week1_Fault_Injection.py     # Fault Injection Studio
+│       │   ├── 2_Week2_Benchmark.py           # Token Benchmark Lab
+│       │   └── 3_API_Extraction.py           # Week 3 Extraction Studio
+│       └── tests/                             # Unit test suite
+├── phase1-week3/
+│   ├── README.md                              # Dedicated Week 3 documentation
+│   ├── schemas.py                             # Pydantic extraction models (Ticket & Invoice)
+│   ├── prompts.py                             # System prompts & dynamic tool schema builder
+│   ├── groq_client.py                         # Groq HTTP client & 400 proxy error interceptor
+│   ├── extractor.py                           # Self-correcting retry loop & semantic sanity guard
+│   ├── main.py                                # FastAPI app (/extract, /extract/stream)
+│   ├── static/index.html                      # Standalone Pipeline Auditor web UI
+│   └── week3-test-report.md                   # 100% verified empirical test report
+```
+
+---
+
+## ⚖️ Tradeoffs & Known Limitations
+
+1. **Client-Side API Boundary vs. Internal Hardware Timers**: Token counts and latencies reflect provider-reported usage across WAN HTTP/SSE connections rather than direct GPU kernel telemetry.
+2. **Grammar Enforcement vs. LLM Freedom**: Strict tool-calling constraints reduce hallucinations but require fallback heuristics when inputs completely lack required target fields.
+3. **Bounded Retries**: Self-correction is capped at 2 retries to prevent unbounded token expenditure on unrecoverable inputs.
