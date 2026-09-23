@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Extraction API — Pipeline Auditor View</title>
+<style>
+:root{
+  --bg:#f4f6f9; --panel:#ffffff; --border:#d7dde5; --text:#1a2230; --muted:#647089;
+  --accent:#2c5cc5; --ok:#1a8a4a; --warn:#b5860a; --err:#c23b3b; --mono:'SFMono-Regular',Consolas,monospace;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12151c; --panel:#1a1f2b; --border:#2c3341; --text:#e6e9f0; --muted:#8b95ab;
+    --accent:#6d9bff; --ok:#4fd393; --warn:#e8b84b; --err:#ff7373;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12151c; --panel:#1a1f2b; --border:#2c3341; --text:#e6e9f0; --muted:#8b95ab;
+  --accent:#6d9bff; --ok:#4fd393; --warn:#e8b84b; --err:#ff7373;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,Segoe UI,Roboto,sans-serif}
+body{padding:18px}
+h1{font-size:18px;margin:0 0 2px}
+.sub{color:var(--muted);font-size:13px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:14px}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px}
+.panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0 0 10px}
+textarea{width:100%;min-height:90px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:8px;font-size:13px;resize:vertical}
+select,button{font-size:13px;padding:7px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text)}
+button{cursor:pointer;background:var(--accent);color:#fff;border:none;font-weight:600}
+button:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+label.mini{font-size:11px;color:var(--muted);display:block;margin-top:10px;margin-bottom:3px;text-transform:uppercase;letter-spacing:.03em}
+pre{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px;font-size:11px;overflow-x:auto;font-family:var(--mono);max-height:180px}
+.steps{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.step{display:flex;align-items:center;gap:8px;padding:8px;border-radius:6px;border:1px solid var(--border);font-size:13px;background:var(--bg)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--muted);flex-shrink:0}
+.step.active .dot{background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent)}
+.step.ok .dot{background:var(--ok)}
+.step.err .dot{background:var(--err)}
+.detail{font-size:11px;color:var(--muted);margin-left:auto;font-family:var(--mono);text-align:right}
+.field{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)}
+.field:last-child{border-bottom:none}
+.badge{font-size:10px;padding:2px 6px;border-radius:4px;font-family:var(--mono)}
+.badge.ok{background:color-mix(in srgb, var(--ok) 18%, transparent);color:var(--ok)}
+.warnbox{margin-top:10px;padding:8px;border-radius:6px;background:color-mix(in srgb, var(--warn) 15%, transparent);border:1px solid var(--warn);font-size:12px;color:var(--warn);display:none}
+.warnbox.show{display:block}
+table{width:100%;border-collapse:collapse;font-size:11px;margin-top:6px}
+th,td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-weight:600}
+.status-success{color:var(--ok)}
+.status-retry{color:var(--warn)}
+.status-fail{color:var(--err)}
+.audit{margin-top:14px}
+</style>
+</head>
+<body>
+<h1>🛡️ Extraction API — Pipeline Auditor View</h1>
+<div class="sub">Simulated model layer — same retry/validation logic as the real service. Two schemas, two failure sources: forced (on demand) and random (live-variance simulation).</div>
+
+<div class="grid">
+  <div class="panel">
+    <h2>Input &amp; Schema</h2>
+    <label class="mini">Schema</label>
+    <select id="schemaSelect" onchange="onSchemaChange()">
+      <option value="ticket">TicketExtraction (support tickets)</option>
+      <option value="invoice">InvoiceExtraction (invoices)</option>
+    </select>
+    <label class="mini">Input text</label>
+    <textarea id="inputText"></textarea>
+    <label class="mini">Failure source</label>
+    <select id="failureMode">
+      <option value="none">No failure</option>
+      <option value="random">Random — simulate live model variance (~35% attempt fail rate)</option>
+      <option value="malformed">Force: malformed JSON</option>
+      <option value="missing_field">Force: missing required field</option>
+      <option value="wrong_enum">Force: invalid enum value</option>
+      <option value="always_fail">Force: exhaust retries (hard fail)</option>
+    </select>
+    <div class="row">
+      <button id="runBtn" onclick="runExtraction()">Run extraction</button>
+    </div>
+    <label class="mini">Active schema (JSON Schema)</label>
+    <pre id="schemaDisplay"></pre>
+  </div>
+
+  <div class="panel">
+    <h2>Live Pipeline</h2>
+    <div class="steps" id="steps">
+      <div class="step" id="s0"><div class="dot"></div><span>Prompt Builder — system prompt + tool spec</span></div>
+      <div class="step" id="s1"><div class="dot"></div><span>Groq tool call — attempt <span id="attemptNum">1</span></span><span class="detail" id="s1detail"></span></div>
+      <div class="step" id="s2"><div class="dot"></div><span>Validator — pydantic.validate()</span><span class="detail" id="s2detail"></span></div>
+      <div class="step" id="s3"><div class="dot"></div><span>Retry (bounded, max 2)</span><span class="detail" id="s3detail"></span></div>
+      <div class="step" id="s4"><div class="dot"></div><span>Final response</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Result</h2>
+    <div id="fields"><div class="field"><span>—</span><span>run extraction to populate</span></div></div>
+    <div class="warnbox" id="warnbox"></div>
+  </div>
+</div>
+
+<div class="panel audit">
+  <h2>Audit Trail</h2>
+  <table>
+    <thead><tr><th>Time</th><th>Schema</th><th>Attempts</th><th>Status</th><th>Failure source</th><th>Semantic flags</th></tr></thead>
+    <tbody id="auditBody"></tbody>
+  </table>
+</div>
+
+<script>
+const SCHEMAS = {
+  ticket: {
+    label: "TicketExtraction",
+    sample: "Customer says: this is NOT a billing issue, the app just crashes on login every time.",
+    jsonSchema: `{
+  "intent": "bug_report|feature_request|billing|other",
+  "urgency": "low|medium|high",
+  "entities": [{"name": str, "type": str}],
+  "summary": "string, max 200 chars",
+  "confidence": "float 0.0-1.0"
+}`,
+    build(text){
+      const lower = text.toLowerCase();
+      const negation = /not\s+a?\s*billing|isn'?t\s+billing/.test(lower);
+      let intent = lower.includes("bill") ? "billing" : (lower.includes("crash") || lower.includes("bug") ? "bug_report" : "other");
+      if(negation && lower.includes("bill")) intent = "bug_report";
+      const urgency = lower.includes("crash") || lower.includes("urgent") ? "high" : "low";
+      return {
+        intent, urgency,
+        entities: lower.includes("app") ? [{name:"the app", type:"product"}] : [],
+        summary: text.slice(0,80),
+        confidence: text.length < 20 ? 0.95 : 0.82,
+        _negation: negation, _short: text.length < 20
+      };
+    },
+    flags(d){
+      const f = [];
+      if(d._negation && d.intent === "billing") f.push("intent may be wrong given negation in text");
+      if(d._short && d.confidence > 0.9) f.push("high confidence on very short input");
+      return f;
+    },
+    errMsg(type){
+      return {
+        malformed: "json.JSONDecodeError: Expecting ',' delimiter",
+        missing_field: "ValidationError: field 'confidence' required",
+        wrong_enum: "ValidationError: urgency='urgent' is not a valid enumeration member"
+      }[type];
+    }
+  },
+  invoice: {
+    label: "InvoiceExtraction",
+    sample: "Invoice #INV-2291 from Northwind Traders. Amount due: $1,240.50. No due date listed on the document.",
+    jsonSchema: `{
+  "vendor": "string",
+  "invoice_number": "string",
+  "amount": "float",
+  "currency": "USD|EUR|GBP|BDT|other",
+  "due_date": "ISO date string, or 'not specified'",
+  "confidence": "float 0.0-1.0"
+}`,
+    build(text){
+      const invMatch = text.match(/INV[-#]?\d+/i);
+      const amtMatch = text.match(/\$?\s?(\d[\d,]*(\.\d{1,2})?)/);
+      const vendorMatch = text.match(/from\s+([A-Z][A-Za-z&.,'\s]{2,30})/);
+      const hasDue = /\d{4}-\d{2}-\d{2}/.test(text);
+      const amount = amtMatch ? parseFloat(amtMatch[1].replace(/,/g,'')) : 0;
+      return {
+        vendor: vendorMatch ? vendorMatch[1].trim().replace(/\.$/,'') : "Unknown Vendor",
+        invoice_number: invMatch ? invMatch[0] : "N/A",
+        amount, currency: text.includes("$") ? "USD" : "USD",
+        due_date: hasDue ? text.match(/\d{4}-\d{2}-\d{2}/)[0] : "not specified",
+        confidence: (amount > 0 && invMatch) ? 0.88 : 0.55,
+        _amount0: amount === 0
+      };
+    },
+    flags(d){
+      const f = [];
+      if(d._amount0) f.push("amount not found in text, defaulted to 0 — do not trust downstream");
+      if(d.due_date === "not specified" && d.confidence > 0.8) f.push("confident despite missing due date");
+      return f;
+    },
+    errMsg(type){
+      return {
+        malformed: "json.JSONDecodeError: Unterminated string starting at char 42",
+        missing_field: "ValidationError: field 'due_date' required",
+        wrong_enum: "ValidationError: currency='USDOLLARS' is not a valid enumeration member"
+      }[type];
+    }
+  }
+};
+
+function currentSchema(){ return SCHEMAS[document.getElementById("schemaSelect").value]; }
+
+function onSchemaChange(){
+  const s = currentSchema();
+  document.getElementById("schemaDisplay").textContent = s.jsonSchema;
+  document.getElementById("inputText").value = s.sample;
+}
+onSchemaChange();
+
+const stepIds = ["s0","s1","s2","s3","s4"];
+function resetSteps(){
+  stepIds.forEach(id=>{ document.getElementById(id).className = "step"; });
+  document.getElementById("s1detail").textContent = "";
+  document.getElementById("s2detail").textContent = "";
+  document.getElementById("s3detail").textContent = "";
+  document.getElementById("attemptNum").textContent = "1";
+}
+function setStep(id, state){ document.getElementById(id).className = "step " + state; }
+function wait(ms){ return new Promise(r=>setTimeout(r, ms)); }
+
+function mockModelCall(schema, text, mode, attempt){
+  let failType = null;
+  if(mode === "always_fail"){ failType = "wrong_enum"; }
+  else if(mode !== "none" && mode !== "random" && attempt === 1){ failType = mode; }
+  else if(mode === "random"){
+    if(Math.random() < 0.35) failType = ["malformed","missing_field","wrong_enum"][Math.floor(Math.random()*3)];
+  }
+  if(failType) return {ok:false, error: schema.errMsg(failType)};
+  const data = schema.build(text);
+  return {ok:true, data, flags: schema.flags(data)};
+}
+
+async function runExtraction(){
+  const btn = document.getElementById("runBtn");
+  btn.disabled = true;
+  resetSteps();
+  document.getElementById("warnbox").className = "warnbox";
+  const schema = currentSchema();
+  const text = document.getElementById("inputText").value || "";
+  const mode = document.getElementById("failureMode").value;
+
+  setStep("s0","active"); await wait(300); setStep("s0","ok");
+
+  let attempt = 1, result, maxAttempts = 3, statusLabel = "success";
+  while(attempt <= maxAttempts){
+    document.getElementById("attemptNum").textContent = attempt;
+    setStep("s1","active"); await wait(450);
+    result = mockModelCall(schema, text, mode, attempt);
+    setStep("s2","active"); await wait(300);
+
+    if(result.ok){
+      setStep("s1","ok"); setStep("s2","ok");
+      document.getElementById("s2detail").textContent = "schema valid";
+      statusLabel = attempt > 1 ? "success_after_retry" : "success";
+      break;
+    } else {
+      setStep("s1","err"); setStep("s2","err");
+      document.getElementById("s2detail").textContent = result.error;
+      if(attempt < maxAttempts){
+        setStep("s3","active");
+        document.getElementById("s3detail").textContent = "feeding error back to model…";
+        await wait(450);
+        setStep("s3","ok");
+        attempt++;
+      } else {
+        setStep("s3","err");
+        document.getElementById("s3detail").textContent = "retry budget exhausted";
+        statusLabel = "failed";
+        break;
+      }
+    }
+  }
+
+  const fieldsEl = document.getElementById("fields");
+  const warnEl = document.getElementById("warnbox");
+  let flags = [];
+
+  if(result.ok){
+    setStep("s4","ok"); await wait(120);
+    const d = result.data;
+    fieldsEl.innerHTML = Object.entries(d).filter(([k])=>!k.startsWith("_")).map(([k,v])=>
+      `<div class="field"><span>${k}</span><span><span class="badge ok">valid</span> ${Array.isArray(v)? JSON.stringify(v): v}</span></div>`
+    ).join("");
+    flags = result.flags || [];
+    if(flags.length){
+      warnEl.textContent = "⚠ Semantic warnings (schema passed, content questionable): " + flags.join("; ");
+      warnEl.className = "warnbox show";
+    }
+  } else {
+    setStep("s4","err");
+    fieldsEl.innerHTML = `<div class="field"><span>status</span><span class="badge" style="background:color-mix(in srgb, var(--err) 18%, transparent); color:var(--err)">extraction_failed</span></div>`;
+    warnEl.textContent = "✗ ExtractionFailure raised after retry budget exhausted: " + result.error;
+    warnEl.className = "warnbox show";
+  }
+
+  const row = document.createElement("tr");
+  const statusClass = statusLabel === "failed" ? "status-fail" : (statusLabel === "success_after_retry" ? "status-retry" : "status-success");
+  row.innerHTML = `<td>${new Date().toLocaleTimeString()}</td><td>${schema.label}</td><td>${attempt}</td><td class="${statusClass}">${statusLabel}</td><td>${mode}</td><td>${flags.length?flags.length+" flag(s)":"none"}</td>`;
+  document.getElementById("auditBody").prepend(row);
+
+  btn.disabled = false;
+}
+</script>
+</body>
+</html>

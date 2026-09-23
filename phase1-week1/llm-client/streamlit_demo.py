@@ -27,6 +27,11 @@ PROJECT_DIR = Path(__file__).resolve().parent
 if str(PROJECT_DIR) not in sys.path:
     sys.path.insert(0, str(PROJECT_DIR))
 
+# Ensure phase1-week3 is in sys.path
+WEEK3_DIR = PROJECT_DIR.parent.parent / "phase1-week3"
+if str(WEEK3_DIR) not in sys.path:
+    sys.path.insert(0, str(WEEK3_DIR))
+
 import httpx
 import streamlit as st
 
@@ -34,8 +39,19 @@ from llm_client import AsyncLLMClient, ChatMessage, LLMRequest, Usage
 from llm_client.schemas import AttemptLog
 from scripts.run_benchmark import load_env_file
 
-# Load credentials from .env
+# Load credentials from .env in llm-client and week3
 load_env_file(PROJECT_DIR / ".env")
+if (WEEK3_DIR / ".env").exists():
+    load_env_file(WEEK3_DIR / ".env")
+
+# Week 3 Extraction Engine Imports
+try:
+    from schemas import SCHEMA_REGISTRY
+    from prompts import PROMPTS, tool_def_for
+    from extractor import extract, semantic_checks
+    from groq_client import call_groq
+except ImportError:
+    pass
 
 
 def safe_html(content: str, target: Any = None) -> None:
@@ -307,10 +323,16 @@ async def run_fault_scenario(script: list[str], max_retries: int, base_delay_s: 
         await client.aclose()
 
 
+def render_tab_api_extraction():
+    import importlib
+    page = importlib.import_module("pages.3_API_Extraction")
+    page.render_extraction_studio(set_config=False)
+
+
 def render_week1_full_studio(set_config: bool = False) -> None:
     if set_config:
         try:
-            st.set_page_config(page_title="Week 1: Live Client & Acceptance Studio", layout="wide", page_icon="⚡")
+            st.set_page_config(page_title="Extraction API — Pipeline Auditor View", layout="wide", page_icon="🛡️")
         except Exception:
             pass
 
@@ -321,30 +343,34 @@ def render_week1_full_studio(set_config: bool = False) -> None:
         <div style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(20, 30, 55, 0.65)); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 20px 24px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35); backdrop-filter: blur(12px); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
             <div>
                 <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                    <span style="font-size: 11px; font-weight: 800; color: #38bdf8; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); padding: 3px 8px; border-radius: 6px; letter-spacing: 0.5px;">PHASE 1 · WEEK 1</span>
-                    <span style="font-size: 11px; color: #64748b; font-family: monospace;">AsyncLLMClient v0.1.0</span>
+                    <span style="font-size: 11px; font-weight: 800; color: #38bdf8; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); padding: 3px 8px; border-radius: 6px; letter-spacing: 0.5px;">LLM ENGINEER TRACK</span>
+                    <span style="font-size: 11px; color: #64748b; font-family: monospace;">openai/gpt-oss-120b</span>
                 </div>
-                <h1 style="margin: 0; font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">Live Client Service & Acceptance Studio</h1>
+                <h1 style="margin: 0; font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">API Extraction & Client Service Studio</h1>
                 <p style="margin: 4px 0 0; color: #94a3b8; font-size: 13.5px; line-height: 1.4;">
-                    Production-grade Async LLM Client featuring real-time speed insights, quadratic latency decomposition, and deterministic fault-injection circuit breakers.
+                    Schema-validated structured data extraction with tool calling, self-correcting retry, and latency insights.
                 </p>
             </div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                 <span style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; font-size: 11.5px; font-weight: 700; padding: 5px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">
-                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #60a5fa; display: inline-block;"></span> HTTP POST /v1/stream
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #60a5fa; display: inline-block;"></span> POST /extract
                 </span>
                 <span style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; font-size: 11.5px; font-weight: 700; padding: 5px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">
-                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #34d399; display: inline-block;"></span> FULL JITTER BACKOFF
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #34d399; display: inline-block;"></span> STREAM SSE
                 </span>
             </div>
         </div>
         """
     )
 
-    tab_live, tab_acceptance = st.tabs([
-        "⚡ Tab 1: Live Client, Speed Insights & Execution Pipeline",
-        "🧪 Tab 2: Acceptance Test & Fault Injection Studio",
+    tab_extraction, tab_live, tab_acceptance = st.tabs([
+        "🛡️ Tab 1: API Extraction — Pipeline Auditor View (Week 3)",
+        "⚡ Tab 2: Live Client, Speed Insights & Execution Pipeline (Week 1)",
+        "🧪 Tab 3: Acceptance Test & Fault Injection Studio (Week 1)",
     ])
+
+    with tab_extraction:
+        render_tab_api_extraction()
 
     # ==========================================================================
     # TAB 1: LIVE CLIENT, SPEED INSIGHTS & EXECUTION PIPELINE
@@ -360,7 +386,7 @@ def render_week1_full_studio(set_config: bool = False) -> None:
                 help="Input prompt streamed to openai/gpt-oss-120b using Server-Sent Events (SSE).",
             )
         with c2:
-            model_id = st.text_input("Model ID", value=os.getenv("LLM_DEFAULT_MODEL", "openai/gpt-oss-120b"), disabled=True)
+            model_id = st.text_input("Model ID", value=os.getenv("LLM_DEFAULT_MODEL", "openai/gpt-oss-120b"), disabled=True, key="w1_live_model_id")
             temp_val = st.slider("Temperature", 0.0, 1.5, 0.7, 0.1, key="w1_live_temp_slider")
 
         stream_btn = st.button("🚀 Stream Live Completion", type="primary", use_container_width=True, key="w1_stream_btn")

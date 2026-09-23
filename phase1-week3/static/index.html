@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Extraction API — Pipeline Auditor View</title>
+<style>
+:root{
+  --bg:#f4f6f9; --panel:#ffffff; --border:#d7dde5; --text:#1a2230; --muted:#647089;
+  --accent:#2c5cc5; --ok:#1a8a4a; --warn:#b5860a; --err:#c23b3b; --mono:'SFMono-Regular',Consolas,monospace;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12151c; --panel:#1a1f2b; --border:#2c3341; --text:#e6e9f0; --muted:#8b95ab;
+    --accent:#6d9bff; --ok:#4fd393; --warn:#e8b84b; --err:#ff7373;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12151c; --panel:#1a1f2b; --border:#2c3341; --text:#e6e9f0; --muted:#8b95ab;
+  --accent:#6d9bff; --ok:#4fd393; --warn:#e8b84b; --err:#ff7373;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,Segoe UI,Roboto,sans-serif}
+body{padding:18px}
+h1{font-size:18px;margin:0 0 2px}
+.sub{color:var(--muted);font-size:13px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:14px}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px}
+.panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0 0 10px}
+textarea{width:100%;min-height:90px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:8px;font-size:13px;resize:vertical}
+select,button{font-size:13px;padding:7px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text)}
+button{cursor:pointer;background:var(--accent);color:#fff;border:none;font-weight:600;transition:opacity 0.2s}
+button.btn-secondary{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+button:hover:not(:disabled){opacity:0.85}
+button:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+label.mini{font-size:11px;color:var(--muted);display:block;margin-top:10px;margin-bottom:3px;text-transform:uppercase;letter-spacing:.03em}
+pre{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px;font-size:11px;overflow-x:auto;font-family:var(--mono);max-height:180px}
+.steps{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.step{display:flex;align-items:center;gap:8px;padding:8px;border-radius:6px;border:1px solid var(--border);font-size:13px;background:var(--bg);transition:all 0.2s ease}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--muted);flex-shrink:0}
+.step.active .dot{background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent)}
+.step.ok .dot{background:var(--ok)}
+.step.err .dot{background:var(--err)}
+.step.muted{opacity:0.6}
+.detail{font-size:11px;color:var(--muted);margin-left:auto;font-family:var(--mono);text-align:right}
+.field{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)}
+.field:last-child{border-bottom:none}
+.badge{font-size:10px;padding:2px 6px;border-radius:4px;font-family:var(--mono)}
+.badge.ok{background:color-mix(in srgb, var(--ok) 18%, transparent);color:var(--ok)}
+.badge.stream{background:color-mix(in srgb, var(--accent) 18%, transparent);color:var(--accent)}
+.warnbox{margin-top:10px;padding:8px;border-radius:6px;background:color-mix(in srgb, var(--warn) 15%, transparent);border:1px solid var(--warn);font-size:12px;color:var(--warn);display:none}
+.warnbox.show{display:block}
+table{width:100%;border-collapse:collapse;font-size:11px;margin-top:6px}
+th,td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-weight:600}
+.status-success{color:var(--ok)}
+.status-retry{color:var(--warn)}
+.status-fail{color:var(--err)}
+.audit{margin-top:14px}
+#streamBuffer{max-height:80px;font-size:10px;margin-top:6px;display:none}
+</style>
+</head>
+<body>
+<h1>🛡️ Extraction API — Pipeline Auditor View</h1>
+<div class="sub">Live model layer connected to Groq <code>openai/gpt-oss-120b</code>. Real-time Pydantic schema validation, bounded self-correction retry, semantic sanity checks, and SSE streaming.</div>
+
+<div class="grid">
+  <div class="panel">
+    <h2>Input &amp; Schema</h2>
+    <label class="mini">Schema</label>
+    <select id="schemaSelect" onchange="onSchemaChange()">
+      <option value="ticket">TicketExtraction (support tickets)</option>
+      <option value="invoice">InvoiceExtraction (invoices)</option>
+    </select>
+    <label class="mini">Input text</label>
+    <textarea id="inputText"></textarea>
+    <div class="row">
+      <button id="runBtn" onclick="runExtraction()">Run extraction (/extract)</button>
+      <button id="streamBtn" class="btn-secondary" onclick="runStreamingExtraction()">Stream (/extract/stream)</button>
+    </div>
+    <label class="mini">Active schema (JSON Schema)</label>
+    <pre id="schemaDisplay"></pre>
+  </div>
+
+  <div class="panel">
+    <h2>Live Pipeline</h2>
+    <div class="steps" id="steps">
+      <div class="step" id="s0"><div class="dot"></div><span>Prompt Builder — system prompt + tool spec</span><span class="detail" id="s0detail"></span></div>
+      <div class="step" id="s1"><div class="dot"></div><span>Groq tool call — attempt <span id="attemptNum">1</span></span><span class="detail" id="s1detail"></span></div>
+      <div class="step" id="s2"><div class="dot"></div><span>Validator — pydantic.validate()</span><span class="detail" id="s2detail"></span></div>
+      <div class="step" id="s3"><div class="dot"></div><span>Retry (bounded, max 2)</span><span class="detail" id="s3detail"></span></div>
+      <div class="step" id="s4"><div class="dot"></div><span>Final response</span><span class="detail" id="s4detail"></span></div>
+    </div>
+    <pre id="streamBuffer"></pre>
+  </div>
+
+  <div class="panel">
+    <h2>Result</h2>
+    <div id="fields"><div class="field"><span>—</span><span>run extraction to populate</span></div></div>
+    <div class="warnbox" id="warnbox"></div>
+  </div>
+</div>
+
+<div class="panel audit">
+  <h2>Audit Trail</h2>
+  <table>
+    <thead><tr><th>Time</th><th>Schema</th><th>Attempts</th><th>Status</th><th>Endpoint Mode</th><th>Semantic flags</th></tr></thead>
+    <tbody id="auditBody"></tbody>
+  </table>
+</div>
+
+<script>
+const SCHEMAS = {
+  ticket: {
+    label: "TicketExtraction",
+    sample: "Customer says: this is NOT a billing issue, the app just crashes on login every time.",
+    jsonSchema: `{
+  "intent": "bug_report | feature_request | billing | other",
+  "urgency": "low | medium | high",
+  "entities": [{"name": "string", "type": "person | org | product | location | other"}],
+  "summary": "string (max 200 chars)",
+  "confidence": "float (0.0 to 1.0)"
+}`
+  },
+  invoice: {
+    label: "InvoiceExtraction",
+    sample: "Invoice #INV-2291 from Northwind Traders. Amount due: $1,240.50. No due date listed on the document.",
+    jsonSchema: `{
+  "vendor": "string",
+  "invoice_number": "string",
+  "amount": "float",
+  "currency": "USD | EUR | GBP | BDT | other",
+  "due_date": "string (ISO date or 'not specified')",
+  "confidence": "float (0.0 to 1.0)"
+}`
+  }
+};
+
+function currentSchemaKey(){ return document.getElementById("schemaSelect").value; }
+function currentSchema(){ return SCHEMAS[currentSchemaKey()]; }
+
+function onSchemaChange(){
+  const s = currentSchema();
+  document.getElementById("schemaDisplay").textContent = s.jsonSchema;
+  document.getElementById("inputText").value = s.sample;
+}
+onSchemaChange();
+
+const stepIds = ["s0","s1","s2","s3","s4"];
+function resetSteps(){
+  stepIds.forEach(id=>{ document.getElementById(id).className = "step"; });
+  document.getElementById("s0detail").textContent = "";
+  document.getElementById("s1detail").textContent = "";
+  document.getElementById("s2detail").textContent = "";
+  document.getElementById("s3detail").textContent = "";
+  document.getElementById("s4detail").textContent = "";
+  document.getElementById("attemptNum").textContent = "1";
+  const sb = document.getElementById("streamBuffer");
+  sb.textContent = "";
+  sb.style.display = "none";
+}
+function setStep(id, state){ document.getElementById(id).className = "step " + state; }
+function wait(ms){ return new Promise(r=>setTimeout(r, ms)); }
+
+function setButtonsDisabled(disabled){
+  document.getElementById("runBtn").disabled = disabled;
+  document.getElementById("streamBtn").disabled = disabled;
+}
+
+async function callExtractAPI(schemaKey, text) {
+  const resp = await fetch("/extract", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({schema_name: schemaKey, text: text})
+  });
+  return await resp.json();
+}
+
+async function runExtraction(){
+  setButtonsDisabled(true);
+  resetSteps();
+  const warnEl = document.getElementById("warnbox");
+  warnEl.className = "warnbox";
+  const schemaKey = currentSchemaKey();
+  const schema = currentSchema();
+  const text = document.getElementById("inputText").value || "";
+
+  setStep("s0","active");
+  document.getElementById("s0detail").textContent = "building prompt...";
+  await wait(200);
+  setStep("s0","ok");
+  document.getElementById("s0detail").textContent = "ready";
+
+  setStep("s1","active");
+  document.getElementById("s1detail").textContent = "calling Groq...";
+
+  let resp;
+  try {
+    resp = await callExtractAPI(schemaKey, text);
+  } catch(err) {
+    resp = {status: "failed", error: "Network/Fetch error: " + err.message};
+  }
+
+  const attempts = resp.attempts || 1;
+  document.getElementById("attemptNum").textContent = attempts;
+
+  if(resp.status === "success" || resp.status === "success_after_retry"){
+    setStep("s1","ok");
+    document.getElementById("s1detail").textContent = "tool call completed";
+
+    setStep("s2","ok");
+    document.getElementById("s2detail").textContent = "pydantic valid";
+
+    if(attempts > 1){
+      setStep("s3","ok");
+      document.getElementById("s3detail").textContent = `repaired in attempt ${attempts}`;
+    } else {
+      setStep("s3","step");
+      document.getElementById("s3detail").textContent = "passed first attempt";
+    }
+
+    setStep("s4","ok");
+    document.getElementById("s4detail").textContent = "200 OK";
+
+    renderSuccess(resp.data, resp.semantic_flags || []);
+    addAuditRow(schema.label, attempts, resp.status, "sync (/extract)", resp.semantic_flags || []);
+  } else {
+    setStep("s1","err");
+    document.getElementById("s1detail").textContent = "tool call failed";
+
+    setStep("s2","err");
+    document.getElementById("s2detail").textContent = resp.error || "validation error";
+
+    setStep("s3","err");
+    document.getElementById("s3detail").textContent = "retry budget exhausted";
+
+    setStep("s4","err");
+    document.getElementById("s4detail").textContent = "failed";
+
+    renderFailure(resp.error || "Unknown extraction failure");
+    addAuditRow(schema.label, attempts, "failed", "sync (/extract)", []);
+  }
+
+  setButtonsDisabled(false);
+}
+
+async function runStreamingExtraction(){
+  setButtonsDisabled(true);
+  resetSteps();
+  const warnEl = document.getElementById("warnbox");
+  warnEl.className = "warnbox";
+  const streamBufEl = document.getElementById("streamBuffer");
+  streamBufEl.style.display = "block";
+  streamBufEl.textContent = "Connecting to /extract/stream...";
+
+  const schemaKey = currentSchemaKey();
+  const schema = currentSchema();
+  const text = document.getElementById("inputText").value || "";
+
+  setStep("s0","active");
+  document.getElementById("s0detail").textContent = "building prompt...";
+  await wait(200);
+  setStep("s0","ok");
+  document.getElementById("s0detail").textContent = "ready";
+
+  setStep("s1","active");
+  document.getElementById("s1detail").textContent = "streaming SSE deltas...";
+
+  try {
+    const resp = await fetch("/extract/stream", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({schema_name: schemaKey, text: text})
+    });
+
+    if(!resp.ok){
+      throw new Error(`HTTP ${resp.status} ${resp.statusText}`);
+    }
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let accumulatedArgs = "";
+    let finalPayload = null;
+    let errorPayload = null;
+    let buffer = "";
+
+    while(true){
+      const {done, value} = await reader.read();
+      if(done) break;
+      buffer += decoder.decode(value, {stream: true});
+      const lines = buffer.split("\n\n");
+      buffer = lines.pop(); // keep remainder
+
+      for(const block of lines){
+        const line = block.trim();
+        if(!line.startsWith("data: ")) continue;
+        const jsonStr = line.slice(6).trim();
+        try {
+          const parsed = JSON.parse(jsonStr);
+          if(parsed.partial !== undefined){
+            accumulatedArgs += parsed.partial;
+            streamBufEl.textContent = "Partial JSON deltas:\n" + accumulatedArgs;
+          }
+          if(parsed.final !== undefined){
+            finalPayload = parsed;
+          }
+          if(parsed.error !== undefined){
+            errorPayload = parsed.error;
+          }
+        } catch(e){}
+      }
+    }
+
+    if(finalPayload){
+      setStep("s1","ok");
+      document.getElementById("s1detail").textContent = "stream complete";
+
+      setStep("s2","ok");
+      document.getElementById("s2detail").textContent = "pydantic valid";
+
+      setStep("s3","step");
+      document.getElementById("s3detail").textContent = "single-pass stream validation";
+
+      setStep("s4","ok");
+      document.getElementById("s4detail").textContent = "200 OK";
+
+      renderSuccess(finalPayload.final, finalPayload.semantic_flags || [], true);
+      addAuditRow(schema.label, 1, "success", "stream (/extract/stream)", finalPayload.semantic_flags || []);
+    } else {
+      setStep("s1","err");
+      document.getElementById("s1detail").textContent = "stream error";
+
+      setStep("s2","err");
+      document.getElementById("s2detail").textContent = errorPayload || "stream validation error";
+
+      setStep("s3","err");
+      document.getElementById("s3detail").textContent = "single pass (no stream retry)";
+
+      setStep("s4","err");
+      document.getElementById("s4detail").textContent = "failed";
+
+      renderFailure(errorPayload || "Streaming extraction failed");
+      addAuditRow(schema.label, 1, "failed", "stream (/extract/stream)", []);
+    }
+  } catch(err){
+    setStep("s1","err");
+    document.getElementById("s1detail").textContent = "fetch error";
+    setStep("s4","err");
+    renderFailure("Streaming connection error: " + err.message);
+    addAuditRow(schema.label, 1, "failed", "stream (/extract/stream)", []);
+  }
+
+  setButtonsDisabled(false);
+}
+
+function renderSuccess(data, flags, isStream = false){
+  const fieldsEl = document.getElementById("fields");
+  const warnEl = document.getElementById("warnbox");
+  const badgeClass = isStream ? "badge stream" : "badge ok";
+  const badgeText = isStream ? "stream valid" : "valid";
+
+  fieldsEl.innerHTML = Object.entries(data).map(([k,v])=>
+    `<div class="field"><span>${k}</span><span><span class="${badgeClass}">${badgeText}</span> ${Array.isArray(v)? JSON.stringify(v): v}</span></div>`
+  ).join("");
+
+  if(flags && flags.length){
+    warnEl.textContent = "⚠ Semantic warnings (schema passed, content questionable): " + flags.join("; ");
+    warnEl.className = "warnbox show";
+  } else {
+    warnEl.className = "warnbox";
+  }
+}
+
+function renderFailure(errorMsg){
+  const fieldsEl = document.getElementById("fields");
+  const warnEl = document.getElementById("warnbox");
+  fieldsEl.innerHTML = `<div class="field"><span>status</span><span class="badge" style="background:color-mix(in srgb, var(--err) 18%, transparent); color:var(--err)">extraction_failed</span></div>`;
+  warnEl.textContent = "✗ ExtractionFailure: " + errorMsg;
+  warnEl.className = "warnbox show";
+}
+
+function addAuditRow(schemaLabel, attempts, statusLabel, mode, flags){
+  const row = document.createElement("tr");
+  const statusClass = statusLabel === "failed" ? "status-fail" : (statusLabel === "success_after_retry" ? "status-retry" : "status-success");
+  row.innerHTML = `<td>${new Date().toLocaleTimeString()}</td><td>${schemaLabel}</td><td>${attempts}</td><td class="${statusClass}">${statusLabel}</td><td>${mode}</td><td>${flags.length?flags.length+" flag(s)":"none"}</td>`;
+  document.getElementById("auditBody").prepend(row);
+}
+</script>
+</body>
+</html>
