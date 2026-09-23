@@ -1,7 +1,7 @@
 # 🚀 LLM Engineer Track: From Async Python to Production Agents & RAG
 
 > **An end-to-end, production-grade LLM engineering repository comprising 24 progressive technical milestones.**  
-> Advancing from resilient asynchronous Python networking and robust streaming clients to deep Transformer inference benchmarking, schema-validated structured extraction pipelines, autonomous multi-agent systems, and enterprise retrieval-augmented generation (RAG) architectures.
+> Advancing from resilient asynchronous Python networking and robust streaming clients to deep Transformer inference benchmarking, autonomous multi-agent systems, and enterprise retrieval-augmented generation (RAG) architectures.
 
 ---
 
@@ -10,15 +10,13 @@
 2. [Milestone Deep Dives](#-milestone-deep-dives)
    - [Phase 1 Week 1: Resilient Async LLM Client & Distributed Fault Tolerance](#phase-1-week-1-resilient-async-llm-client--distributed-fault-tolerance)
    - [Phase 1 Week 2: Inference Pipeline, Token Benchmarking & Decoding Dynamics](#phase-1-week-2-inference-pipeline-token-benchmarking--decoding-dynamics)
-   - [Phase 1 Week 3: Schema-Validated Extraction API Service & Pipeline Auditor Studio](#phase-1-week-3-schema-validated-extraction-api-service--pipeline-auditor-studio)
 3. [System Architecture](#-system-architecture)
 4. [Inference Pipeline: Theory to Codebase Mapping](#-inference-pipeline-theory-to-codebase-mapping)
 5. [Empirical Benchmark Results (`openai/gpt-oss-120b`)](#-empirical-benchmark-results-openaigpt-oss-120b)
 6. [Quickstart & Running Locally](#-quickstart--running-locally)
-   - [Running the Unit Test Suite (Week 1)](#1-running-the-automated-unit-test-suite)
-   - [Running the Standalone Benchmark CLI (Week 2)](#2-running-the-benchmark-cli-runner)
-   - [Running the FastAPI Extraction Backend & HTML Auditor (Week 3)](#3-running-the-fastapi-extraction-service--auditor-web-ui)
-   - [Running the Interactive Unified Streamlit Studio](#4-launching-the-interactive-streamlit-studio)
+   - [Running the Unit Test Suite](#1-running-the-automated-test-suite)
+   - [Running the Standalone Benchmark CLI](#2-running-the-benchmark-cli-runner)
+   - [Running the Interactive Multipage Streamlit Studio](#3-launching-the-interactive-streamlit-studio)
 7. [Repository Structure](#-repository-structure)
 8. [Tradeoffs & Known Limitations](#-tradeoffs--known-limitations)
 
@@ -30,7 +28,7 @@
 | :--- | :--- | :---: | :--- |
 | **Phase 1: Week 1** | **Resilient Async LLM Client & Latency Insights** | ✅ Completed | Production async client, AWS Full Jitter backoff, circuit-breaker fast-fail policy, TTFT & decode token decomposition, zero-egress fault injection simulation harness. |
 | **Phase 1: Week 2** | **Inference Pipeline & Token Benchmarking** | ✅ Completed | Transformer pipeline architecture mapping, server-side TTFT & throughput benchmarking engine, temperature/top-p nondeterminism analysis, multipage Streamlit interactive studio. |
-| **Phase 1: Week 3** | **Schema-Validated Extraction API & Pipeline Auditor** | ✅ Completed | Pydantic v2 data models, Groq function calling on `openai/gpt-oss-120b`, bounded self-correction retry loop, non-LLM semantic sanity checks, FastAPI `/extract` and SSE `/extract/stream`, unified Streamlit studio integration. |
+| **Phase 1: Week 3** | **Streaming Architectures & SSE Protocol** | 📋 Scheduled | Real-time token delivery pipelines, backpressure handling, bi-directional event transport, connection lifecycle recovery. |
 | **Phase 1: Week 4** | **Observability, Distributed Tracing & Token Economics** | 📋 Scheduled | OpenTelemetry integration, distributed trace context propagation, granular per-token cost ledger, latency SLA monitoring. |
 | **Phase 2: Weeks 5–10**| **Production Retrieval-Augmented Generation (RAG)** | 📋 Scheduled | Hybrid search (dense vectors + BM25 sparse), Reciprocal Rank Fusion (RRF), Cross-Encoder dynamic reranking, chunking strategies, contextual compression. |
 | **Phase 3: Weeks 11–18**| **Autonomous Multi-Agent Systems & Tool Calling** | 📋 Scheduled | ReAct / Plan-and-Solve engines, structured function calling, sandbox code execution, human-in-the-loop validation checkpoints, multi-agent orchestration. |
@@ -68,31 +66,6 @@ Week 2 connects theoretical Transformer mechanics to empirical measurements, dis
 
 ---
 
-### Phase 1 Week 3: Schema-Validated Extraction API Service & Pipeline Auditor Studio
-
-Week 3 shifts from raw text generation to production-grade, schema-validated structured data extraction using Groq's high-speed function calling API (`openai/gpt-oss-120b`).
-
-- **Typed Pydantic Contracts (`schemas.py`)**:
-  - `TicketExtraction`: Enforces typed `intent`, `urgency`, typed `entities` list, `summary` ($\le 200$ chars), and numeric `confidence`.
-  - `InvoiceExtraction`: Enforces strict float amount parsing, ISO `due_date`, currency enums, and vendor metadata.
-- **Bounded Self-Correction Retry Loop (`extractor.py`)**:
-  - Intercepts Pydantic `ValidationError` and JSON decoding failures.
-  - Feeds the exact validation error back to the assistant in a `tool` role message (budget of 2 retries), allowing the LLM to self-correct inline.
-- **Groq Proxy 400 Interception (`groq_client.py`)**:
-  - Transparently intercepts Groq's `tool_use_failed` 400 proxy responses, unpacks `failed_generation`, and feeds it into the validator/retry pipeline.
-- **Semantic Sanity Checks (Non-LLM Heuristic Guard)**:
-  - Catches the failure class schema validation cannot see: outputs that are schema-valid but factually or logically wrong (e.g. sarcasm detection, negation inversion, ungrounded summaries, negative balances, missing due dates).
-- **FastAPI Endpoints & SSE Streaming (`main.py`)**:
-  - `POST /extract`: Synchronous extraction returning structured JSON, attempt counts, and sanity warning flags.
-  - `POST /extract/stream`: Server-Sent Events (SSE) streaming partial argument deltas with single-pass final buffer validation.
-- **Pipeline Auditor Studio**:
-  - Integrated into the Streamlit studio as **Tab 1: API Extraction** with a 5-stage backend stepper, metric HUD, and attempt-by-attempt self-correction recovery cards.
-  - Standalone web auditor served at `http://localhost:8000/`.
-
-*(For the complete dedicated Week 3 documentation, see [`phase1-week3/README.md`](phase1-week3/README.md)).*
-
----
-
 ## 🏛️ System Architecture
 
 ```
@@ -103,28 +76,26 @@ Week 3 shifts from raw text generation to production-grade, schema-validated str
                                                         | HTTP JSON / SSE Stream
                                                         v
 +--------------------------------------------------------------------------------------------------+
-| FastAPI Gateway (app.py & main.py) & Streamlit Demo Studio (streamlit_demo.py)                   |
-|  - Validates request payload against Pydantic LLMRequest & Extraction schemas                    |
-|  - Enforces domain exceptions (LLMRateLimitError, ExtractionFailure)                             |
+| FastAPI Gateway (app.py) & Streamlit Demo Studio (streamlit_demo.py)                             |
+|  - Validates request payload against Pydantic LLMRequest                                         |
+|  - Enforces domain exceptions (LLMRateLimitError, LLMBadRequestError, LLMTimeoutError)           |
 |  - Streams Server-Sent Events (SSE) token-by-token with monotonic telemetry                      |
-|  - Interactive 5-stage backend execution pipeline stepper & self-correction audit cards          |
 +-------------------------------------------------------+------------------------------------------+
                                                         |
-                                                        | Calls client.complete() / extract()
+                                                        | Calls client.complete() / client.stream()
                                                         v
 +--------------------------------------------------------------------------------------------------+
-| Core Execution Engine (llm_client/client.py & phase1-week3/extractor.py)                         |
+| AsyncLLMClient Engine (llm_client/client.py & llm_client/benchmark.py)                           |
 |  - Decorrelated Full-Jitter Exponential Backoff                                                  |
-|  - Bounded Self-Correction Retry Loop (feeds ValidationError back to LLM)                        |
-|  - Non-LLM Semantic Sanity Guard (negation, sarcasm, balance checks)                             |
+|  - Fast-fail circuit breaker for 4xx / malformed schemas                                         |
 |  - High-resolution wall-clock monotonic timing via time.perf_counter()                           |
+|  - Token generation benchmarking suite across prompt lengths and temperature sweeps              |
 +-------------------------------------------------------+------------------------------------------+
                                                         |
                                                         | Outbound HTTPS / TLS Handshake
                                                         v
 +--------------------------------------------------------------------------------------------------+
 | Upstream LLM Serving Infrastructure (openai/gpt-oss-120b on Groq Cloud)                          |
-|  - Function calling / Tool choice enforcement                                                    |
 |  - Prefill Phase: Subword Tokenization -> Embeddings -> Transformer Attention -> KV Cache Init   |
 |  - Decode Phase: Logits -> Softmax Temperature / Top-P Sampling -> Autoregressive Streaming     |
 +--------------------------------------------------------------------------------------------------+
@@ -143,11 +114,13 @@ Week 3 shifts from raw text generation to production-grade, schema-validated str
 | **5. Autoregressive Decode** | One forward pass per token; past key/value states preserved in high-speed GPU KV Cache. | Directly driven by `async for chunk in client.stream()` in [`client.py`](phase1-week1/llm-client/llm_client/client.py) and SSE loops in [`app.py`](phase1-week1/llm-client/app.py). |
 | **6. Detokenization** | Integer token IDs decoded back into UTF-8 characters and emitted to client. | Read from SSE `delta.content` chunks and rendered live in the CLI and Streamlit interfaces. |
 
+*(For the complete architectural walkthrough, see [`PIPELINE.md`](phase1-week1/llm-client/PIPELINE.md) and [`architecture.md`](architecture.md)).*
+
 ---
 
 ## 📊 Empirical Benchmark Results (`openai/gpt-oss-120b`)
 
-Real empirical telemetry collected by running the automated benchmark suite against `openai/gpt-oss-120b` (persisted in [`benchmark_results.json`](phase1-week1/llm-client/benchmark_results.json)):
+Real empirical telemetry collected by running the automated benchmark suite (`python scripts/run_benchmark.py --repeats 3 --delay 2.1`) against `openai/gpt-oss-120b` (persisted in [`benchmark_results.json`](phase1-week1/llm-client/benchmark_results.json)):
 
 ```text
 ================================================================================================================
@@ -167,51 +140,84 @@ Long (758c)    | 1.2    | 1.0     | 3      | 214          | 128        | 651.4  
 ---------------+--------+---------+--------+--------------+------------+-------------+------------+-------------
 ```
 
+> **Key Empirical Insight**: On the Long Prompt at `temperature=0.0`, 2 distinct text variations were observed across 3 repeats. This empirically verifies that in distributed GPU serving environments, floating-point reduction non-associativity across concurrent batches can introduce subtle divergences even during greedy sampling.
+
 ---
 
 ## ⚡ Quickstart & Running Locally
 
 ### Prerequisites
 - Python 3.10+
-- Groq Cloud API Key configured in `.env`:
-  ```ini
-  GROQ_API_KEY=gsk_your_groq_api_key_here
-  LLM_DEFAULT_MODEL=openai/gpt-oss-120b
-  ```
+- Groq Cloud API Key (or use simulated mock mode without any credentials)
+
+```bash
+# Clone and enter the repository
+git clone https://github.com/Rokibul1022/llm_engineer_track.git
+cd llm_engineer_track/phase1-week1/llm-client
+
+# Create and activate virtual environment
+python -m venv .venv
+# On Windows:
+.\.venv\Scripts\activate
+# On Linux/macOS:
+source .venv/bin/activate
+
+# Install dependencies
+pip install -e .
+```
+
+Configure `.env` (copied from `.env.example`):
+```ini
+LLM_API_KEY=your_groq_api_key_here
+LLM_BASE_URL=https://api.groq.com/openai/v1
+LLM_DEFAULT_MODEL=openai/gpt-oss-120b
+```
 
 ---
 
-### 1. Running the Automated Unit Test Suite
+### 1. Running the Automated Test Suite
+The test suite utilizes `respx` to mock the HTTP transport layer—enabling instant, hermetic execution with zero external network egress:
+
 ```powershell
-& ".\phase1-week1\llm-client\.venv\Scripts\pytest.exe" .\phase1-week1\llm-client\tests\ -v
+pytest tests/ -v
 ```
+**Result**: **11/11 tests passing (100%)** in ~0.45s (verifying retry policies, circuit breakers, SSE streaming, TTFT calculations, and nondeterminism detection).
 
 ---
 
 ### 2. Running the Benchmark CLI Runner
+
+**A. Live interactive single-prompt streaming with real-time telemetry:**
 ```powershell
-python phase1-week1/llm-client/scripts/run_benchmark.py --prompt "Explain attention mechanisms in 2 sentences."
+python scripts/run_benchmark.py --prompt "Explain what attention does in Transformer models in 2 sentences."
+```
+
+**B. Full Cartesian benchmark suite (3 prompts × 3 settings × 3 repeats):**
+```powershell
+# Live API with rate-limit pacing delay:
+python scripts/run_benchmark.py --repeats 3 --delay 2.1
+
+# Or offline with mock streaming transport:
+python scripts/run_benchmark.py --mock --repeats 3
 ```
 
 ---
 
-### 3. Running the FastAPI Extraction Service & Auditor Web UI (Week 3)
-```powershell
-cd phase1-week3
-& "..\phase1-week1\llm-client\.venv\Scripts\uvicorn.exe" main:app --reload --port 8000
-```
-Open **`http://localhost:8000`** in your browser to inspect live pipeline execution and Server-Sent Events parameter deltas.
+### 3. Launching the Interactive Streamlit Studio
 
----
+Run the dual-module multipage Streamlit application:
 
-### 4. Launching the Interactive Streamlit Studio
 ```powershell
-& ".\phase1-week1\llm-client\.venv\Scripts\streamlit.exe" run ".\phase1-week1\llm-client\streamlit_demo.py"
+streamlit run streamlit_demo.py
 ```
-Open **`http://localhost:8501`** in your browser to access:
-- **🛡️ Tab 1: API Extraction — Pipeline Auditor View (Week 3)**: Test structured extraction, adversarial samples, and watch self-correcting retry recovery live.
-- **⚡ Tab 2: Live Client, Speed Insights & Execution Pipeline (Week 1 & 2)**: Live token streaming with TTFT vs. decode throughput decomposition.
-- **🧪 Tab 3: Acceptance Test & Fault Injection Studio (Week 1)**: Interactive simulations of 429 rate limits, 5xx server crashes, malformed outputs, and fast-fail circuit breakers.
+Open **`http://localhost:8501`** in your browser:
+
+1. **`1_Week1_Fault_Injection` (Phase 1 Week 1 Studio)**:
+   - **⚡ Tab 1: Live Client, Speed Insights & Execution Pipeline**: Live token streaming, real-time 5-stage pipeline stepper, 4-row Speed Insights HUD, physical latency progress bars (Prefill % vs Decode %), and formula call stacks.
+   - **🧪 Tab 2: Acceptance Test & Fault Injection Studio**: Interactive simulation of all 6 failure modes (500 recovery, 429 rate limits, timeouts, 400 fast-fail, malformed 200) with live retry logs and backoff countdowns.
+2. **`2_Week2_Benchmark` (Phase 1 Week 2 Lab)**:
+   - **💬 Tab 1: Live Interactive Streaming**: Test custom prompts live with instantaneous TTFT and decode throughput tracking.
+   - **📊 Tab 2: Nondeterminism Benchmark Suite**: Run multi-repeat temperature sweeps (0.0, 0.7, 1.2) with side-by-side text divergence comparison cards.
 
 ---
 
@@ -219,36 +225,58 @@ Open **`http://localhost:8501`** in your browser to access:
 
 ```text
 llm_engineer_track/
-├── README.md                                  # Unified master roadmap & curriculum guide
-├── prompt.md                                  # Curated test prompts & adversarial error cases
+├── README.md                                  # Comprehensive track overview and roadmap
+├── answers.md                                 # Core knowledge questions & technical answers
+├── architecture.md                            # Transformer inference pipeline specification
+├── architecture.png                           # Visual architecture diagram
 ├── phase1-week1/
 │   └── llm-client/
-│       ├── streamlit_demo.py                  # Main unified Streamlit studio entrypoint
+│       ├── .env.example                       # Environment configuration template
+│       ├── app.py                             # FastAPI proxy gateway & SSE endpoint
+│       ├── benchmark_results.json             # Persisted empirical benchmark measurements
+│       ├── test_report.json                   # Automated test report & verification metadata
+│       ├── PIPELINE.md                        # End-to-end pipeline mapping to codebase
+│       ├── LIMITATIONS.md                     # Engineering tradeoffs & known constraints
+│       ├── ANSWERS.md                         # Milestone technical answers
+│       ├── streamlit_demo.py                  # Main Streamlit application entrypoint
 │       ├── llm_client/
+│       │   ├── __init__.py                    # Public exports
 │       │   ├── client.py                      # AsyncLLMClient with Full Jitter backoff
-│       │   ├── schemas.py                     # Pydantic v2 data models
-│       │   ├── exceptions.py                  # Domain exception hierarchy
-│       │   └── benchmark.py                   # Benchmark & nondeterminism engine
+│       │   ├── schemas.py                     # Pydantic v2 data models (LLMRequest, Usage)
+│       │   ├── exceptions.py                  # Typed exception hierarchy
+│       │   └── benchmark.py                   # Benchmark engine & nondeterminism analyzer
 │       ├── pages/
-│       │   ├── 1_Week1_Fault_Injection.py     # Fault Injection Studio
-│       │   ├── 2_Week2_Benchmark.py           # Token Benchmark Lab
-│       │   └── 3_API_Extraction.py           # Week 3 Extraction Studio
-│       └── tests/                             # Unit test suite
-├── phase1-week3/
-│   ├── README.md                              # Dedicated Week 3 documentation
-│   ├── schemas.py                             # Pydantic extraction models (Ticket & Invoice)
-│   ├── prompts.py                             # System prompts & dynamic tool schema builder
-│   ├── groq_client.py                         # Groq HTTP client & 400 proxy error interceptor
-│   ├── extractor.py                           # Self-correcting retry loop & semantic sanity guard
-│   ├── main.py                                # FastAPI app (/extract, /extract/stream)
-│   ├── static/index.html                      # Standalone Pipeline Auditor web UI
-│   └── week3-test-report.md                   # 100% verified empirical test report
+│       │   ├── 1_Week1_Fault_Injection.py     # Week 1 Live Client & Fault Injection Studio
+│       │   └── 2_Week2_Benchmark.py           # Week 2 Token Benchmark & Live Generation Lab
+│       ├── scripts/
+│       │   └── run_benchmark.py               # CLI benchmark runner with live streaming
+│       ├── static/
+│       │   └── index.html                     # Visual demonstration dashboard (FastAPI)
+│       └── tests/
+│           ├── test_client.py                 # Resilient client & retry policy tests (8 tests)
+│           └── test_benchmark.py              # Benchmark & nondeterminism unit tests (3 tests)
 ```
 
 ---
 
 ## ⚖️ Tradeoffs & Known Limitations
 
-1. **Client-Side API Boundary vs. Internal Hardware Timers**: Token counts and latencies reflect provider-reported usage across WAN HTTP/SSE connections rather than direct GPU kernel telemetry.
-2. **Grammar Enforcement vs. LLM Freedom**: Strict tool-calling constraints reduce hallucinations but require fallback heuristics when inputs completely lack required target fields.
-3. **Bounded Retries**: Self-correction is capped at 2 retries to prevent unbounded token expenditure on unrecoverable inputs.
+1. **Client-Side API Boundary vs. Model Internal Weights**:
+   The client interacts across an external HTTP/SSE API boundary. Token counts and completion latencies reflect provider-reported usage rather than directly instrumented GPU kernel timers.
+2. **TTFT Latency Composition**:
+   Client-measured TTFT includes client serialization, WAN internet transit, provider API gateway routing, and GPU queueing alongside the true model prefill time.
+3. **Provider Rate Limits (RPM/TPM)**:
+   Free-tier cloud provider quotas (e.g. Groq 30 RPM) require pacing delays (`--delay 2.1`) during large Cartesian benchmark sweeps to prevent transient HTTP 429 throttling.
+4. **Streamlit Synchronous Worker Loop**:
+   Executing asynchronous benchmark loops inside Streamlit via `asyncio.run()` blocks the session thread during bulk multi-repeat executions.
+
+*(For detailed architectural tradeoffs, see [`LIMITATIONS.md`](phase1-week1/llm-client/LIMITATIONS.md)).*
+
+---
+
+## 🤝 Contribution & Integration
+
+- **Active Development Branch**: [`phase1-week2`](https://github.com/Rokibul1022/llm_engineer_track/tree/phase1-week2)
+- **Base Integration Branch**: `phase1-week1`
+- **Pull Request**: [Open Pull Request on GitHub](https://github.com/Rokibul1022/llm_engineer_track/pull/new/phase1-week2)
+- **Author**: Rokibul
