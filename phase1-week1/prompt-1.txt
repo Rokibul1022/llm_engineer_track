@@ -1,0 +1,22 @@
+1. Explain why exponential backoff needs jitter when handling rate limits in exactly two punchy sentences.
+2. Write a concise Python function implementing exponential backoff with full jitter, including type hints and docstring.
+3. Return a valid JSON object analyzing the HTTP status code 429. Include keys: "status_code" (int), "error_type" (string), "is_transient" (bool), and "recommended_action" (string). Output only JSON.
+4. Compare "at-least-once" retry semantics with idempotency in LLM services. Why is blindly retrying a timed-out completion dangerous?
+5. 
+.\.venv\Scripts\streamlit run streamlit_demo.py
+
+
+transformer - backend - 
+
+How the API Hit works: Live HTTP POST / Server-Sent Events (SSE) wire inspector displaying request headers, connection lifecycle, and JSON payload.
+
+Where and How the Transformer is used:
+
+Tokenization & Embedding: BPE subwords $\to$ token IDs $\to$ dense vector lookup + RoPE position encoding.
+
+Transformer Stack & Prefill: Multi-head self-attention ($Q K^T / \sqrt{d_k}$) processing all input prompt tokens in parallel, 
+initializing the Key-Value (KV) cache, and measuring TTFT.
+
+Logits & Softmax Sampling: Temperature scaling and Top-P nucleus sampling over vocabulary.
+
+Autoregressive Decode Loop: Generating token-by-token with KV cache lookups, checking stop conditions, detokenizing to UTF-8 text, and streaming back SSE deltas.
